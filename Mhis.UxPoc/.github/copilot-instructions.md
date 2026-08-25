@@ -82,6 +82,14 @@ If the screenshots conflict with `docs/UX-BRIEF.md`, follow `docs/UX-BRIEF.md`.
 - The left sidebar is the primary application navigation.
 - The top bar contains only global utilities such as notifications and account controls.
 
+## UI consistency
+
+- Use Lucide line icons exclusively throughout the POC.
+- Never use emoji, Unicode symbols, operating-system icons, or mixed icon libraries as interface icons.
+- Follow the CSS variables and component styles already defined in `site.css`.
+- New pages must visually reuse the established sidebar, top bar, typography, buttons, cards, tables, modals, spacing, and notification styles.
+- Do not redesign accepted shared components in later iterations unless explicitly requested.
+
 ## Working behavior
 
 Before editing:

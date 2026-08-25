@@ -228,11 +228,11 @@ function renderHomePage() {
 
             <div class="action-buttons">
                 <button class="btn btn-primary" id="addActivityBtn">
-                    <span>➕</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>Add Activity</span>
                 </button>
                 <button class="btn btn-secondary" id="viewDashboardBtn">
-                    <span>📊</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M13 17V9"></path><path d="M18 17V5"></path><path d="M8 17v-3"></path></svg>
                     <span>View Dashboard</span>
                 </button>
             </div>
@@ -258,7 +258,7 @@ function renderHomePage() {
 
             <div class="section-card">
                 <div class="section-header">
-                    <h3>⚠️ Needs Attention</h3>
+                    <h3>Needs Attention</h3>
                 </div>
                 <div class="section-content">
                     ${needsAttentionHTML}
@@ -267,7 +267,7 @@ function renderHomePage() {
 
             <div class="section-card">
                 <div class="section-header">
-                    <h3>📢 Recent Announcements</h3>
+                    <h3>Recent Announcements</h3>
                 </div>
                 <div class="section-content">
                     ${announcementsHTML}
@@ -276,7 +276,7 @@ function renderHomePage() {
 
             <div class="section-card">
                 <div class="section-header">
-                    <h3>📅 Upcoming Events</h3>
+                    <h3>Upcoming Events</h3>
                 </div>
                 <div class="section-content">
                     ${eventsHTML}
@@ -298,27 +298,25 @@ function attachHomePageListeners() {
 // Placeholder Page
 function renderPlaceholderPage(page) {
     const pageInfo = {
-        'organization-profile': { icon: '🏢', title: 'Organization Profile' },
-        'facilities': { icon: '🏥', title: 'Facilities' },
-        'providers': { icon: '👨‍⚕️', title: 'Providers' },
-        'activities': { icon: '📋', title: 'Activities' },
-        'surveys': { icon: '📊', title: 'Surveys' },
-        'my-dashboard': { icon: '📈', title: 'My Dashboard' },
-        'advanced-dashboard': { icon: '📊', title: 'Advanced Dashboard' },
-        'events-calendar': { icon: '📅', title: 'Events Calendar' },
-        'resources-help': { icon: '❓', title: 'Resources & Help' }
+        'organization-profile': { title: 'Organization Profile' },
+        'facilities': { title: 'Facilities' },
+        'providers': { title: 'Providers' },
+        'activities': { title: 'Activities' },
+        'surveys': { title: 'Surveys' },
+        'my-dashboard': { title: 'My Dashboard' },
+        'advanced-dashboard': { title: 'Advanced Dashboard' },
+        'events-calendar': { title: 'Events Calendar' },
+        'resources-help': { title: 'Resources & Help' }
     };
 
-    const info = pageInfo[page] || { icon: '📄', title: 'Page' };
+    const info = pageInfo[page] || { title: 'Page' };
 
     return `
         <div class="placeholder-page">
-            <div class="placeholder-icon">${info.icon}</div>
+            <div class="placeholder-icon">📋</div>
             <h2 class="placeholder-title">${info.title}</h2>
             <p class="placeholder-description">This page will be implemented in future iterations</p>
-            <p class="placeholder-description" style="font-size: 12px; color: #999;">
-                Current focus: Establishing the shell with home page and notification system
-            </p>
+            <p class="placeholder-description">Current focus: Establishing the shell with home page and notification system</p>
         </div>
     `;
 }
