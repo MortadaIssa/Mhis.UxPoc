@@ -770,6 +770,56 @@ svg.icon {
     font-size: 13px;
 }
 
+/* ===== Resources & Help ===== */
+.resource-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.resource-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resource-card:hover {
+    border-color: var(--color-primary-green);
+    box-shadow: var(--shadow-sm);
+}
+
+.resource-card-icon {
+    color: var(--color-primary-green);
+    margin-bottom: var(--spacing-sm);
+}
+
+.resource-card-icon svg,
+.resource-card-icon i {
+    width: 24px;
+    height: 24px;
+}
+
+.resource-card-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.resource-card-description {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {

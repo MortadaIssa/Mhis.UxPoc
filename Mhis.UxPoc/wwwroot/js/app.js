@@ -339,6 +339,38 @@ let calendarView = {
     currentDate: new Date()
 };
 
+// ===== Resources & Help mock data =====
+mockData.resources = {
+    glossary: [
+        { term: '4Ws', definition: 'The "Who, What, Where, When" mapping framework used to track mental health and psychosocial support activities.' },
+        { term: 'NGO', definition: 'Non-Governmental Organization implementing mental health and psychosocial support activities.' },
+        { term: 'NMHP', definition: 'National Mental Health Programme, the government body overseeing mental health services and reporting.' },
+        { term: 'MHPSS', definition: 'Mental Health and Psychosocial Support, the overall sector these activities belong to.' },
+        { term: 'Facility', definition: 'A physical location, such as a clinic or hospital, where activities or services are delivered.' },
+        { term: 'Provider', definition: 'An individual professional, such as a psychiatrist or social worker, delivering services.' },
+        { term: 'Sub-Activity', definition: 'A specific, catalog-defined type of work reported under a broader activity category.' },
+        { term: 'Focal Person', definition: 'The designated contact person within an NGO for a specific reporting area, such as 4Ws or Substance Use.' }
+    ],
+    annualReports: [
+        { title: 'MHIS Annual Report 2023', year: 2023, href: '#' },
+        { title: 'MHIS Annual Report 2022', year: 2022, href: '#' },
+        { title: 'MHIS Annual Report 2021', year: 2021, href: '#' },
+        { title: 'National Mental Health Programme Overview 2020', year: 2020, href: '#' }
+    ],
+    contact: {
+        organization: 'National Mental Health Programme (NMHP)',
+        email: 'support@mhis-lb.org',
+        phone: '+961 1 000 000',
+        address: 'Ministry of Public Health, Beirut, Lebanon',
+        hours: 'Sunday - Thursday, 9:00 AM - 4:00 PM'
+    },
+    whatsNew: [
+        { title: 'Improved Notifications', date: 'March 2024', description: 'Notifications now group by type and support quick actions directly from the bell menu.' },
+        { title: 'Dynamic Activity Forms', date: 'February 2024', description: 'Activity forms now adapt automatically based on the selected sub-activity.' },
+        { title: 'New Events Calendar', date: 'January 2024', description: 'A dedicated Events Calendar view replaces the previous scattered event listings.' }
+    ]
+};
+
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
     initializeEventListeners();
@@ -460,8 +492,11 @@ function renderPage(page) {
             container.innerHTML = renderEventsCalendarPage();
             attachEventsCalendarListeners();
             break;
-        case 'surveys':
         case 'resources-help':
+            container.innerHTML = renderResourcesHelpPage();
+            attachResourcesHelpListeners();
+            break;
+        case 'surveys':
             container.innerHTML = renderPlaceholderPage(page);
             break;
         default:
@@ -593,6 +628,274 @@ function attachHomePageListeners() {
     document.getElementById('viewDashboardBtn')?.addEventListener('click', () => {
         document.querySelector('[data-page="my-dashboard"]').click();
     });
+}
+
+// ===== Resources & Help =====
+const RESOURCE_TOPICS = [
+    { key: 'activity-catalog', label: 'Activity Catalog', icon: 'book-open', description: 'Browse activity codes, names, and definitions.' },
+    { key: 'glossary', label: 'Glossary of Terms', icon: 'book-text', description: 'Definitions of common MHIS terms and acronyms.' },
+    { key: 'about-4ws', label: 'About 4Ws', icon: 'info', description: 'Learn about the Who, What, Where, When framework.' },
+    { key: 'about-mhis', label: 'About MHIS', icon: 'info', description: 'Learn about the Mental Health Information System.' },
+    { key: 'about-nmhp', label: 'About NMHP', icon: 'info', description: 'Learn about the National Mental Health Programme.' },
+    { key: 'whats-new', label: 'What\u2019s New', icon: 'sparkles', description: 'Recent updates and improvements to MHIS.' },
+    { key: 'annual-reports', label: 'Annual Reports', icon: 'file-text', description: 'Published annual reports.' },
+    { key: 'contact-us', label: 'Contact Us', icon: 'mail', description: 'Get in touch with the NMHP support team.' }
+];
+
+function getResourceTopic(key) {
+    return RESOURCE_TOPICS.find(t => t.key === key);
+}
+
+function renderResourcesHelpPage() {
+    if (resourcesHelpView.mode === 'landing') {
+        return renderResourcesLandingPage();
+    }
+    return renderResourceTopicPage(resourcesHelpView.mode);
+}
+
+function renderResourcesLandingPage() {
+    const cardsHTML = RESOURCE_TOPICS.map(t => `
+        <button type="button" class="resource-card" data-topic="${t.key}">
+            <div class="resource-card-icon"><i data-lucide="${t.icon}"></i></div>
+            <div class="resource-card-label">${escapeHtml(t.label)}</div>
+            <div class="resource-card-description">${escapeHtml(t.description)}</div>
+        </button>`).join('');
+
+    return `
+        <div class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Resources & Help</h1>
+                    <p class="page-lead">Reference material, definitions, and support information.</p>
+                </div>
+            </div>
+            <div class="resource-card-grid">
+                ${cardsHTML}
+            </div>
+        </div>`;
+}
+
+function renderResourceTopicPage(topicKey) {
+    const topic = getResourceTopic(topicKey);
+    const backLinkHTML = `<button type="button" class="link-back" id="resourcesBackBtn"><i data-lucide="arrow-left"></i> Back to Resources & Help</button>`;
+
+    let bodyHTML = '';
+    switch (topicKey) {
+        case 'activity-catalog':
+            bodyHTML = renderActivityCatalogResource();
+            break;
+        case 'glossary':
+            bodyHTML = renderGlossaryResource();
+            break;
+        case 'about-4ws':
+            bodyHTML = renderStaticResource('About 4Ws', 'The 4Ws (Who, What, Where, When) framework is used to map mental health and psychosocial support activities across Lebanon. It helps NGOs and the National Mental Health Programme understand who is doing what, where, and when, avoiding duplication and identifying gaps in coverage.');
+            break;
+        case 'about-mhis':
+            bodyHTML = renderStaticResource('About MHIS', 'The Mental Health Information System (MHIS) is the platform NGOs and administrators use to register activities, facilities, providers, and surveys in support of the national mental health response. It centralizes reporting to support coordination and evidence-based planning.');
+            break;
+        case 'about-nmhp':
+            bodyHTML = renderStaticResource('About NMHP', 'The National Mental Health Programme (NMHP) is the government body within the Ministry of Public Health responsible for overseeing mental health policy, coordination, and services in Lebanon.');
+            break;
+        case 'whats-new':
+            bodyHTML = renderWhatsNewResource();
+            break;
+        case 'annual-reports':
+            bodyHTML = renderAnnualReportsResource();
+            break;
+        case 'contact-us':
+            bodyHTML = renderContactUsResource();
+            break;
+        default:
+            bodyHTML = renderStaticResource(topic ? topic.label : 'Resource', 'Content coming soon.');
+    }
+
+    return `
+        <div class="page">
+            ${backLinkHTML}
+            ${bodyHTML}
+        </div>`;
+}
+
+function renderStaticResource(title, paragraph) {
+    return `
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">${escapeHtml(title)}</h1>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-content">
+                <p>${escapeHtml(paragraph)}</p>
+            </div>
+        </div>`;
+}
+
+function renderGlossaryResource() {
+    const itemsHTML = mockData.resources.glossary.map(entry => `
+        <div class="announcement-item">
+            <div class="announcement-title">${escapeHtml(entry.term)}</div>
+            <div class="announcement-content">${escapeHtml(entry.definition)}</div>
+        </div>`).join('');
+
+    return `
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Glossary of Terms</h1>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-content">
+                ${itemsHTML}
+            </div>
+        </div>`;
+}
+
+function renderWhatsNewResource() {
+    const itemsHTML = mockData.resources.whatsNew.map(entry => `
+        <div class="announcement-item">
+            <div class="announcement-title">${escapeHtml(entry.title)}</div>
+            <div class="announcement-content">${escapeHtml(entry.description)}</div>
+            <div class="announcement-meta">${escapeHtml(entry.date)}</div>
+        </div>`).join('');
+
+    return `
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">What\u2019s New</h1>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-content">
+                ${itemsHTML}
+            </div>
+        </div>`;
+}
+
+function renderAnnualReportsResource() {
+    const rowsHTML = mockData.resources.annualReports.map(report => `
+        <div class="event-item">
+            <div class="event-details">
+                <div class="event-title">${escapeHtml(report.title)}</div>
+                <div class="event-time">${report.year}</div>
+            </div>
+            <a class="btn btn-secondary" href="${report.href}" target="_blank" rel="noopener">
+                <i data-lucide="download"></i>
+                <span>View Report</span>
+            </a>
+        </div>`).join('');
+
+    return `
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Annual Reports</h1>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-content">
+                ${rowsHTML}
+            </div>
+        </div>`;
+}
+
+function renderContactUsResource() {
+    const c = mockData.resources.contact;
+    const rows = [
+        ['Organization', c.organization],
+        ['Email', c.email],
+        ['Phone', c.phone],
+        ['Address', c.address],
+        ['Office Hours', c.hours]
+    ];
+
+    return `
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Contact Us</h1>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-content">
+                <dl class="detail-list">${rows.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl>
+            </div>
+        </div>`;
+}
+
+function filterResourceCatalog(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return mockData.activityConfigs;
+    return mockData.activityConfigs.filter(cfg => {
+        const haystack = `${cfg.code} ${cfg.subCode} ${cfg.activity} ${cfg.subActivity} ${cfg.definition} ${cfg.keywords.join(' ')}`.toLowerCase();
+        return haystack.includes(q);
+    });
+}
+
+function renderActivityCatalogResource() {
+    const results = filterResourceCatalog(resourcesHelpView.catalogQuery);
+    const cardsHTML = results.length === 0
+        ? `<div class="empty-state">No catalog entries match your search.</div>`
+        : results.map(cfg => `
+            <div class="catalog-card">
+                <div>
+                    <div class="catalog-code">${escapeHtml(cfg.subCode)} &middot; ${escapeHtml(cfg.activity)}</div>
+                    <div class="catalog-name">${escapeHtml(cfg.subActivity)}</div>
+                    <div class="catalog-def">${escapeHtml(cfg.definition)}</div>
+                </div>
+            </div>`).join('');
+
+    return `
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Activity Catalog</h1>
+                <p class="page-lead">Browse the full list of reportable activities and their definitions.</p>
+            </div>
+        </div>
+        <div class="discovery-search">
+            <div class="search-group large">
+                <i data-lucide="search"></i>
+                <input type="search" id="resourceCatalogSearch" value="${escapeHtml(resourcesHelpView.catalogQuery)}"
+                    placeholder="Search by code, activity name, or keyword..." aria-label="Search the activity catalog" autocomplete="off" />
+            </div>
+        </div>
+        <div id="resourceCatalogResults" class="discovery-results">
+            ${cardsHTML}
+        </div>`;
+}
+
+function attachResourcesHelpListeners() {
+    if (resourcesHelpView.mode === 'landing') {
+        document.querySelectorAll('.resource-card').forEach(card => {
+            card.addEventListener('click', () => {
+                resourcesHelpView.mode = card.getAttribute('data-topic');
+                renderPage('resources-help');
+            });
+        });
+        return;
+    }
+
+    document.getElementById('resourcesBackBtn')?.addEventListener('click', () => {
+        resourcesHelpView.mode = 'landing';
+        renderPage('resources-help');
+    });
+
+    if (resourcesHelpView.mode === 'activity-catalog') {
+        const input = document.getElementById('resourceCatalogSearch');
+        input?.addEventListener('input', () => {
+            resourcesHelpView.catalogQuery = input.value;
+            const results = filterResourceCatalog(resourcesHelpView.catalogQuery);
+            const container = document.getElementById('resourceCatalogResults');
+            container.innerHTML = results.length === 0
+                ? `<div class="empty-state">No catalog entries match your search.</div>`
+                : results.map(cfg => `
+                    <div class="catalog-card">
+                        <div>
+                            <div class="catalog-code">${escapeHtml(cfg.subCode)} &middot; ${escapeHtml(cfg.activity)}</div>
+                            <div class="catalog-name">${escapeHtml(cfg.subActivity)}</div>
+                            <div class="catalog-def">${escapeHtml(cfg.definition)}</div>
+                        </div>
+                    </div>`).join('');
+            if (window.lucide) window.lucide.createIcons();
+        });
+    }
 }
 
 // Placeholder Page
@@ -1810,6 +2113,10 @@ function validateModalForm(form) {
 // No add/edit modal is used anywhere in this module.
 let activitiesView = { mode: 'list', discoveryQuery: '' };
 let activityEditor = null;
+
+// ===== Resources & Help =====
+// mode is 'landing' or one of the resource topic keys.
+let resourcesHelpView = { mode: 'landing', catalogQuery: '' };
 
 function getActivityConfig(configId) {
     return mockData.activityConfigs.find(c => c.id === configId);
