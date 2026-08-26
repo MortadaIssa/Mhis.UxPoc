@@ -103,4 +103,12 @@ After editing:
 - Build or run the application.
 - Fix errors introduced by the change.
 - Provide a short list of changed files and what can now be demonstrated.
+
+## Activity UX rules
+
+- MHIS Activities are reporting/logging records for work the NGO has already performed or is currently implementing. MHIS is not an activity-planning tool.
+- Activity add and edit experiences must use a dedicated full page, never a modal, drawer, or long popup.
+- Users must be able to discover an activity by code, catalog wording, or plain-language description without first visiting the catalog.
+- Activity form sections are dynamic. Never assume that Location, Facilities, Providers, Beneficiaries, Funding, or any other section applies to every activity.
+- Existing screenshots explain business content only and must not be copied as the target UX.
 - Do not generate additional documentation.

@@ -49,14 +49,18 @@ const mockData = {
     activityConfigs: [
         {
             id: "facility-service",
+            code: "3.2",
+            subCode: "3.2.1",
             activity: "Service Provision",
             subActivity: "Facility-Based Mental Health Service",
+            definition: "Clinical or psychosocial services delivered to individuals at a health facility, such as counselling, psychological intervention, or case management.",
+            keywords: ["service", "counselling", "counseling", "psychological intervention", "clinical", "case management", "support provided to children", "individual support", "therapy", "mhpss service"],
             sections: [
                 {
-                    key: "general", title: "General Information", fields: [
+                    key: "general", title: "Activity Details", fields: [
                         { id: "title", label: "Activity Title", type: "text", required: true },
-                        { id: "startDate", label: "Start Date", type: "date", required: true },
-                        { id: "endDate", label: "End Date", type: "date", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
                         { id: "description", label: "Description", type: "textarea", required: false }
                     ]
                 },
@@ -83,14 +87,18 @@ const mockData = {
         },
         {
             id: "awareness",
+            code: "6.1",
+            subCode: "6.1.2",
             activity: "Awareness & Information",
             subActivity: "Community Awareness Campaign",
+            definition: "Public information and awareness work that spreads mental health messages to communities through campaigns, events, or media.",
+            keywords: ["community awareness", "awareness", "campaign", "mental health messages", "information session", "public", "stigma", "outreach messaging", "radio", "social media"],
             sections: [
                 {
-                    key: "general", title: "General Information", fields: [
+                    key: "general", title: "Activity Details", fields: [
                         { id: "title", label: "Activity Title", type: "text", required: true },
-                        { id: "startDate", label: "Start Date", type: "date", required: true },
-                        { id: "endDate", label: "End Date", type: "date", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
                         { id: "theme", label: "Campaign Theme", type: "text", required: true }
                     ]
                 },
@@ -110,15 +118,56 @@ const mockData = {
         },
         {
             id: "coordination",
+            code: "8.4",
+            subCode: "8.4.1",
             activity: "Coordination & Policy",
             subActivity: "Policy / Research Coordination",
+            definition: "Coordination, working-group, policy, or research work carried out with partners at national or sub-national level.",
+            keywords: ["coordination", "policy", "research", "working group", "advocacy", "guidelines", "assessment", "study", "partners meeting"],
             sections: [
                 {
-                    key: "general", title: "General Information", fields: [
+                    key: "general", title: "Activity Details", fields: [
                         { id: "title", label: "Activity Title", type: "text", required: true },
-                        { id: "startDate", label: "Start Date", type: "date", required: true },
-                        { id: "endDate", label: "End Date", type: "date", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
                         { id: "partners", label: "Coordinating Partners", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "training",
+            code: "5.3",
+            subCode: "5.3.2",
+            activity: "Capacity Building",
+            subActivity: "Training of Health Workers",
+            definition: "Training, coaching, or supervision delivered to providers and health workers to strengthen mental health service capacity.",
+            keywords: ["training", "we trained health workers", "capacity building", "coaching", "supervision", "workshop", "provider training", "trained staff", "skills"],
+            sections: [
+                {
+                    key: "general", title: "Activity Details", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
+                        { id: "topic", label: "Training Topic", type: "text", required: true }
+                    ]
+                },
+                {
+                    key: "providers", title: "Providers", fields: [
+                        { id: "providerType", label: "Providers Trained", type: "select", required: true, options: ["Psychiatrists", "Psychologists", "Social Workers", "Psychiatric Nurses", "General Practitioners", "Mixed"] },
+                        { id: "providerCount", label: "Number of Providers Trained", type: "number", required: true },
+                        { id: "trainer", label: "Lead Trainer", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "beneficiaries", title: "Beneficiaries", fields: [
+                        { id: "beneficiaryCount", label: "Indirect Beneficiaries Reached", type: "number", required: false }
                     ]
                 },
                 {
@@ -150,6 +199,11 @@ const mockData = {
             id: 4, configId: "facility-service", state: "completed",
             data: { title: "Mobile Clinic Outreach", startDate: "2024-03-01", endDate: "2024-09-30", description: "Rural outreach sessions.", facility: "Mount Lebanon Mobile Unit", governorate: "Mount Lebanon", locality: "Hazmieh", beneficiaryType: "Mixed", beneficiaryCount: 300, donor: "EU", budget: 60000 },
             updated: "2024-10-02"
+        },
+        {
+            id: 5, configId: "training", state: "published",
+            data: { title: "PM+ Training for Health Workers", startDate: "2025-04-01", endDate: "2026-03-31", topic: "Problem Management Plus", providerType: "General Practitioners", providerCount: 28, trainer: "Dr. Nour Khalil", beneficiaryCount: 900, donor: "WHO", budget: 32000 },
+            updated: "2025-05-18"
         }
     ],
     notifications: [
@@ -298,6 +352,12 @@ function handleNavigation(e) {
             return;
         }
         appState.profileDirty = false;
+    }
+
+    if (page === 'activities') {
+        // A direct sidebar click always returns to the My Activities list.
+        activitiesView.mode = 'list';
+        activityEditor = null;
     }
 
     setActivePage(page);
@@ -481,8 +541,9 @@ function renderHomePage() {
 
 function attachHomePageListeners() {
     document.getElementById('addActivityBtn')?.addEventListener('click', () => {
+        activitiesView.mode = 'discovery';
+        activitiesView.discoveryQuery = '';
         navigateTo('activities');
-        openActivityModal();
     });
     document.getElementById('viewDashboardBtn')?.addEventListener('click', () => {
         document.querySelector('[data-page="my-dashboard"]').click();
@@ -1196,6 +1257,12 @@ function validateModalForm(form) {
 }
 
 // ===== Activities =====
+// The Activities destination has three in-page views: 'list' (My Activities),
+// 'discovery' (catalog smart search) and 'editor' (full-page guided stepper).
+// No add/edit modal is used anywhere in this module.
+let activitiesView = { mode: 'list', discoveryQuery: '' };
+let activityEditor = null;
+
 function getActivityConfig(configId) {
     return mockData.activityConfigs.find(c => c.id === configId);
 }
@@ -1216,31 +1283,49 @@ function activityStateLabel(activity) {
 }
 
 function renderActivitiesPage() {
+    if (activitiesView.mode === 'discovery') return renderActivityDiscovery();
+    if (activitiesView.mode === 'editor') return renderActivityEditorPage();
+    return renderMyActivitiesList();
+}
+
+function attachActivitiesListeners() {
+    if (activitiesView.mode === 'discovery') return attachActivityDiscoveryListeners();
+    if (activitiesView.mode === 'editor') return attachActivityEditorListeners();
+    return attachMyActivitiesListeners();
+}
+
+function showActivitiesView(mode) {
+    activitiesView.mode = mode;
+    renderPage('activities');
+}
+
+// ---------- My Activities list ----------
+function renderMyActivitiesList() {
     const configOptions = mockData.activityConfigs
-        .map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.activity)} — ${escapeHtml(c.subActivity)}</option>`)
+        .map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.code)} — ${escapeHtml(c.subActivity)}</option>`)
         .join('');
     return `
         <div class="page">
             <div class="page-header">
-                <h1 class="page-title">Activities</h1>
-                <button class="btn btn-primary" id="addActivityPageBtn">
-                    <i data-lucide="plus"></i><span>Add Activity</span>
+                <h1 class="page-title">My Activities</h1>
+                <button class="btn btn-primary" id="logActivityBtn">
+                    <i data-lucide="plus"></i><span>Log Activity</span>
                 </button>
             </div>
             <div class="list-toolbar">
                 <div class="search-group">
                     <i data-lucide="search"></i>
-                    <input type="search" id="activitySearch" placeholder="Search activities..." aria-label="Search activities" />
+                    <input type="search" id="activitySearch" placeholder="Search my activities..." aria-label="Search my activities" />
                 </div>
                 <div class="filter-group">
-                    <label for="activityTypeFilter">Activity Type</label>
+                    <label for="activityTypeFilter">Activity</label>
                     <select id="activityTypeFilter">
                         <option value="">All</option>
                         ${configOptions}
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="activityStateFilter">Category</label>
+                    <label for="activityStateFilter">Record</label>
                     <select id="activityStateFilter">
                         <option value="">All</option>
                         <option value="draft">Draft</option>
@@ -1253,7 +1338,8 @@ function renderActivitiesPage() {
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Activity</th><th>Period</th><th>Last Updated</th><th class="actions-col">Actions</th>
+                        <th>Code</th><th>Activity</th><th>Location</th><th>Facility</th>
+                        <th>Implementation Dates</th><th>Last Updated</th><th class="actions-col">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="activityTableBody"></tbody>
@@ -1261,28 +1347,16 @@ function renderActivitiesPage() {
         </div>`;
 }
 
-function attachActivitiesListeners() {
-    document.getElementById('addActivityPageBtn').addEventListener('click', () => openActivityModal());
+function attachMyActivitiesListeners() {
+    document.getElementById('logActivityBtn').addEventListener('click', () => startActivityDiscovery());
     document.getElementById('activitySearch').addEventListener('input', renderActivityRows);
     document.getElementById('activityTypeFilter').addEventListener('change', renderActivityRows);
     document.getElementById('activityStateFilter').addEventListener('change', renderActivityRows);
     renderActivityRows();
 }
 
-function getFilteredActivities() {
-    const q = (document.getElementById('activitySearch')?.value || '').toLowerCase();
-    const type = document.getElementById('activityTypeFilter')?.value || '';
-    const state = document.getElementById('activityStateFilter')?.value || '';
-    return mockData.activities.filter(a => {
-        const cfg = getActivityConfig(a.configId);
-        const title = (a.data.title || '').toLowerCase();
-        const matchesQ = !q || title.includes(q) ||
-            (cfg && (`${cfg.activity} ${cfg.subActivity}`.toLowerCase().includes(q)));
-        const matchesType = !type || a.configId === type;
-        const category = isActivityCompleted(a) ? 'completed' : a.state;
-        const matchesState = !state || category === state;
-        return matchesQ && matchesType && matchesState;
-    });
+function activitySectionKeys(cfg) {
+    return cfg ? cfg.sections.map(s => s.key) : [];
 }
 
 function renderActivityRows() {
@@ -1290,13 +1364,21 @@ function renderActivityRows() {
     const body = document.getElementById('activityTableBody');
     document.getElementById('activityCount').textContent = `${rows.length} activit${rows.length === 1 ? 'y' : 'ies'} found`;
     if (rows.length === 0) {
-        body.innerHTML = `<tr><td colspan="4" class="empty-row">No activities match your filters.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="7" class="empty-row">No activities match your filters.</td></tr>`;
         return;
     }
     body.innerHTML = rows.map(a => {
         const cfg = getActivityConfig(a.configId);
         const completed = isActivityCompleted(a);
-        const secondary = [a.data.facility, a.data.governorate].filter(Boolean).join(' · ');
+        const keys = activitySectionKeys(cfg);
+        const hasLocation = keys.includes('location');
+        const hasFacility = keys.includes('location'); // facility lives in the Location section
+        const location = hasLocation
+            ? escapeHtml([a.data.governorate, a.data.locality].filter(Boolean).join(', ') || '—')
+            : '<span class="muted">Not required</span>';
+        const facility = hasFacility
+            ? escapeHtml(a.data.facility || '—')
+            : '<span class="muted">Not required</span>';
         const period = `${escapeHtml(a.data.startDate || '—')} → ${escapeHtml(a.data.endDate || '—')}`;
         const label = activityStateLabel(a);
         const labelClass = completed ? 'completed' : (a.state === 'draft' ? 'draft' : 'published');
@@ -1313,10 +1395,13 @@ function renderActivityRows() {
         }
         return `
             <tr>
+                <td>${escapeHtml(cfg ? cfg.code : '—')}</td>
                 <td>
                     <div class="cell-primary">${escapeHtml(a.data.title || 'Untitled activity')}</div>
-                    <div class="cell-secondary">${escapeHtml(cfg ? cfg.subActivity : '')}${secondary ? ' · ' + escapeHtml(secondary) : ''}</div>
+                    <div class="cell-secondary">${escapeHtml(cfg ? cfg.subActivity : '')}</div>
                 </td>
+                <td>${location}</td>
+                <td>${facility}</td>
                 <td>${period}</td>
                 <td>
                     ${escapeHtml(a.updated || '—')}
@@ -1330,13 +1415,29 @@ function renderActivityRows() {
         btn.addEventListener('click', () => {
             const id = parseInt(btn.getAttribute('data-id'));
             const action = btn.getAttribute('data-action');
-            if (action === 'view') openActivityModal(id, true);
-            else if (action === 'edit') openActivityModal(id, false);
+            if (action === 'view') openActivityEditor(id, true);
+            else if (action === 'edit') openActivityEditor(id, false);
             else if (action === 'duplicate') duplicateActivity(id);
             else if (action === 'delete') deleteActivity(id);
         });
     });
     if (window.lucide) window.lucide.createIcons();
+}
+
+function getFilteredActivities() {
+    const q = (document.getElementById('activitySearch')?.value || '').toLowerCase();
+    const type = document.getElementById('activityTypeFilter')?.value || '';
+    const state = document.getElementById('activityStateFilter')?.value || '';
+    return mockData.activities.filter(a => {
+        const cfg = getActivityConfig(a.configId);
+        const title = (a.data.title || '').toLowerCase();
+        const matchesQ = !q || title.includes(q) ||
+            (cfg && (`${cfg.code} ${cfg.activity} ${cfg.subActivity}`.toLowerCase().includes(q)));
+        const matchesType = !type || a.configId === type;
+        const category = isActivityCompleted(a) ? 'completed' : a.state;
+        const matchesState = !state || category === state;
+        return matchesQ && matchesType && matchesState;
+    });
 }
 
 function duplicateActivity(id) {
@@ -1364,60 +1465,256 @@ function deleteActivity(id) {
     }
 }
 
-// Working buffer for the activity currently open in the modal
-let activityDraftState = null;
+// ---------- Activity discovery (smart catalog search) ----------
+function startActivityDiscovery() {
+    activitiesView.discoveryQuery = '';
+    showActivitiesView('discovery');
+}
 
-function openActivityModal(id, viewOnly) {
+function scoreCatalogMatch(cfg, query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return { score: 0, reason: '' };
+    let score = 0;
+    let reason = '';
+    const words = q.split(/\s+/).filter(w => w.length > 2);
+
+    if (cfg.code.toLowerCase() === q || cfg.subCode.toLowerCase() === q) { score += 100; reason = `Matched code ${cfg.code}`; }
+    else if (cfg.code.toLowerCase().startsWith(q) || cfg.subCode.toLowerCase().startsWith(q)) { score += 80; reason = `Matched code ${cfg.subCode}`; }
+
+    const name = `${cfg.activity} ${cfg.subActivity}`.toLowerCase();
+    if (name.includes(q)) { score += 60; reason = reason || 'Matches the activity name'; }
+
+    cfg.keywords.forEach(k => {
+        const kl = k.toLowerCase();
+        if (kl === q || q.includes(kl) || kl.includes(q)) {
+            score += 40;
+            reason = reason || `Matches "${k}"`;
+        }
+    });
+
+    // Plain-language: count overlapping meaningful words against keywords + definition
+    const haystack = `${name} ${cfg.definition} ${cfg.keywords.join(' ')}`.toLowerCase();
+    let hits = 0;
+    let hitWord = '';
+    words.forEach(w => {
+        if (haystack.includes(w)) { hits++; hitWord = hitWord || w; }
+    });
+    if (hits > 0) {
+        score += hits * 12;
+        reason = reason || `Relevant to "${hitWord}"`;
+    }
+    return { score, reason };
+}
+
+function renderActivityDiscovery() {
+    const q = activitiesView.discoveryQuery;
+    return `
+        <div class="page">
+            <div class="page-header">
+                <div>
+                    <button class="link-back" id="discoveryBackBtn"><i data-lucide="arrow-left"></i> Back to My Activities</button>
+                    <h1 class="page-title">Log Activity</h1>
+                    <p class="page-lead">What activity are you reporting?</p>
+                </div>
+            </div>
+            <div class="discovery-search">
+                <div class="search-group large">
+                    <i data-lucide="search"></i>
+                    <input type="search" id="discoverySearch" value="${escapeHtml(q)}"
+                        placeholder="Search by code (e.g. 6.1), activity name, or describe the work performed..."
+                        aria-label="Search the activity catalog" autocomplete="off" />
+                </div>
+                <p class="helper-text">Try a code like <strong>6.1</strong>, a term like <strong>community awareness</strong>, or plain language like <strong>we trained health workers</strong>.</p>
+            </div>
+            <div id="discoveryResults" class="discovery-results"></div>
+        </div>`;
+}
+
+function attachActivityDiscoveryListeners() {
+    document.getElementById('discoveryBackBtn').addEventListener('click', () => showActivitiesView('list'));
+    const input = document.getElementById('discoverySearch');
+    input.addEventListener('input', () => {
+        activitiesView.discoveryQuery = input.value;
+        renderDiscoveryResults();
+    });
+    renderDiscoveryResults();
+    input.focus();
+}
+
+function renderDiscoveryResults() {
+    const container = document.getElementById('discoveryResults');
+    const q = activitiesView.discoveryQuery.trim();
+    const isPlainLanguage = q.split(/\s+/).length >= 3;
+
+    let items;
+    if (!q) {
+        items = mockData.activityConfigs.map(cfg => ({ cfg, score: 1, reason: '' }));
+    } else {
+        items = mockData.activityConfigs
+            .map(cfg => ({ cfg, ...scoreCatalogMatch(cfg, q) }))
+            .filter(x => x.score > 0)
+            .sort((a, b) => b.score - a.score);
+    }
+
+    if (items.length === 0) {
+        container.innerHTML = `<div class="empty-state">No catalog matches for "<strong>${escapeHtml(q)}</strong>". Try a different term or a code.</div>`;
+        return;
+    }
+
+    container.innerHTML = items.map(({ cfg, reason }) => `
+        <div class="catalog-card">
+            <div class="catalog-card-main">
+                <div class="catalog-code">${escapeHtml(cfg.code)} · ${escapeHtml(cfg.subCode)}</div>
+                <div class="catalog-name">${escapeHtml(cfg.activity)}</div>
+                <div class="catalog-sub">${escapeHtml(cfg.subActivity)}</div>
+                <p class="catalog-def">${escapeHtml(cfg.definition)}</p>
+                ${(q && isPlainLanguage && reason) ? `<div class="catalog-why"><i data-lucide="sparkles"></i> Why this matches: ${escapeHtml(reason)}</div>` : ''}
+            </div>
+            <div class="catalog-card-action">
+                <button class="btn btn-primary" data-select="${escapeHtml(cfg.id)}">Select activity</button>
+            </div>
+        </div>`).join('');
+
+    container.querySelectorAll('button[data-select]').forEach(btn => {
+        btn.addEventListener('click', () => openActivityEditor(null, false, btn.getAttribute('data-select')));
+    });
+    if (window.lucide) window.lucide.createIcons();
+}
+
+// ---------- Full-page guided editor ----------
+function editorSteps(cfg) {
+    // Steps come from activity metadata + a final Review step.
+    const steps = cfg.sections.map(s => ({ key: s.key, title: s.title }));
+    steps.push({ key: '__review', title: 'Review' });
+    return steps;
+}
+
+function openActivityEditor(id, viewOnly, configId) {
     const editing = typeof id === 'number';
     const existing = editing ? mockData.activities.find(a => a.id === id) : null;
-    activityDraftState = {
+    activityEditor = {
         id: editing ? existing.id : null,
-        configId: editing ? existing.configId : '',
+        configId: editing ? existing.configId : (configId || ''),
         state: editing ? existing.state : 'draft',
         data: editing ? Object.assign({}, existing.data) : {},
-        viewOnly: !!viewOnly
+        originalData: editing ? JSON.stringify(existing.data) : JSON.stringify({}),
+        viewOnly: !!viewOnly,
+        step: 0,
+        visited: {},
+        dirty: false
     };
-
-    const title = viewOnly ? 'View Activity' : (editing ? 'Edit Activity' : 'Add Activity');
-    openFormModal(title, renderActivityModalBody(), renderActivityModalFooter(), true);
-    attachActivityModalListeners();
+    showActivitiesView('editor');
 }
 
-function renderActivityModalBody() {
-    const s = activityDraftState;
-    const readonly = s.viewOnly;
-    const selectorOptions = mockData.activityConfigs
-        .map(c => `<option value="${escapeHtml(c.id)}"${c.id === s.configId ? ' selected' : ''}>${escapeHtml(c.activity)} — ${escapeHtml(c.subActivity)}</option>`)
-        .join('');
-
-    return `
-        <form id="activityForm" class="modal-form" novalidate>
-            <div class="form-field">
-                <label for="activityConfigSelect">Activity / Sub-Activity <span class="required">*</span></label>
-                <select id="activityConfigSelect"${readonly ? ' disabled' : ''}>
-                    <option value="">Select an activity...</option>
-                    ${selectorOptions}
-                </select>
-                <div class="field-error" id="activityConfigSelect-error"></div>
-            </div>
-            <div id="activityDynamicSections">${renderActivitySections()}</div>
-        </form>`;
-}
-
-function renderActivitySections() {
-    const s = activityDraftState;
+function renderActivityEditorPage() {
+    const s = activityEditor;
     const cfg = getActivityConfig(s.configId);
     if (!cfg) {
-        return `<p class="helper-text">Select an activity above to see the sections required for it.</p>`;
+        // Should not happen; fall back to discovery.
+        return renderActivityDiscovery();
     }
+    const steps = editorSteps(cfg);
     const readonly = s.viewOnly;
-    return cfg.sections.map(section => `
+    const title = readonly ? 'View Activity' : (s.id ? 'Edit Activity' : 'Log Activity');
+
+    const stepperHTML = steps.map((step, i) => {
+        const classes = ['stepper-item'];
+        if (i === s.step) classes.push('current');
+        if (s.visited[step.key] && i !== s.step) classes.push('done');
+        if (s.stepIssues && s.stepIssues[step.key]) classes.push('attention');
+        return `
+            <button type="button" class="${classes.join(' ')}" data-step="${i}">
+                <span class="stepper-index">${s.visited[step.key] && i !== s.step ? '<i data-lucide=\'check\'></i>' : (i + 1)}</span>
+                <span class="stepper-label">${escapeHtml(step.title)}</span>
+            </button>`;
+    }).join('<span class="stepper-line"></span>');
+
+    return `
+        <div class="page activity-editor">
+            <div class="editor-topbar">
+                <button class="link-back" id="editorBackBtn"><i data-lucide="arrow-left"></i> Back to My Activities</button>
+                <h1 class="page-title">${title}</h1>
+                ${readonly ? '<span class="readonly-tag">Read-only · completed record</span>' : ''}
+            </div>
+
+            <div class="selected-activity">
+                <div class="selected-activity-info">
+                    <div class="catalog-code">${escapeHtml(cfg.code)} · ${escapeHtml(cfg.subCode)}</div>
+                    <div class="selected-activity-name">${escapeHtml(cfg.activity)} — ${escapeHtml(cfg.subActivity)}</div>
+                    <div class="selected-activity-def">${escapeHtml(cfg.definition)}</div>
+                </div>
+                ${readonly ? '' : '<button class="btn btn-secondary" id="changeActivityBtn">Change activity</button>'}
+            </div>
+
+            <div class="stepper" id="activityStepper">${stepperHTML}</div>
+
+            <div id="editorValidationSummary"></div>
+
+            <form id="activityEditorForm" class="editor-form" novalidate>
+                <div id="editorStepBody">${renderEditorStep()}</div>
+            </form>
+
+            <div class="editor-actions">
+                <button type="button" class="btn btn-secondary" id="editorCancelBtn">Cancel</button>
+                <div class="editor-actions-right">
+                    ${s.step > 0 ? '<button type="button" class="btn btn-secondary" id="editorBackStepBtn">Back</button>' : ''}
+                    ${readonly ? '' : '<button type="button" class="btn btn-secondary" id="editorSaveDraftBtn">Save Draft</button>'}
+                    ${renderEditorPrimaryAction()}
+                </div>
+            </div>
+        </div>`;
+}
+
+function renderEditorPrimaryAction() {
+    const s = activityEditor;
+    const cfg = getActivityConfig(s.configId);
+    const steps = editorSteps(cfg);
+    const isLast = s.step === steps.length - 1;
+    if (s.viewOnly) {
+        return isLast ? '' : '<button type="button" class="btn btn-primary" id="editorContinueBtn">Continue</button>';
+    }
+    if (isLast) {
+        return '<button type="button" class="btn btn-primary" id="editorPublishBtn">Publish Activity</button>';
+    }
+    return '<button type="button" class="btn btn-primary" id="editorContinueBtn">Continue</button>';
+}
+
+function renderEditorStep() {
+    const s = activityEditor;
+    const cfg = getActivityConfig(s.configId);
+    const steps = editorSteps(cfg);
+    const step = steps[s.step];
+
+    if (step.key === '__review') {
+        return renderEditorReview();
+    }
+    const section = cfg.sections.find(sec => sec.key === step.key);
+    const readonly = s.viewOnly;
+    return `
         <section class="activity-section">
             <h3 class="activity-section-title">${escapeHtml(section.title)}</h3>
             <div class="form-grid">
                 ${section.fields.map(f => renderActivityField(f, s.data[f.id], readonly)).join('')}
             </div>
-        </section>`).join('');
+        </section>`;
+}
+
+function renderEditorReview() {
+    const s = activityEditor;
+    const cfg = getActivityConfig(s.configId);
+    const blocks = cfg.sections.map(section => {
+        const rows = section.fields.map(f => {
+            const v = s.data[f.id];
+            return `<div class="review-row"><dt>${escapeHtml(f.label)}</dt><dd>${v == null || v === '' ? '<span class="muted">—</span>' : escapeHtml(String(v))}</dd></div>`;
+        }).join('');
+        return `<div class="review-block"><h4>${escapeHtml(section.title)}</h4><dl>${rows}</dl></div>`;
+    }).join('');
+    return `
+        <section class="activity-section">
+            <h3 class="activity-section-title">Review</h3>
+            <p class="helper-text">Review the recorded details below, then ${s.viewOnly ? 'close this record.' : 'publish the activity.'}</p>
+            ${blocks}
+        </section>`;
 }
 
 function renderActivityField(f, value, readonly) {
@@ -1446,114 +1743,215 @@ function renderActivityField(f, value, readonly) {
         </div>`;
 }
 
-function renderActivityModalFooter() {
-    if (activityDraftState.viewOnly) {
-        return `<button class="modal-btn" id="activityCloseBtn">Close</button>`;
-    }
-    return `
-        <button class="modal-btn" id="activityCancelBtn">Cancel</button>
-        <button class="modal-btn" id="activitySaveDraftBtn">Save Draft</button>
-        <button class="modal-btn primary" id="activityPublishBtn">Publish</button>`;
+function attachActivityEditorListeners() {
+    const s = activityEditor;
+    document.getElementById('editorBackBtn').addEventListener('click', () => editorCancel());
+    document.getElementById('editorCancelBtn').addEventListener('click', () => editorCancel());
+
+    const changeBtn = document.getElementById('changeActivityBtn');
+    if (changeBtn) changeBtn.addEventListener('click', editorChangeActivity);
+
+    document.querySelectorAll('#activityStepper .stepper-item').forEach(btn => {
+        btn.addEventListener('click', () => editorGoToStep(parseInt(btn.getAttribute('data-step'))));
+    });
+
+    const backStep = document.getElementById('editorBackStepBtn');
+    if (backStep) backStep.addEventListener('click', () => editorGoToStep(s.step - 1));
+
+    const continueBtn = document.getElementById('editorContinueBtn');
+    if (continueBtn) continueBtn.addEventListener('click', () => editorGoToStep(s.step + 1));
+
+    const saveDraft = document.getElementById('editorSaveDraftBtn');
+    if (saveDraft) saveDraft.addEventListener('click', editorSaveDraft);
+
+    const publish = document.getElementById('editorPublishBtn');
+    if (publish) publish.addEventListener('click', editorPublish);
+
+    bindEditorFieldInputs();
+    if (window.lucide) window.lucide.createIcons();
 }
 
-function attachActivityModalListeners() {
-    if (activityDraftState.viewOnly) {
-        document.getElementById('activityCloseBtn').addEventListener('click', closeFormModal);
-        return;
+function bindEditorFieldInputs() {
+    document.querySelectorAll('#editorStepBody [data-field]').forEach(el => {
+        const handler = () => {
+            activityEditor.data[el.getAttribute('data-field')] = el.value;
+            activityEditor.dirty = JSON.stringify(activityEditor.data) !== activityEditor.originalData;
+        };
+        el.addEventListener('input', handler);
+        el.addEventListener('change', handler);
+    });
+}
+
+function currentStepKey() {
+    const cfg = getActivityConfig(activityEditor.configId);
+    return editorSteps(cfg)[activityEditor.step].key;
+}
+
+function stepMissingRequired(stepKey) {
+    const cfg = getActivityConfig(activityEditor.configId);
+    const section = cfg.sections.find(sec => sec.key === stepKey);
+    if (!section) return [];
+    return section.fields.filter(f => f.required && (activityEditor.data[f.id] == null || String(activityEditor.data[f.id]).trim() === ''));
+}
+
+function editorGoToStep(target) {
+    const cfg = getActivityConfig(activityEditor.configId);
+    const steps = editorSteps(cfg);
+    if (target < 0 || target >= steps.length) return;
+
+    // Mark the step we are leaving as visited and flag missing required data (amber, not red).
+    const leavingKey = currentStepKey();
+    activityEditor.visited[leavingKey] = true;
+    activityEditor.stepIssues = activityEditor.stepIssues || {};
+    if (!activityEditor.viewOnly && leavingKey !== '__review') {
+        activityEditor.stepIssues[leavingKey] = stepMissingRequired(leavingKey).length > 0;
     }
 
-    const select = document.getElementById('activityConfigSelect');
-    select.addEventListener('change', () => {
-        const newConfig = select.value;
-        const hasData = Object.keys(activityDraftState.data).some(k => activityDraftState.data[k] !== '' && activityDraftState.data[k] != null);
-        if (activityDraftState.configId && newConfig !== activityDraftState.configId && hasData) {
-            const proceed = confirm('Changing the activity will clear information that no longer applies. Continue?');
-            if (!proceed) {
-                select.value = activityDraftState.configId;
-                return;
-            }
+    activityEditor.step = target;
+    document.getElementById('editorStepBody').innerHTML = renderEditorStep();
+    refreshStepper();
+    rebuildEditorActions();
+    bindEditorFieldInputs();
+    document.getElementById('editorValidationSummary').innerHTML = '';
+    if (window.lucide) window.lucide.createIcons();
+    document.querySelector('.activity-editor').scrollIntoView({ block: 'start', behavior: 'smooth' });
+}
+
+function refreshStepper() {
+    const cfg = getActivityConfig(activityEditor.configId);
+    const steps = editorSteps(cfg);
+    const stepper = document.getElementById('activityStepper');
+    stepper.querySelectorAll('.stepper-item').forEach((btn, i) => {
+        const key = steps[i].key;
+        btn.classList.toggle('current', i === activityEditor.step);
+        btn.classList.toggle('done', !!activityEditor.visited[key] && i !== activityEditor.step);
+        btn.classList.toggle('attention', !!(activityEditor.stepIssues && activityEditor.stepIssues[key]));
+        const idx = btn.querySelector('.stepper-index');
+        if (activityEditor.visited[key] && i !== activityEditor.step) idx.innerHTML = "<i data-lucide='check'></i>";
+        else idx.textContent = (i + 1);
+    });
+}
+
+function rebuildEditorActions() {
+    const s = activityEditor;
+    const cfg = getActivityConfig(s.configId);
+    const steps = editorSteps(cfg);
+    const right = document.querySelector('.editor-actions-right');
+    let html = '';
+    if (s.step > 0) html += '<button type="button" class="btn btn-secondary" id="editorBackStepBtn">Back</button>';
+    if (!s.viewOnly) html += '<button type="button" class="btn btn-secondary" id="editorSaveDraftBtn">Save Draft</button>';
+    html += renderEditorPrimaryAction();
+    right.innerHTML = html;
+
+    const backStep = document.getElementById('editorBackStepBtn');
+    if (backStep) backStep.addEventListener('click', () => editorGoToStep(s.step - 1));
+    const continueBtn = document.getElementById('editorContinueBtn');
+    if (continueBtn) continueBtn.addEventListener('click', () => editorGoToStep(s.step + 1));
+    const saveDraft = document.getElementById('editorSaveDraftBtn');
+    if (saveDraft) saveDraft.addEventListener('click', editorSaveDraft);
+    const publish = document.getElementById('editorPublishBtn');
+    if (publish) publish.addEventListener('click', editorPublish);
+}
+
+function editorChangeActivity() {
+    const proceed = !activityEditor.dirty || confirm('Changing the activity will reset details that no longer apply. Continue?');
+    if (!proceed) return;
+    startActivityDiscovery();
+}
+
+function editorCancel() {
+    if (activityEditor && activityEditor.dirty && !activityEditor.viewOnly) {
+        const proceed = confirm('Discard your changes and return to My Activities?');
+        if (!proceed) return;
+    }
+    activityEditor = null;
+    showActivitiesView('list');
+}
+
+function editorSaveDraft() {
+    persistActivity('draft');
+    showToast('Draft saved successfully.', 'success');
+    activityEditor = null;
+    showActivitiesView('list');
+}
+
+function editorPublish() {
+    const cfg = getActivityConfig(activityEditor.configId);
+    const issuesBySection = [];
+    cfg.sections.forEach(section => {
+        const missing = section.fields.filter(f => f.required && (activityEditor.data[f.id] == null || String(activityEditor.data[f.id]).trim() === ''));
+        if (missing.length > 0) {
+            issuesBySection.push({ key: section.key, title: section.title, fields: missing });
+            activityEditor.stepIssues = activityEditor.stepIssues || {};
+            activityEditor.stepIssues[section.key] = true;
         }
-        activityDraftState.configId = newConfig;
-        activityDraftState.data = {};
-        document.getElementById('activityDynamicSections').innerHTML = renderActivitySections();
-        bindActivityFieldInputs();
+    });
+
+    if (issuesBySection.length > 0) {
+        renderValidationSummary(issuesBySection);
+        refreshStepper();
         if (window.lucide) window.lucide.createIcons();
-    });
-
-    bindActivityFieldInputs();
-
-    document.getElementById('activityCancelBtn').addEventListener('click', closeFormModal);
-    document.getElementById('activitySaveDraftBtn').addEventListener('click', () => saveActivity(false));
-    document.getElementById('activityPublishBtn').addEventListener('click', () => saveActivity(true));
-}
-
-function bindActivityFieldInputs() {
-    document.querySelectorAll('#activityDynamicSections [data-field]').forEach(el => {
-        el.addEventListener('input', () => {
-            activityDraftState.data[el.getAttribute('data-field')] = el.value;
-        });
-        el.addEventListener('change', () => {
-            activityDraftState.data[el.getAttribute('data-field')] = el.value;
-        });
-    });
-}
-
-function saveActivity(publish) {
-    const s = activityDraftState;
-    const form = document.getElementById('activityForm');
-    form.querySelectorAll('.field-error').forEach(el => (el.textContent = ''));
-    form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-
-    if (!s.configId) {
-        const err = document.getElementById('activityConfigSelect-error');
-        if (err) err.textContent = 'Select an activity to continue.';
-        document.getElementById('activityConfigSelect').classList.add('invalid');
         return;
     }
 
-    if (publish) {
-        const cfg = getActivityConfig(s.configId);
-        let valid = true;
-        cfg.sections.forEach(section => {
-            section.fields.forEach(f => {
-                if (f.required) {
-                    const val = s.data[f.id];
-                    if (val == null || String(val).trim() === '') {
-                        valid = false;
-                        const input = document.getElementById(`af-${f.id}`);
-                        const errorEl = document.getElementById(`af-${f.id}-error`);
-                        if (input) input.classList.add('invalid');
-                        if (errorEl) errorEl.textContent = 'This field is required.';
-                    }
-                }
-            });
-        });
-        if (!valid) {
-            return; // keep modal open
-        }
-    }
+    persistActivity('published');
+    showToast('Activity published successfully.', 'success');
+    activityEditor = null;
+    showActivitiesView('list');
+}
 
+function renderValidationSummary(issuesBySection) {
+    const cfg = getActivityConfig(activityEditor.configId);
+    const steps = editorSteps(cfg);
+    const summary = document.getElementById('editorValidationSummary');
+    summary.innerHTML = `
+        <div class="validation-summary">
+            <div class="validation-summary-title"><i data-lucide="alert-triangle"></i> Please complete the required fields before publishing</div>
+            <ul>
+                ${issuesBySection.map(sec => {
+                    const stepIndex = steps.findIndex(st => st.key === sec.key);
+                    return `<li><button type="button" class="validation-link" data-goto-step="${stepIndex}">${escapeHtml(sec.title)}</button>: ${sec.fields.map(f => escapeHtml(f.label)).join(', ')}</li>`;
+                }).join('')}
+            </ul>
+        </div>`;
+    summary.querySelectorAll('button[data-goto-step]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            editorGoToStep(parseInt(btn.getAttribute('data-goto-step')));
+            // Show inline errors on the target section fields.
+            highlightMissingInStep();
+        });
+    });
+    if (window.lucide) window.lucide.createIcons();
+    summary.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function highlightMissingInStep() {
+    const missing = stepMissingRequired(currentStepKey());
+    missing.forEach(f => {
+        const input = document.getElementById(`af-${f.id}`);
+        const err = document.getElementById(`af-${f.id}-error`);
+        if (input) input.classList.add('invalid');
+        if (err) err.textContent = 'This field is required.';
+    });
+}
+
+function persistActivity(state) {
+    const s = activityEditor;
     const today = new Date().toISOString().slice(0, 10);
     if (s.id) {
         const existing = mockData.activities.find(a => a.id === s.id);
         existing.configId = s.configId;
         existing.data = Object.assign({}, s.data);
-        existing.state = publish ? 'published' : 'draft';
+        existing.state = state;
         existing.updated = today;
     } else {
         mockData.activities.push({
             id: Math.max(0, ...mockData.activities.map(a => a.id)) + 1,
             configId: s.configId,
-            state: publish ? 'published' : 'draft',
+            state: state,
             data: Object.assign({}, s.data),
             updated: today
         });
-    }
-
-    closeFormModal();
-    showToast(publish ? 'Activity published successfully.' : 'Draft saved successfully.', 'success');
-    if (appState.currentPage === 'activities') {
-        renderActivityRows();
     }
 }
 
