@@ -589,20 +589,23 @@ function renderOrganizationProfilePage() {
             <div class="field-error" id="${id}-error"></div>
         </div>`;
 
+    const focalHTML = mockData.focalPersons.map(f => `
+        <tr>
+            <td>${escapeHtml(f.area)}</td>
+            <td>${escapeHtml(f.name)}</td>
+            <td>${escapeHtml(f.email)}</td>
+            <td>${escapeHtml(f.mobile)}</td>
+        </tr>`).join('');
+
     return `
         <div class="page">
             <div class="page-header">
                 <h1 class="page-title">Organization Profile</h1>
             </div>
-            <div class="tabs" role="tablist">
-                <button class="tab active" data-tab="general" role="tab">General Information</button>
-                <button class="tab" data-tab="facilities" role="tab">Facilities</button>
-                <button class="tab" data-tab="providers" role="tab">Providers</button>
-                <button class="tab" data-tab="focal" role="tab">Focal Persons</button>
-            </div>
 
-            <div class="tab-panel active" data-panel="general">
-                <form id="profileForm" class="profile-form" novalidate>
+            <form id="profileForm" class="profile-form" novalidate>
+                <section class="profile-section">
+                    <h2 class="profile-section-title">General Information</h2>
                     <div class="logo-row">
                         <div class="logo-placeholder" aria-hidden="true">
                             <i data-lucide="image"></i>
@@ -613,72 +616,56 @@ function renderOrganizationProfilePage() {
                     <div class="form-grid">
                         ${field('org-name', 'Organization Name', p.name, true)}
                         ${field('org-acronym', 'Acronym', p.acronym, false)}
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2 class="profile-section-title">Contact Information</h2>
+                    <div class="form-grid">
                         ${field('org-phone', 'Institution Phone Number', p.phone, true)}
                         ${field('org-mobile', 'Institution Mobile Number', p.mobile, false)}
                         ${field('org-email', 'Institution Email', p.email, true, 'email')}
                         ${field('org-director-name', 'Director Name', p.directorName, true)}
                         ${field('org-director-email', 'Director Email', p.directorEmail, true, 'email')}
                         ${field('org-director-mobile', 'Director Mobile Number', p.directorMobile, false)}
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2 class="profile-section-title">Areas of Work</h2>
+                    <div class="form-grid">
                         ${field('org-sectors', 'Sectors / Areas of Responsibility', p.sectors, false)}
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2 class="profile-section-title">Online Presence</h2>
+                    <div class="form-grid">
                         ${field('org-website', 'Organization Website', p.website, false, 'url')}
                         ${field('org-linkedin', 'LinkedIn Profile', p.linkedin, false, 'url')}
                         ${field('org-daleel', 'Daleel Madani Link', p.daleelMadani, false, 'url')}
                     </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <button type="button" class="btn btn-secondary" id="profileCancelBtn">Cancel</button>
-                    </div>
-                </form>
-            </div>
+                </section>
 
-            <div class="tab-panel" data-panel="facilities">
-                <div class="summary-block">
-                    <p><strong>${mockData.facilities.length}</strong> facilities registered for this organization.</p>
-                    <button type="button" class="btn btn-secondary" data-goto="facilities">Manage Facilities</button>
+                <section class="profile-section">
+                    <h2 class="profile-section-title">Organization Focal Persons</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Area</th><th>Name</th><th>Email</th><th>Mobile</th></tr>
+                        </thead>
+                        <tbody>${focalHTML}</tbody>
+                    </table>
+                </section>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" id="profileCancelBtn">Cancel</button>
                 </div>
-            </div>
-
-            <div class="tab-panel" data-panel="providers">
-                <div class="summary-block">
-                    <p><strong>${mockData.providers.length}</strong> providers registered for this organization.</p>
-                    <button type="button" class="btn btn-secondary" data-goto="providers">Manage Providers</button>
-                </div>
-            </div>
-
-            <div class="tab-panel" data-panel="focal">
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Area</th><th>Name</th><th>Email</th><th>Mobile</th></tr>
-                    </thead>
-                    <tbody>
-                        ${mockData.focalPersons.map(f => `
-                            <tr>
-                                <td>${escapeHtml(f.area)}</td>
-                                <td>${escapeHtml(f.name)}</td>
-                                <td>${escapeHtml(f.email)}</td>
-                                <td>${escapeHtml(f.mobile)}</td>
-                            </tr>`).join('')}
-                    </tbody>
-                </table>
-            </div>
+            </form>
         </div>`;
 }
 
 function attachOrganizationProfileListeners() {
-    document.querySelectorAll('.tabs .tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            const target = tab.getAttribute('data-tab');
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.toggle('active', t === tab));
-            document.querySelectorAll('.tab-panel').forEach(p => {
-                p.classList.toggle('active', p.getAttribute('data-panel') === target);
-            });
-        });
-    });
-
-    document.querySelectorAll('[data-goto]').forEach(btn => {
-        btn.addEventListener('click', () => navigateTo(btn.getAttribute('data-goto')));
-    });
-
     const form = document.getElementById('profileForm');
     form.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', () => { appState.profileDirty = true; });

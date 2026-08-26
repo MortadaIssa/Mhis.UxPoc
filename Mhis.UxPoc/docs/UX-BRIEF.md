@@ -1,5 +1,9 @@
 # MHIS UX POC Brief
 
+## Reference material rule
+
+Reference screenshots describe the current business capabilities and data only. They are not UI specifications. New pages must follow the approved POC information architecture and visual system.
+
 ## Objective
 
 Create a clickable desktop-first proof of concept that demonstrates how the current MHIS application can become easier to understand and navigate without redesigning its business processes or introducing a large technical refactor.
