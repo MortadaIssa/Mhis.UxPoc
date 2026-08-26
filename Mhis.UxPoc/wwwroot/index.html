@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MHIS - Mental Health Information System</title>
     <link rel="stylesheet" href="css/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <!-- Vendored locally (js/vendor/lucide.min.js) instead of loaded from a CDN so the
+         icon set doesn't depend on the demo machine's network/proxy reaching an external
+         host, and doesn't silently break if the "@latest" CDN build ever changes. -->
+    <script src="js/vendor/lucide.min.js"></script>
 </head>
 <body>
     <!-- Login Screen -->
