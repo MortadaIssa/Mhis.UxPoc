@@ -44,6 +44,114 @@ const mockData = {
         { id: 1, area: "4Ws", name: "Sara Mansour", email: "s.mansour@chn.org", mobile: "+961 71 555 111" },
         { id: 2, area: "Substance Use", name: "Elie Rahme", email: "e.rahme@chn.org", mobile: "+961 71 555 222" }
     ],
+    // Dynamic activity configurations. Each config lists ONLY the sections/fields it needs.
+    // The activity form renders strictly from the selected config — no fixed tabs.
+    activityConfigs: [
+        {
+            id: "facility-service",
+            activity: "Service Provision",
+            subActivity: "Facility-Based Mental Health Service",
+            sections: [
+                {
+                    key: "general", title: "General Information", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Start Date", type: "date", required: true },
+                        { id: "endDate", label: "End Date", type: "date", required: true },
+                        { id: "description", label: "Description", type: "textarea", required: false }
+                    ]
+                },
+                {
+                    key: "location", title: "Location & Facility", fields: [
+                        { id: "facility", label: "Facility", type: "select", required: true, optionsFrom: "facilities" },
+                        { id: "governorate", label: "Governorate", type: "select", required: true, optionsFrom: "governorates" },
+                        { id: "locality", label: "Locality", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "beneficiaries", title: "Beneficiaries", fields: [
+                        { id: "beneficiaryType", label: "Beneficiary Type", type: "select", required: true, options: ["Adults", "Children", "Families", "Mixed"] },
+                        { id: "beneficiaryCount", label: "Number of Beneficiaries", type: "number", required: true }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "awareness",
+            activity: "Awareness & Information",
+            subActivity: "Community Awareness Campaign",
+            sections: [
+                {
+                    key: "general", title: "General Information", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Start Date", type: "date", required: true },
+                        { id: "endDate", label: "End Date", type: "date", required: true },
+                        { id: "theme", label: "Campaign Theme", type: "text", required: true }
+                    ]
+                },
+                {
+                    key: "beneficiaries", title: "Beneficiaries", fields: [
+                        { id: "audience", label: "Target Audience", type: "select", required: true, options: ["General Public", "Youth", "Health Workers", "Caregivers"] },
+                        { id: "reach", label: "Estimated Reach", type: "number", required: true }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "coordination",
+            activity: "Coordination & Policy",
+            subActivity: "Policy / Research Coordination",
+            sections: [
+                {
+                    key: "general", title: "General Information", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Start Date", type: "date", required: true },
+                        { id: "endDate", label: "End Date", type: "date", required: true },
+                        { id: "partners", label: "Coordinating Partners", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        }
+    ],
+    activities: [
+        {
+            id: 1, configId: "facility-service", state: "published",
+            data: { title: "Weekly Counselling Sessions", startDate: "2025-01-06", endDate: "2026-06-30", description: "Ongoing individual counselling.", facility: "Central Health Clinic", governorate: "Beirut", locality: "Achrafieh", beneficiaryType: "Adults", beneficiaryCount: 120, donor: "WHO", budget: 45000 },
+            updated: "2025-05-12"
+        },
+        {
+            id: 2, configId: "awareness", state: "draft",
+            data: { title: "World Mental Health Day Campaign", startDate: "2025-10-01", endDate: "2025-10-10", theme: "Mental Health for All", audience: "General Public", reach: 5000 },
+            updated: "2025-05-20"
+        },
+        {
+            id: 3, configId: "coordination", state: "completed",
+            data: { title: "National MHPSS Working Group", startDate: "2024-02-01", endDate: "2024-12-15", partners: "MoPH, UNICEF, NMHP", donor: "UNICEF", budget: 20000 },
+            updated: "2024-12-16"
+        },
+        {
+            id: 4, configId: "facility-service", state: "completed",
+            data: { title: "Mobile Clinic Outreach", startDate: "2024-03-01", endDate: "2024-09-30", description: "Rural outreach sessions.", facility: "Mount Lebanon Mobile Unit", governorate: "Mount Lebanon", locality: "Hazmieh", beneficiaryType: "Mixed", beneficiaryCount: 300, donor: "EU", budget: 60000 },
+            updated: "2024-10-02"
+        }
+    ],
     notifications: [
         {
             id: 1,
@@ -241,6 +349,9 @@ function renderPage(page) {
             attachProvidersListeners();
             break;
         case 'activities':
+            container.innerHTML = renderActivitiesPage();
+            attachActivitiesListeners();
+            break;
         case 'surveys':
         case 'my-dashboard':
         case 'advanced-dashboard':
@@ -370,7 +481,8 @@ function renderHomePage() {
 
 function attachHomePageListeners() {
     document.getElementById('addActivityBtn')?.addEventListener('click', () => {
-        alert('Add Activity feature - Coming soon in next iteration');
+        navigateTo('activities');
+        openActivityModal();
     });
     document.getElementById('viewDashboardBtn')?.addEventListener('click', () => {
         document.querySelector('[data-page="my-dashboard"]').click();
@@ -534,11 +646,12 @@ function handleOutsideClick(e) {
 }
 
 // ===== Reusable Form Modal =====
-function openFormModal(title, bodyHTML, footerHTML) {
+function openFormModal(title, bodyHTML, footerHTML, wide) {
     document.getElementById('formModalTitle').textContent = title;
     document.getElementById('formModalBody').innerHTML = bodyHTML;
     document.getElementById('formModalFooter').innerHTML = footerHTML;
     const overlay = document.getElementById('formModalOverlay');
+    overlay.classList.toggle('modal-wide', !!wide);
     overlay.style.display = 'flex';
     overlay.classList.add('show');
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -550,6 +663,7 @@ function closeFormModal() {
     const overlay = document.getElementById('formModalOverlay');
     overlay.style.display = 'none';
     overlay.classList.remove('show');
+    overlay.classList.remove('modal-wide');
 }
 
 // ===== Toast =====
@@ -1079,6 +1193,368 @@ function validateModalForm(form) {
         valid = false;
     }
     return valid;
+}
+
+// ===== Activities =====
+function getActivityConfig(configId) {
+    return mockData.activityConfigs.find(c => c.id === configId);
+}
+
+function isActivityCompleted(activity) {
+    // Completed = end date in the past (view-only), regardless of stored state.
+    const end = activity.data && activity.data.endDate ? new Date(activity.data.endDate) : null;
+    if (activity.state === 'completed') return true;
+    if (!end) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return end < today;
+}
+
+function activityStateLabel(activity) {
+    if (isActivityCompleted(activity)) return 'Completed';
+    return activity.state === 'draft' ? 'Draft' : 'Published';
+}
+
+function renderActivitiesPage() {
+    const configOptions = mockData.activityConfigs
+        .map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.activity)} — ${escapeHtml(c.subActivity)}</option>`)
+        .join('');
+    return `
+        <div class="page">
+            <div class="page-header">
+                <h1 class="page-title">Activities</h1>
+                <button class="btn btn-primary" id="addActivityPageBtn">
+                    <i data-lucide="plus"></i><span>Add Activity</span>
+                </button>
+            </div>
+            <div class="list-toolbar">
+                <div class="search-group">
+                    <i data-lucide="search"></i>
+                    <input type="search" id="activitySearch" placeholder="Search activities..." aria-label="Search activities" />
+                </div>
+                <div class="filter-group">
+                    <label for="activityTypeFilter">Activity Type</label>
+                    <select id="activityTypeFilter">
+                        <option value="">All</option>
+                        ${configOptions}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="activityStateFilter">Category</label>
+                    <select id="activityStateFilter">
+                        <option value="">All</option>
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="result-count" id="activityCount"></div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Activity</th><th>Period</th><th>Last Updated</th><th class="actions-col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="activityTableBody"></tbody>
+            </table>
+        </div>`;
+}
+
+function attachActivitiesListeners() {
+    document.getElementById('addActivityPageBtn').addEventListener('click', () => openActivityModal());
+    document.getElementById('activitySearch').addEventListener('input', renderActivityRows);
+    document.getElementById('activityTypeFilter').addEventListener('change', renderActivityRows);
+    document.getElementById('activityStateFilter').addEventListener('change', renderActivityRows);
+    renderActivityRows();
+}
+
+function getFilteredActivities() {
+    const q = (document.getElementById('activitySearch')?.value || '').toLowerCase();
+    const type = document.getElementById('activityTypeFilter')?.value || '';
+    const state = document.getElementById('activityStateFilter')?.value || '';
+    return mockData.activities.filter(a => {
+        const cfg = getActivityConfig(a.configId);
+        const title = (a.data.title || '').toLowerCase();
+        const matchesQ = !q || title.includes(q) ||
+            (cfg && (`${cfg.activity} ${cfg.subActivity}`.toLowerCase().includes(q)));
+        const matchesType = !type || a.configId === type;
+        const category = isActivityCompleted(a) ? 'completed' : a.state;
+        const matchesState = !state || category === state;
+        return matchesQ && matchesType && matchesState;
+    });
+}
+
+function renderActivityRows() {
+    const rows = getFilteredActivities();
+    const body = document.getElementById('activityTableBody');
+    document.getElementById('activityCount').textContent = `${rows.length} activit${rows.length === 1 ? 'y' : 'ies'} found`;
+    if (rows.length === 0) {
+        body.innerHTML = `<tr><td colspan="4" class="empty-row">No activities match your filters.</td></tr>`;
+        return;
+    }
+    body.innerHTML = rows.map(a => {
+        const cfg = getActivityConfig(a.configId);
+        const completed = isActivityCompleted(a);
+        const secondary = [a.data.facility, a.data.governorate].filter(Boolean).join(' · ');
+        const period = `${escapeHtml(a.data.startDate || '—')} → ${escapeHtml(a.data.endDate || '—')}`;
+        const label = activityStateLabel(a);
+        const labelClass = completed ? 'completed' : (a.state === 'draft' ? 'draft' : 'published');
+        let actions = '';
+        if (completed) {
+            actions = `<button class="icon-action" title="View" aria-label="View" data-action="view" data-id="${a.id}"><i data-lucide="eye"></i></button>`;
+        } else {
+            actions = `
+                <button class="icon-action" title="Edit" aria-label="Edit" data-action="edit" data-id="${a.id}"><i data-lucide="pencil"></i></button>
+                <button class="icon-action" title="Duplicate" aria-label="Duplicate" data-action="duplicate" data-id="${a.id}"><i data-lucide="copy"></i></button>`;
+            if (a.state === 'draft') {
+                actions += `<button class="icon-action danger" title="Delete" aria-label="Delete" data-action="delete" data-id="${a.id}"><i data-lucide="trash-2"></i></button>`;
+            }
+        }
+        return `
+            <tr>
+                <td>
+                    <div class="cell-primary">${escapeHtml(a.data.title || 'Untitled activity')}</div>
+                    <div class="cell-secondary">${escapeHtml(cfg ? cfg.subActivity : '')}${secondary ? ' · ' + escapeHtml(secondary) : ''}</div>
+                </td>
+                <td>${period}</td>
+                <td>
+                    ${escapeHtml(a.updated || '—')}
+                    <span class="state-chip ${labelClass}">${escapeHtml(label)}</span>
+                </td>
+                <td class="actions-col">${actions}</td>
+            </tr>`;
+    }).join('');
+
+    body.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = parseInt(btn.getAttribute('data-id'));
+            const action = btn.getAttribute('data-action');
+            if (action === 'view') openActivityModal(id, true);
+            else if (action === 'edit') openActivityModal(id, false);
+            else if (action === 'duplicate') duplicateActivity(id);
+            else if (action === 'delete') deleteActivity(id);
+        });
+    });
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function duplicateActivity(id) {
+    const src = mockData.activities.find(a => a.id === id);
+    if (!src) return;
+    const copy = {
+        id: Math.max(0, ...mockData.activities.map(a => a.id)) + 1,
+        configId: src.configId,
+        state: 'draft',
+        data: Object.assign({}, src.data, { title: `${src.data.title} (Copy)` }),
+        updated: new Date().toISOString().slice(0, 10)
+    };
+    mockData.activities.push(copy);
+    showToast('Activity duplicated as a draft.', 'success');
+    renderActivityRows();
+}
+
+function deleteActivity(id) {
+    const a = mockData.activities.find(x => x.id === id);
+    if (!a) return;
+    if (confirm(`Delete draft activity "${a.data.title}"? This cannot be undone.`)) {
+        mockData.activities = mockData.activities.filter(x => x.id !== id);
+        showToast('Activity deleted.', 'success');
+        renderActivityRows();
+    }
+}
+
+// Working buffer for the activity currently open in the modal
+let activityDraftState = null;
+
+function openActivityModal(id, viewOnly) {
+    const editing = typeof id === 'number';
+    const existing = editing ? mockData.activities.find(a => a.id === id) : null;
+    activityDraftState = {
+        id: editing ? existing.id : null,
+        configId: editing ? existing.configId : '',
+        state: editing ? existing.state : 'draft',
+        data: editing ? Object.assign({}, existing.data) : {},
+        viewOnly: !!viewOnly
+    };
+
+    const title = viewOnly ? 'View Activity' : (editing ? 'Edit Activity' : 'Add Activity');
+    openFormModal(title, renderActivityModalBody(), renderActivityModalFooter(), true);
+    attachActivityModalListeners();
+}
+
+function renderActivityModalBody() {
+    const s = activityDraftState;
+    const readonly = s.viewOnly;
+    const selectorOptions = mockData.activityConfigs
+        .map(c => `<option value="${escapeHtml(c.id)}"${c.id === s.configId ? ' selected' : ''}>${escapeHtml(c.activity)} — ${escapeHtml(c.subActivity)}</option>`)
+        .join('');
+
+    return `
+        <form id="activityForm" class="modal-form" novalidate>
+            <div class="form-field">
+                <label for="activityConfigSelect">Activity / Sub-Activity <span class="required">*</span></label>
+                <select id="activityConfigSelect"${readonly ? ' disabled' : ''}>
+                    <option value="">Select an activity...</option>
+                    ${selectorOptions}
+                </select>
+                <div class="field-error" id="activityConfigSelect-error"></div>
+            </div>
+            <div id="activityDynamicSections">${renderActivitySections()}</div>
+        </form>`;
+}
+
+function renderActivitySections() {
+    const s = activityDraftState;
+    const cfg = getActivityConfig(s.configId);
+    if (!cfg) {
+        return `<p class="helper-text">Select an activity above to see the sections required for it.</p>`;
+    }
+    const readonly = s.viewOnly;
+    return cfg.sections.map(section => `
+        <section class="activity-section">
+            <h3 class="activity-section-title">${escapeHtml(section.title)}</h3>
+            <div class="form-grid">
+                ${section.fields.map(f => renderActivityField(f, s.data[f.id], readonly)).join('')}
+            </div>
+        </section>`).join('');
+}
+
+function renderActivityField(f, value, readonly) {
+    const v = value == null ? '' : value;
+    const req = f.required ? ' <span class="required">*</span>' : '';
+    const dis = readonly ? ' disabled' : '';
+    const dataReq = f.required ? ' data-required="true"' : '';
+    let control;
+    if (f.type === 'textarea') {
+        control = `<textarea id="af-${f.id}" data-field="${f.id}"${dataReq}${dis}>${escapeHtml(v)}</textarea>`;
+    } else if (f.type === 'select') {
+        let opts = f.options;
+        if (!opts && f.optionsFrom === 'facilities') opts = mockData.facilities.map(x => x.name);
+        if (!opts && f.optionsFrom === 'governorates') opts = mockData.governorates;
+        opts = opts || [];
+        const optHtml = opts.map(o => `<option value="${escapeHtml(o)}"${String(o) === String(v) ? ' selected' : ''}>${escapeHtml(o)}</option>`).join('');
+        control = `<select id="af-${f.id}" data-field="${f.id}"${dataReq}${dis}><option value="">Select...</option>${optHtml}</select>`;
+    } else {
+        control = `<input type="${f.type}" id="af-${f.id}" data-field="${f.id}" value="${escapeHtml(v)}"${dataReq}${dis} />`;
+    }
+    return `
+        <div class="form-field">
+            <label for="af-${f.id}">${escapeHtml(f.label)}${req}</label>
+            ${control}
+            <div class="field-error" id="af-${f.id}-error"></div>
+        </div>`;
+}
+
+function renderActivityModalFooter() {
+    if (activityDraftState.viewOnly) {
+        return `<button class="modal-btn" id="activityCloseBtn">Close</button>`;
+    }
+    return `
+        <button class="modal-btn" id="activityCancelBtn">Cancel</button>
+        <button class="modal-btn" id="activitySaveDraftBtn">Save Draft</button>
+        <button class="modal-btn primary" id="activityPublishBtn">Publish</button>`;
+}
+
+function attachActivityModalListeners() {
+    if (activityDraftState.viewOnly) {
+        document.getElementById('activityCloseBtn').addEventListener('click', closeFormModal);
+        return;
+    }
+
+    const select = document.getElementById('activityConfigSelect');
+    select.addEventListener('change', () => {
+        const newConfig = select.value;
+        const hasData = Object.keys(activityDraftState.data).some(k => activityDraftState.data[k] !== '' && activityDraftState.data[k] != null);
+        if (activityDraftState.configId && newConfig !== activityDraftState.configId && hasData) {
+            const proceed = confirm('Changing the activity will clear information that no longer applies. Continue?');
+            if (!proceed) {
+                select.value = activityDraftState.configId;
+                return;
+            }
+        }
+        activityDraftState.configId = newConfig;
+        activityDraftState.data = {};
+        document.getElementById('activityDynamicSections').innerHTML = renderActivitySections();
+        bindActivityFieldInputs();
+        if (window.lucide) window.lucide.createIcons();
+    });
+
+    bindActivityFieldInputs();
+
+    document.getElementById('activityCancelBtn').addEventListener('click', closeFormModal);
+    document.getElementById('activitySaveDraftBtn').addEventListener('click', () => saveActivity(false));
+    document.getElementById('activityPublishBtn').addEventListener('click', () => saveActivity(true));
+}
+
+function bindActivityFieldInputs() {
+    document.querySelectorAll('#activityDynamicSections [data-field]').forEach(el => {
+        el.addEventListener('input', () => {
+            activityDraftState.data[el.getAttribute('data-field')] = el.value;
+        });
+        el.addEventListener('change', () => {
+            activityDraftState.data[el.getAttribute('data-field')] = el.value;
+        });
+    });
+}
+
+function saveActivity(publish) {
+    const s = activityDraftState;
+    const form = document.getElementById('activityForm');
+    form.querySelectorAll('.field-error').forEach(el => (el.textContent = ''));
+    form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+
+    if (!s.configId) {
+        const err = document.getElementById('activityConfigSelect-error');
+        if (err) err.textContent = 'Select an activity to continue.';
+        document.getElementById('activityConfigSelect').classList.add('invalid');
+        return;
+    }
+
+    if (publish) {
+        const cfg = getActivityConfig(s.configId);
+        let valid = true;
+        cfg.sections.forEach(section => {
+            section.fields.forEach(f => {
+                if (f.required) {
+                    const val = s.data[f.id];
+                    if (val == null || String(val).trim() === '') {
+                        valid = false;
+                        const input = document.getElementById(`af-${f.id}`);
+                        const errorEl = document.getElementById(`af-${f.id}-error`);
+                        if (input) input.classList.add('invalid');
+                        if (errorEl) errorEl.textContent = 'This field is required.';
+                    }
+                }
+            });
+        });
+        if (!valid) {
+            return; // keep modal open
+        }
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+    if (s.id) {
+        const existing = mockData.activities.find(a => a.id === s.id);
+        existing.configId = s.configId;
+        existing.data = Object.assign({}, s.data);
+        existing.state = publish ? 'published' : 'draft';
+        existing.updated = today;
+    } else {
+        mockData.activities.push({
+            id: Math.max(0, ...mockData.activities.map(a => a.id)) + 1,
+            configId: s.configId,
+            state: publish ? 'published' : 'draft',
+            data: Object.assign({}, s.data),
+            updated: today
+        });
+    }
+
+    closeFormModal();
+    showToast(publish ? 'Activity published successfully.' : 'Draft saved successfully.', 'success');
+    if (appState.currentPage === 'activities') {
+        renderActivityRows();
+    }
 }
 
 // Utility Functions

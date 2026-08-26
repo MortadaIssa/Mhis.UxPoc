@@ -1202,3 +1202,88 @@ svg.icon {
 .toast-info {
     background-color: var(--color-info);
 }
+
+/* ===== Activities ===== */
+.cell-primary {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.cell-secondary {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+}
+
+.state-chip {
+    display: inline-block;
+    margin-left: var(--spacing-sm);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    vertical-align: middle;
+}
+
+.state-chip.draft {
+    background-color: #f3f4f6;
+    color: var(--color-text-secondary);
+}
+
+.state-chip.published {
+    background-color: var(--color-pale-green);
+    color: var(--color-primary-green);
+}
+
+.state-chip.completed {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.modal-wide .modal-content {
+    max-width: 820px;
+    width: 92%;
+}
+
+.activity-section {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.activity-section:first-of-type {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.activity-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.modal-form textarea {
+    padding: 9px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: inherit;
+    min-height: 72px;
+    resize: vertical;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+}
+
+.modal-form textarea.invalid {
+    border-color: var(--color-error);
+}
+
+.helper-text {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    padding: var(--spacing-md) 0;
+}
