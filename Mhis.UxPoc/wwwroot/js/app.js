@@ -389,16 +389,34 @@ mockData.resources = {
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
+    loadDemoState();
     initializeEventListeners();
     updateNotificationBadge();
-    renderPage('home');
+    startApp();
 });
 
 // Event Listeners
 function initializeEventListeners() {
-    // Navigation
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', handleNavigation);
+    // Login screen
+    renderDemoAccountList();
+    document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
+    document.getElementById('explorePublicBtn').addEventListener('click', () => {
+        showToast('The public Mental Health Services view is not part of this iteration.', 'info');
+    });
+    document.getElementById('resetDemoBtn').addEventListener('click', () => {
+        resetDemoState();
+        showToast('Demo data has been reset.', 'success');
+        startApp();
+    });
+
+    // Account menu
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        handleSignOut();
+    });
+    document.getElementById('changePasswordBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        showToast('Changing the password is simulated in this POC.', 'info');
     });
 
     // Notification Bell
@@ -474,7 +492,34 @@ function navigateTo(page) {
 // Page Rendering
 function renderPage(page) {
     const container = document.getElementById('page-container');
-    
+
+    if (!getAllowedPages().includes(page)) {
+        page = 'home';
+        setActivePage(page);
+    }
+
+    if (page === 'home') {
+        if (isAdminUser()) {
+            container.innerHTML = renderAdminHomePage();
+            attachAdminHomeListeners();
+            refreshLucideIcons();
+            return;
+        }
+        if (!isCurrentNgoApproved()) {
+            container.innerHTML = renderRegistrationStatusHomePage();
+            attachRegistrationStatusHomeListeners();
+            refreshLucideIcons();
+            return;
+        }
+    }
+
+    if (page === 'organization-profile' && getCurrentRegistration()) {
+        container.innerHTML = renderRegistrationProfilePage();
+        attachRegistrationProfileListeners();
+        refreshLucideIcons();
+        return;
+    }
+
     switch(page) {
         case 'home':
             container.innerHTML = renderHomePage();
@@ -516,10 +561,22 @@ function renderPage(page) {
             container.innerHTML = renderSurveysPage();
             attachSurveysListeners();
             break;
+        case 'organization-registrations':
+            container.innerHTML = renderOrganizationRegistrationsPage();
+            attachOrganizationRegistrationsListeners();
+            break;
+        case 'registration-review':
+            container.innerHTML = renderRegistrationReviewPage();
+            attachRegistrationReviewListeners();
+            break;
         default:
             container.innerHTML = renderHomePage();
     }
 
+    refreshLucideIcons();
+}
+
+function refreshLucideIcons() {
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons();
     }
@@ -2955,4 +3012,661 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ===== Demo login screen =====
+function startApp() {
+    const loginScreen = document.getElementById('loginScreen');
+    const topBar = document.getElementById('topBar');
+    const appShell = document.getElementById('appShell');
+
+    if (!isSignedIn()) {
+        loginScreen.hidden = false;
+        topBar.hidden = true;
+        appShell.hidden = true;
+        document.getElementById('loginForm').reset();
+        clearLoginErrors();
+        return;
+    }
+
+    loginScreen.hidden = true;
+    topBar.hidden = false;
+    appShell.hidden = false;
+    updateTopBarIdentity();
+    renderSidebarNav();
+    navigateTo('home');
+}
+
+function renderDemoAccountList() {
+    const list = document.getElementById('demoAccountList');
+    list.innerHTML = DEMO_ACCOUNTS.map(account => `
+        <button type="button" class="demo-account" data-account="${escapeHtml(account.id)}">
+            <span class="demo-account-role">${escapeHtml(account.label)}</span>
+            <span class="demo-account-name">${escapeHtml(account.organization)}</span>
+            <span class="demo-account-description">${escapeHtml(account.description)}</span>
+            <span class="demo-account-email">${escapeHtml(account.email)}</span>
+        </button>`).join('');
+
+    list.querySelectorAll('.demo-account').forEach(btn => {
+        btn.addEventListener('click', () => signInAs(btn.getAttribute('data-account')));
+    });
+}
+
+function clearLoginErrors() {
+    document.getElementById('loginEmail-error').textContent = '';
+    document.getElementById('loginPassword-error').textContent = '';
+    document.getElementById('loginEmail').classList.remove('invalid');
+    document.getElementById('loginPassword').classList.remove('invalid');
+}
+
+function handleLoginSubmit(e) {
+    e.preventDefault();
+    clearLoginErrors();
+
+    const emailInput = document.getElementById('loginEmail');
+    const passwordInput = document.getElementById('loginPassword');
+    let valid = true;
+
+    if (!emailInput.value.trim()) {
+        emailInput.classList.add('invalid');
+        document.getElementById('loginEmail-error').textContent = 'This field is required.';
+        valid = false;
+    }
+    if (!passwordInput.value) {
+        passwordInput.classList.add('invalid');
+        document.getElementById('loginPassword-error').textContent = 'This field is required.';
+        valid = false;
+    }
+    if (!valid) {
+        return;
+    }
+
+    const account = getDemoAccountByEmail(emailInput.value);
+    if (!account) {
+        emailInput.classList.add('invalid');
+        document.getElementById('loginEmail-error').textContent = 'Unknown account. Use one of the demo accounts listed beside the form.';
+        return;
+    }
+
+    signInAs(account.id);
+}
+
+function signInAs(accountId) {
+    if (!demoSignIn(accountId)) {
+        return;
+    }
+    appState.profileDirty = false;
+    activitiesView.mode = 'list';
+    activityEditor = null;
+    adminView.selectedRegistrationId = null;
+    startApp();
+}
+
+function handleSignOut() {
+    if (appState.profileDirty) {
+        const proceed = confirm('You have unsaved changes. Log out and discard them?');
+        if (!proceed) {
+            return;
+        }
+        appState.profileDirty = false;
+    }
+    demoSignOut();
+    closeNotificationModal();
+    document.getElementById('accountDropdown').style.display = 'none';
+    startApp();
+}
+
+function updateTopBarIdentity() {
+    const account = getCurrentAccount();
+    if (!account) {
+        return;
+    }
+    const label = account.id === 'ngo-existing' ? mockData.organization.name : account.organization;
+    document.getElementById('topBarOrgName').textContent = label;
+}
+
+// ===== Navigation policy =====
+const NAV_DEFINITIONS = {
+    'home': { label: 'Home', icon: 'house' },
+    'organization-profile': { label: 'Organization Profile', icon: 'building-2' },
+    'facilities': { label: 'Facilities', icon: 'building' },
+    'providers': { label: 'Providers', icon: 'users' },
+    'activities': { label: 'Activities', icon: 'clipboard-list' },
+    'surveys': { label: 'Surveys', icon: 'file-text' },
+    'my-dashboard': { label: 'My Dashboard', icon: 'layout-dashboard' },
+    'advanced-dashboard': { label: 'Advanced Dashboard', icon: 'bar-chart-3' },
+    'events-calendar': { label: 'Events Calendar', icon: 'calendar-days' },
+    'resources-help': { label: 'Resources & Help', icon: 'circle-help' },
+    'organization-registrations': { label: 'Organization Registrations', icon: 'file-check' }
+};
+
+function getNavigationForCurrentUser() {
+    if (isAdminUser()) {
+        return [
+            { type: 'item', page: 'home' },
+            { type: 'item', page: 'organization-registrations' },
+            { type: 'item', page: 'resources-help' }
+        ];
+    }
+
+    if (!isCurrentNgoApproved()) {
+        // An organization without an approved registration cannot reach the
+        // operational modules yet.
+        return [
+            { type: 'item', page: 'home' },
+            { type: 'item', page: 'organization-profile' },
+            { type: 'item', page: 'resources-help' }
+        ];
+    }
+
+    return [
+        { type: 'item', page: 'home' },
+        { type: 'item', page: 'organization-profile' },
+        { type: 'item', page: 'facilities' },
+        { type: 'item', page: 'providers' },
+        { type: 'item', page: 'activities' },
+        { type: 'item', page: 'surveys' },
+        { type: 'section', label: 'Dashboards' },
+        { type: 'item', page: 'my-dashboard', subsection: true },
+        { type: 'item', page: 'advanced-dashboard', subsection: true },
+        { type: 'item', page: 'events-calendar' },
+        { type: 'item', page: 'resources-help' }
+    ];
+}
+
+function getAllowedPages() {
+    const pages = getNavigationForCurrentUser()
+        .filter(entry => entry.type === 'item')
+        .map(entry => entry.page);
+
+    if (isAdminUser()) {
+        // Reached from the registrations list, not from the sidebar.
+        pages.push('registration-review');
+    }
+    return pages;
+}
+
+function renderSidebarNav() {
+    const nav = document.getElementById('sidebarNav');
+    nav.innerHTML = getNavigationForCurrentUser().map(entry => {
+        if (entry.type === 'section') {
+            return `<div class="nav-section-title">${escapeHtml(entry.label)}</div>`;
+        }
+        const def = NAV_DEFINITIONS[entry.page];
+        const classes = `nav-item${entry.subsection ? ' nav-subsection' : ''}${entry.page === appState.currentPage ? ' active' : ''}`;
+        return `
+            <a href="#" class="${classes}" data-page="${escapeHtml(entry.page)}">
+                <i class="nav-icon" data-lucide="${escapeHtml(def.icon)}"></i>
+                <span class="nav-label">${escapeHtml(def.label)}</span>
+            </a>`;
+    }).join('');
+
+    nav.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', handleNavigation);
+    });
+    refreshLucideIcons();
+}
+
+// ===== New NGO registration lifecycle =====
+function renderRegistrationStatusHomePage() {
+    const registration = getCurrentRegistration();
+    const orgName = registration ? registration.organization : '';
+
+    let bodyHTML = '';
+    if (registration.status === REGISTRATION_STATUS.incomplete) {
+        bodyHTML = `
+            <div class="section-card">
+                <div class="section-header"><h3>Complete your organization profile</h3></div>
+                <div class="section-content">
+                    <p class="status-text">Your account has been created. Complete the organization profile and submit it so that NMHP can review your registration.</p>
+                    <p class="status-text">The rest of MHIS becomes available once your registration is approved.</p>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="goToProfileBtn">
+                            <i data-lucide="building-2"></i><span>Complete Organization Profile</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    } else if (registration.status === REGISTRATION_STATUS.pendingReview) {
+        bodyHTML = `
+            <div class="section-card">
+                <div class="section-header"><h3>Registration submitted</h3></div>
+                <div class="section-content">
+                    <p class="status-text">Your organization profile was submitted on ${escapeHtml(registration.submittedDate)} and is being reviewed by NMHP.</p>
+                    <p class="status-text">You will be notified once the review is complete. The remaining MHIS modules stay unavailable until then.</p>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="goToProfileBtn">
+                            <i data-lucide="eye"></i><span>View Submitted Profile</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    } else {
+        bodyHTML = `
+            <div class="section-card">
+                <div class="section-header"><h3>Registration returned by NMHP</h3></div>
+                <div class="section-content">
+                    <div class="reason-box">
+                        <div class="reason-box-label">Reason</div>
+                        <p>${escapeHtml(registration.rejectionReason)}</p>
+                    </div>
+                    <p class="status-text">Update your organization profile and resubmit it for review.</p>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="goToProfileBtn">
+                            <i data-lucide="pencil"></i><span>Update and Resubmit</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    return `
+        <div class="home-page">
+            <div class="welcome-section">
+                <h1 class="welcome-heading">Welcome, ${escapeHtml(orgName)}</h1>
+                <div class="reg-status reg-status-${registrationStatusClass(registration.status)}">${escapeHtml(registration.status)}</div>
+            </div>
+            ${bodyHTML}
+        </div>`;
+}
+
+function attachRegistrationStatusHomeListeners() {
+    document.getElementById('goToProfileBtn')?.addEventListener('click', () => navigateTo('organization-profile'));
+}
+
+function registrationStatusClass(status) {
+    switch (status) {
+        case REGISTRATION_STATUS.approved: return 'approved';
+        case REGISTRATION_STATUS.rejected: return 'rejected';
+        case REGISTRATION_STATUS.pendingReview: return 'pending';
+        default: return 'incomplete';
+    }
+}
+
+function renderRegistrationProfilePage() {
+    const r = getCurrentRegistration();
+    const readOnly = r.status === REGISTRATION_STATUS.pendingReview || r.status === REGISTRATION_STATUS.approved;
+    const focal = area => r.focalPersons.find(f => f.area === area) || { name: '', email: '', mobile: '' };
+    const fourWs = focal('4Ws');
+    const substance = focal('Substance Use');
+
+    const field = (id, label, value, required, type = 'text') => `
+        <div class="form-field">
+            <label for="${id}">${escapeHtml(label)}${required ? ' <span class="required">*</span>' : ''}</label>
+            <input type="${type}" id="${id}" value="${escapeHtml(value || '')}"${required && !readOnly ? ' data-required="true"' : ''}${readOnly ? ' disabled' : ''} />
+            <div class="field-error" id="${id}-error"></div>
+        </div>`;
+
+    let bannerHTML = '';
+    if (r.status === REGISTRATION_STATUS.rejected) {
+        bannerHTML = `
+            <div class="reason-box">
+                <div class="reason-box-label">Registration returned by NMHP</div>
+                <p>${escapeHtml(r.rejectionReason)}</p>
+            </div>`;
+    } else if (r.status === REGISTRATION_STATUS.pendingReview) {
+        bannerHTML = `<div class="info-banner">Submitted on ${escapeHtml(r.submittedDate)}. The profile cannot be changed while NMHP is reviewing it.</div>`;
+    }
+
+    const actionsHTML = readOnly ? '' : `
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">${r.status === REGISTRATION_STATUS.rejected ? 'Resubmit for Review' : 'Submit for Review'}</button>
+            <button type="button" class="btn btn-secondary" id="regProfileSaveBtn">Save Draft</button>
+        </div>`;
+
+    return `
+        <div class="page">
+            <div class="page-header">
+                <h1 class="page-title">Organization Profile</h1>
+                <div class="reg-status reg-status-${registrationStatusClass(r.status)}">${escapeHtml(r.status)}</div>
+            </div>
+            ${bannerHTML}
+            <form id="registrationProfileForm" class="profile-form" novalidate>
+                <section class="profile-section">
+                    <h2 class="profile-section-title">General Information</h2>
+                    <div class="form-grid">
+                        ${field('reg-name', 'Organization Name', r.organization, true)}
+                        ${field('reg-acronym', 'Acronym', r.acronym, false)}
+                        ${field('reg-phone', 'Institution Phone Number', r.phone, true)}
+                        ${field('reg-mobile', 'Institution Mobile Number', r.mobile, false)}
+                        ${field('reg-email', 'Institution Email', r.email, true, 'email')}
+                        ${field('reg-director-name', 'Director Name', r.directorName, true)}
+                        ${field('reg-director-email', 'Director Email', r.directorEmail, true, 'email')}
+                        ${field('reg-director-mobile', 'Director Mobile Number', r.directorMobile, false)}
+                        ${field('reg-sectors', 'Sectors / Areas of Responsibility', r.sectors, true)}
+                        ${field('reg-website', 'Organization Website', r.website, false, 'url')}
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2 class="profile-section-title">4Ws Focal Person</h2>
+                    <div class="form-grid">
+                        ${field('reg-4ws-name', 'Name', fourWs.name, true)}
+                        ${field('reg-4ws-email', 'Email', fourWs.email, true, 'email')}
+                        ${field('reg-4ws-mobile', 'Mobile', fourWs.mobile, false)}
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2 class="profile-section-title">Substance Use Focal Person</h2>
+                    <div class="form-grid">
+                        ${field('reg-su-name', 'Name', substance.name, true)}
+                        ${field('reg-su-email', 'Email', substance.email, true, 'email')}
+                        ${field('reg-su-mobile', 'Mobile', substance.mobile, false)}
+                    </div>
+                </section>
+
+                ${actionsHTML}
+            </form>
+        </div>`;
+}
+
+function attachRegistrationProfileListeners() {
+    const form = document.getElementById('registrationProfileForm');
+    const r = getCurrentRegistration();
+    const readOnly = r.status === REGISTRATION_STATUS.pendingReview || r.status === REGISTRATION_STATUS.approved;
+    if (readOnly) {
+        return;
+    }
+
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => { appState.profileDirty = true; });
+    });
+
+    const collect = () => {
+        r.organization = form.querySelector('#reg-name').value.trim();
+        r.acronym = form.querySelector('#reg-acronym').value.trim();
+        r.phone = form.querySelector('#reg-phone').value.trim();
+        r.mobile = form.querySelector('#reg-mobile').value.trim();
+        r.email = form.querySelector('#reg-email').value.trim();
+        r.directorName = form.querySelector('#reg-director-name').value.trim();
+        r.directorEmail = form.querySelector('#reg-director-email').value.trim();
+        r.directorMobile = form.querySelector('#reg-director-mobile').value.trim();
+        r.sectors = form.querySelector('#reg-sectors').value.trim();
+        r.website = form.querySelector('#reg-website').value.trim();
+        r.focalPersons = [
+            {
+                area: '4Ws',
+                name: form.querySelector('#reg-4ws-name').value.trim(),
+                email: form.querySelector('#reg-4ws-email').value.trim(),
+                mobile: form.querySelector('#reg-4ws-mobile').value.trim()
+            },
+            {
+                area: 'Substance Use',
+                name: form.querySelector('#reg-su-name').value.trim(),
+                email: form.querySelector('#reg-su-email').value.trim(),
+                mobile: form.querySelector('#reg-su-mobile').value.trim()
+            }
+        ];
+        saveDemoState();
+    };
+
+    document.getElementById('regProfileSaveBtn').addEventListener('click', () => {
+        collect();
+        appState.profileDirty = false;
+        showToast('Draft saved. Submit the profile when it is complete.', 'success');
+        updateTopBarIdentity();
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!validateProfileForm(form)) {
+            showToast('Complete the required fields before submitting.', 'error');
+            return;
+        }
+        collect();
+        submitRegistrationForReview(r.id);
+        appState.profileDirty = false;
+        updateTopBarIdentity();
+        renderSidebarNav();
+        showToast('Profile submitted. NMHP is reviewing your registration.', 'success');
+        navigateTo('home');
+    });
+}
+
+// ===== Administrator: organization registrations =====
+let adminView = {
+    selectedRegistrationId: null,
+    statusFilter: '',
+    search: ''
+};
+
+function renderAdminHomePage() {
+    const pending = countRegistrationsByStatus(REGISTRATION_STATUS.pendingReview);
+    return `
+        <div class="home-page">
+            <div class="welcome-section">
+                <h1 class="welcome-heading">Welcome, NMHP Administrator</h1>
+            </div>
+
+            <div class="summary-tiles">
+                <div class="tile tile-action" data-admin-tile="registrations">
+                    <div class="tile-label">New Organization Registrations</div>
+                    <div class="tile-value">${pending}</div>
+                </div>
+                <div class="tile">
+                    <div class="tile-label">Events to Review</div>
+                    <div class="tile-value">4</div>
+                </div>
+                <div class="tile">
+                    <div class="tile-label">Potential Duplicate Facilities</div>
+                    <div class="tile-value">2</div>
+                </div>
+                <div class="tile">
+                    <div class="tile-label">Pending Custom Values</div>
+                    <div class="tile-value">6</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="adminRegistrationsBtn">
+                    <i data-lucide="file-check"></i><span>Review Organization Registrations</span>
+                </button>
+            </div>
+        </div>`;
+}
+
+function attachAdminHomeListeners() {
+    const goToRegistrations = () => {
+        adminView.statusFilter = REGISTRATION_STATUS.pendingReview;
+        navigateTo('organization-registrations');
+    };
+    document.getElementById('adminRegistrationsBtn')?.addEventListener('click', goToRegistrations);
+    document.querySelector('[data-admin-tile="registrations"]')?.addEventListener('click', goToRegistrations);
+}
+
+function getFilteredRegistrations() {
+    const query = adminView.search.trim().toLowerCase();
+    return getRegistrations().filter(r => {
+        const matchesStatus = !adminView.statusFilter || r.status === adminView.statusFilter;
+        const matchesQuery = !query || r.organization.toLowerCase().includes(query) || (r.acronym || '').toLowerCase().includes(query);
+        return matchesStatus && matchesQuery;
+    });
+}
+
+function renderOrganizationRegistrationsPage() {
+    const records = getFilteredRegistrations();
+    const rowsHTML = records.length
+        ? records.map(r => `
+            <tr>
+                <td>
+                    <div class="cell-primary">${escapeHtml(r.organization)}</div>
+                    <div class="cell-secondary">${escapeHtml(r.acronym || '')}</div>
+                </td>
+                <td>${escapeHtml(r.submittedDate || 'Not submitted')}</td>
+                <td><span class="reg-status reg-status-${registrationStatusClass(r.status)}">${escapeHtml(r.status)}</span></td>
+                <td>${escapeHtml(r.accountAccess)}</td>
+                <td class="actions-cell">
+                    <button type="button" class="btn btn-link" data-review="${r.id}">Review</button>
+                </td>
+            </tr>`).join('')
+        : '<tr><td colspan="5" class="empty-cell">No registrations match the current filters.</td></tr>';
+
+    const statusOptions = [
+        REGISTRATION_STATUS.incomplete,
+        REGISTRATION_STATUS.pendingReview,
+        REGISTRATION_STATUS.approved,
+        REGISTRATION_STATUS.rejected
+    ];
+
+    return `
+        <div class="page">
+            <div class="page-header">
+                <h1 class="page-title">Organization Registrations</h1>
+            </div>
+            <div class="list-toolbar">
+                <div class="search-group">
+                    <i data-lucide="search"></i>
+                    <input type="search" id="registrationSearch" placeholder="Search organizations..." aria-label="Search organizations" value="${escapeHtml(adminView.search)}" />
+                </div>
+                ${renderSelect('registrationStatusFilter', 'Registration Status', statusOptions, adminView.statusFilter)}
+            </div>
+            <div class="result-count">${records.length} registration${records.length === 1 ? '' : 's'}</div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Organization</th>
+                        <th>Submitted</th>
+                        <th>Registration Status</th>
+                        <th>Account Access</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>${rowsHTML}</tbody>
+            </table>
+        </div>`;
+}
+
+function attachOrganizationRegistrationsListeners() {
+    document.getElementById('registrationSearch').addEventListener('input', (e) => {
+        adminView.search = e.target.value;
+        renderPage('organization-registrations');
+        document.getElementById('registrationSearch').focus();
+    });
+
+    document.getElementById('registrationStatusFilter').addEventListener('change', (e) => {
+        adminView.statusFilter = e.target.value;
+        renderPage('organization-registrations');
+    });
+
+    document.querySelectorAll('[data-review]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            adminView.selectedRegistrationId = Number(btn.getAttribute('data-review'));
+            navigateTo('registration-review');
+        });
+    });
+}
+
+function renderRegistrationReviewPage() {
+    const r = getRegistrationById(adminView.selectedRegistrationId);
+    if (!r) {
+        return renderOrganizationRegistrationsPage();
+    }
+
+    const row = (label, value) => `
+        <div class="detail-row">
+            <div class="detail-label">${escapeHtml(label)}</div>
+            <div class="detail-value">${escapeHtml(value || '-')}</div>
+        </div>`;
+
+    const focalHTML = r.focalPersons.map(f => `
+        <tr>
+            <td>${escapeHtml(f.area)}</td>
+            <td>${escapeHtml(f.name || '-')}</td>
+            <td>${escapeHtml(f.email || '-')}</td>
+            <td>${escapeHtml(f.mobile || '-')}</td>
+        </tr>`).join('');
+
+    let actionsHTML = '';
+    if (r.status === REGISTRATION_STATUS.pendingReview) {
+        actionsHTML = `
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="approveRegistrationBtn">Approve</button>
+                <button type="button" class="btn btn-secondary" id="rejectRegistrationBtn">Reject</button>
+            </div>`;
+    } else if (r.status === REGISTRATION_STATUS.rejected) {
+        actionsHTML = `
+            <div class="reason-box">
+                <div class="reason-box-label">Rejection reason sent to the organization</div>
+                <p>${escapeHtml(r.rejectionReason)}</p>
+            </div>`;
+    } else if (r.status === REGISTRATION_STATUS.incomplete) {
+        actionsHTML = '<div class="info-banner">This organization has not submitted its profile yet.</div>';
+    } else {
+        actionsHTML = '<div class="info-banner">This registration has been approved.</div>';
+    }
+
+    return `
+        <div class="page">
+            <button type="button" class="link-back" id="registrationBackBtn"><i data-lucide="arrow-left"></i> Back to Organization Registrations</button>
+            <div class="page-header">
+                <h1 class="page-title">${escapeHtml(r.organization)}</h1>
+                <div class="reg-status reg-status-${registrationStatusClass(r.status)}">${escapeHtml(r.status)}</div>
+            </div>
+            <p class="status-text">Submitted registration details are read-only. NMHP can approve or reject the registration but cannot change the submitted information.</p>
+
+            <section class="profile-section">
+                <h2 class="profile-section-title">General Information</h2>
+                ${row('Organization Name', r.organization)}
+                ${row('Acronym', r.acronym)}
+                ${row('Institution Phone Number', r.phone)}
+                ${row('Institution Mobile Number', r.mobile)}
+                ${row('Institution Email', r.email)}
+                ${row('Director Name', r.directorName)}
+                ${row('Director Email', r.directorEmail)}
+                ${row('Director Mobile Number', r.directorMobile)}
+                ${row('Sectors / Areas of Responsibility', r.sectors)}
+                ${row('Organization Website', r.website)}
+                ${row('Submitted', r.submittedDate)}
+                ${row('Account Access', r.accountAccess)}
+            </section>
+
+            <section class="profile-section">
+                <h2 class="profile-section-title">Focal Persons</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Area</th><th>Name</th><th>Email</th><th>Mobile</th></tr>
+                    </thead>
+                    <tbody>${focalHTML}</tbody>
+                </table>
+            </section>
+
+            ${actionsHTML}
+        </div>`;
+}
+
+function attachRegistrationReviewListeners() {
+    document.getElementById('registrationBackBtn')?.addEventListener('click', () => navigateTo('organization-registrations'));
+
+    document.getElementById('approveRegistrationBtn')?.addEventListener('click', () => {
+        const r = approveRegistration(adminView.selectedRegistrationId);
+        showToast(`${r.organization} has been approved.`, 'success');
+        renderPage('registration-review');
+    });
+
+    document.getElementById('rejectRegistrationBtn')?.addEventListener('click', () => {
+        openFormModal(
+            'Reject Registration',
+            `<div class="form-field">
+                <label for="rejectReason">Reason <span class="required">*</span></label>
+                <textarea id="rejectReason" rows="4"></textarea>
+                <div class="field-error" id="rejectReason-error"></div>
+            </div>`,
+            `<button type="button" class="btn btn-secondary" id="cancelRejectBtn">Cancel</button>
+             <button type="button" class="btn btn-primary" id="confirmRejectBtn">Reject Registration</button>`
+        );
+
+        document.getElementById('cancelRejectBtn').addEventListener('click', closeFormModal);
+        document.getElementById('confirmRejectBtn').addEventListener('click', () => {
+            const reason = document.getElementById('rejectReason').value.trim();
+            if (!reason) {
+                document.getElementById('rejectReason-error').textContent = 'A reason is required.';
+                return;
+            }
+            const r = rejectRegistration(adminView.selectedRegistrationId, reason);
+            closeFormModal();
+            showToast(`${r.organization} has been rejected.`, 'success');
+            renderPage('registration-review');
+        });
+    });
 }
