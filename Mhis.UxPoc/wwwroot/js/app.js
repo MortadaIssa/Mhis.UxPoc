@@ -44,6 +44,22 @@ const mockData = {
         { id: 1, area: "4Ws", name: "Sara Mansour", email: "s.mansour@chn.org", mobile: "+961 71 555 111" },
         { id: 2, area: "Substance Use", name: "Elie Rahme", email: "e.rahme@chn.org", mobile: "+961 71 555 222" }
     ],
+    // Surveys (Substance Use data collection) presented inside the MHIS shell.
+    surveysIntro: {
+        short: "The Substance Use Platform collects detailed data on prevention and treatment activities across populations and settings in Lebanon on an annual basis.",
+        full: "The Substance Use Platform collects detailed data on prevention and treatment activities across populations and settings in Lebanon on an annual basis. It maps existing prevention and treatment activities, identifies gaps, and keeps accurate, up-to-date information readily available. By centralising this information, it supports evidence-based policymaking, resource allocation, and strategic planning, feeds regular updates to the National Observatory of Drugs and Drug Addiction (NODDA), and encourages the scaling up of evidence-based interventions."
+    },
+    surveyTypes: ["Prevention", "Treatment", "Harm Reduction"],
+    surveyYears: ["2025", "2024", "2023"],
+    surveyStatuses: ["Draft", "Submitted"],
+    surveys: [
+        { id: 1, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2025", status: "Draft", updated: "12 Feb 2025" },
+        { id: 2, name: "Treatment Services Annual Survey", type: "Treatment", description: "Outpatient and residential treatment services and capacity.", year: "2025", status: "Draft", updated: "05 Feb 2025" },
+        { id: 3, name: "Harm Reduction Services Survey", type: "Harm Reduction", description: "Needle and syringe programmes, overdose prevention, and outreach.", year: "2024", status: "Submitted", updated: "18 Nov 2024" },
+        { id: 4, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2024", status: "Submitted", updated: "22 Oct 2024" },
+        { id: 5, name: "Treatment Services Annual Survey", type: "Treatment", description: "Outpatient and residential treatment services and capacity.", year: "2024", status: "Submitted", updated: "09 Oct 2024" },
+        { id: 6, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2023", status: "Submitted", updated: "30 Nov 2023" }
+    ],
     // Dynamic activity configurations. Each config lists ONLY the sections/fields it needs.
     // The activity form renders strictly from the selected config — no fixed tabs.
     activityConfigs: [
@@ -497,7 +513,8 @@ function renderPage(page) {
             attachResourcesHelpListeners();
             break;
         case 'surveys':
-            container.innerHTML = renderPlaceholderPage(page);
+            container.innerHTML = renderSurveysPage();
+            attachSurveysListeners();
             break;
         default:
             container.innerHTML = renderHomePage();
@@ -2114,9 +2131,132 @@ function validateModalForm(form) {
 let activitiesView = { mode: 'list', discoveryQuery: '' };
 let activityEditor = null;
 
+// ===== Surveys (Substance Use) =====
+// The former standalone Substance Use portal is presented as a normal MHIS page:
+// no secondary header, no breadcrumb, no Back to Portal, and no intermediate
+// "View Surveys" step. The introduction becomes a compact collapsible panel and
+// the surveys are listed immediately underneath.
+function renderSurveysPage() {
+    const intro = mockData.surveysIntro;
+    const expanded = surveysView.introExpanded;
+
+    return `
+        <div class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Surveys</h1>
+                    <p class="page-lead">Substance use prevention and treatment data collection.</p>
+                </div>
+                <button class="btn btn-primary" id="addSurveyBtn">
+                    <i data-lucide="plus"></i><span>Add Survey</span>
+                </button>
+            </div>
+
+            <div class="intro-panel${expanded ? ' expanded' : ''}" id="surveysIntroPanel">
+                <div class="intro-panel-icon"><i data-lucide="info"></i></div>
+                <div class="intro-panel-body">
+                    <h2 class="intro-panel-title">About Substance Use Data Collection</h2>
+                    <p class="intro-panel-text" id="surveysIntroText">${escapeHtml(expanded ? intro.full : intro.short)}</p>
+                    <button type="button" class="intro-panel-toggle" id="surveysIntroToggle">${expanded ? 'Show less' : 'Show more'}</button>
+                </div>
+            </div>
+
+            <div class="list-toolbar">
+                <div class="search-group">
+                    <i data-lucide="search"></i>
+                    <input type="search" id="surveySearch" placeholder="Search surveys..." aria-label="Search surveys" />
+                </div>
+                ${renderSelect('surveyYearFilter', 'Reporting Year', mockData.surveyYears, '')}
+                ${renderSelect('surveyTypeFilter', 'Survey Type', mockData.surveyTypes, '')}
+                ${renderSelect('surveyStatusFilter', 'Status', mockData.surveyStatuses, '')}
+            </div>
+            <div class="result-count" id="surveyCount"></div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Survey</th><th>Reporting Year</th><th>Status</th>
+                        <th>Last Updated</th><th class="actions-col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="surveyTableBody"></tbody>
+            </table>
+        </div>`;
+}
+
+function attachSurveysListeners() {
+    document.getElementById('addSurveyBtn').addEventListener('click', () => {
+        showToast('Adding a survey is not simulated in this prototype.', 'info');
+    });
+    document.getElementById('surveysIntroToggle').addEventListener('click', toggleSurveysIntro);
+    document.getElementById('surveySearch').addEventListener('input', renderSurveyRows);
+    document.getElementById('surveyYearFilter').addEventListener('change', renderSurveyRows);
+    document.getElementById('surveyTypeFilter').addEventListener('change', renderSurveyRows);
+    document.getElementById('surveyStatusFilter').addEventListener('change', renderSurveyRows);
+    renderSurveyRows();
+}
+
+function toggleSurveysIntro() {
+    surveysView.introExpanded = !surveysView.introExpanded;
+    const intro = mockData.surveysIntro;
+    document.getElementById('surveysIntroPanel').classList.toggle('expanded', surveysView.introExpanded);
+    document.getElementById('surveysIntroText').textContent = surveysView.introExpanded ? intro.full : intro.short;
+    document.getElementById('surveysIntroToggle').textContent = surveysView.introExpanded ? 'Show less' : 'Show more';
+}
+
+function getFilteredSurveys() {
+    const q = (document.getElementById('surveySearch')?.value || '').toLowerCase();
+    const year = document.getElementById('surveyYearFilter')?.value || '';
+    const type = document.getElementById('surveyTypeFilter')?.value || '';
+    const status = document.getElementById('surveyStatusFilter')?.value || '';
+    return mockData.surveys.filter(s =>
+        (!q || s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)) &&
+        (!year || s.year === year) &&
+        (!type || s.type === type) &&
+        (!status || s.status === status));
+}
+
+function renderSurveyRows() {
+    const rows = getFilteredSurveys();
+    const body = document.getElementById('surveyTableBody');
+    document.getElementById('surveyCount').textContent = `${rows.length} survey${rows.length === 1 ? '' : 's'} found`;
+    if (rows.length === 0) {
+        body.innerHTML = `<tr><td colspan="5" class="empty-row">No surveys match your filters.</td></tr>`;
+        return;
+    }
+    body.innerHTML = rows.map(s => {
+        const isDraft = s.status === 'Draft';
+        return `
+        <tr>
+            <td>
+                <div class="cell-primary">${escapeHtml(s.name)}</div>
+                <div class="cell-secondary">${escapeHtml(s.type)} &middot; ${escapeHtml(s.description)}</div>
+            </td>
+            <td>${escapeHtml(s.year)}</td>
+            <td><span class="state-chip ${isDraft ? 'draft' : 'published'}">${escapeHtml(s.status)}</span></td>
+            <td>${escapeHtml(s.updated)}</td>
+            <td class="actions-col">
+                <button class="icon-action" title="${isDraft ? 'Edit' : 'View'}" aria-label="${isDraft ? 'Edit' : 'View'}" data-action="${isDraft ? 'edit' : 'view'}" data-id="${s.id}"><i data-lucide="${isDraft ? 'pencil' : 'eye'}"></i></button>
+            </td>
+        </tr>`;
+    }).join('');
+    body.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.getAttribute('data-action');
+            showToast(action === 'edit'
+                ? 'Opening a survey for editing is not simulated in this prototype.'
+                : 'Viewing a submitted survey is not simulated in this prototype.', 'info');
+        });
+    });
+    if (window.lucide) window.lucide.createIcons();
+}
+
 // ===== Resources & Help =====
 // mode is 'landing' or one of the resource topic keys.
 let resourcesHelpView = { mode: 'landing', catalogQuery: '' };
+
+// ===== Surveys =====
+// Substance use data collection presented inside the MHIS shell (no separate portal).
+let surveysView = { introExpanded: false };
 
 function getActivityConfig(configId) {
     return mockData.activityConfigs.find(c => c.id === configId);

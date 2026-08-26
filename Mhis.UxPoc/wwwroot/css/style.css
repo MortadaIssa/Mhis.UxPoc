@@ -2129,3 +2129,63 @@ svg.icon {
     font-weight: 600;
     color: var(--color-text-primary);
 }
+
+/* ===== Compact intro / context panel (Surveys) ===== */
+.intro-panel {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+    background-color: var(--color-pale-green);
+    border-left: 4px solid var(--color-primary-green);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.intro-panel-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: var(--color-surface);
+    color: var(--color-primary-green);
+}
+
+.intro-panel-icon i,
+.intro-panel-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.intro-panel-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-dark-green);
+    margin-bottom: var(--spacing-xs);
+}
+
+.intro-panel-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+    max-width: 90ch;
+}
+
+.intro-panel-toggle {
+    margin-top: var(--spacing-xs);
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary-green);
+    cursor: pointer;
+}
+
+.intro-panel-toggle:hover {
+    text-decoration: underline;
+}
+

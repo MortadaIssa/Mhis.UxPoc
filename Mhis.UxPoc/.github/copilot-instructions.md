@@ -14,8 +14,7 @@ Before making UX changes, read:
 
 1. `docs/UX-BRIEF.md` – the approved redesign direction and highest-priority source.
 2. `reference/Overall Business Cases.md` – existing business functionality.
-3. `reference/Current User Experience Catalog.md` – current UX problems.
-4. `reference/images/` – screenshots of the current application.
+
 
 The screenshots show the current problematic experience. They are references for existing functions and branding, not designs to reproduce.
 
