@@ -16,7 +16,8 @@ const NAV_DEFINITIONS = {
     'pending-custom-values': { label: 'Pending Custom Values', icon: 'list-plus' },
     'user-management': { label: 'User Management', icon: 'users-round' },
     'audience-groups': { label: 'Audience Groups', icon: 'megaphone' },
-    'announcement-history': { label: 'Announcement History', icon: 'history' }
+    'announcement-history': { label: 'Announcement History', icon: 'history' },
+    'whats-new-management': { label: "What's New Management", icon: 'newspaper' }
 };
 
 function getNavigationForCurrentUser() {
@@ -32,6 +33,7 @@ function getNavigationForCurrentUser() {
             { type: 'section', label: 'Announcements' },
             { type: 'item', page: 'audience-groups', subsection: true },
             { type: 'item', page: 'announcement-history', subsection: true },
+            { type: 'item', page: 'whats-new-management' },
             { type: 'item', page: 'resources-help' }
         ];
     }

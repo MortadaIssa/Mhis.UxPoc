@@ -381,9 +381,9 @@ mockData.resources = {
         hours: 'Sunday - Thursday, 9:00 AM - 4:00 PM'
     },
     whatsNew: [
-        { title: 'Improved Notifications', date: 'March 2024', description: 'Notifications now group by type and support quick actions directly from the bell menu.' },
-        { title: 'Dynamic Activity Forms', date: 'February 2024', description: 'Activity forms now adapt automatically based on the selected sub-activity.' },
-        { title: 'New Events Calendar', date: 'January 2024', description: 'A dedicated Events Calendar view replaces the previous scattered event listings.' }
+        { id: 1, title: 'Improved Notifications', date: 'March 2024', description: 'Notifications now group by type and support quick actions directly from the bell menu.' },
+        { id: 2, title: 'Dynamic Activity Forms', date: 'February 2024', description: 'Activity forms now adapt automatically based on the selected sub-activity.' },
+        { id: 3, title: 'New Events Calendar', date: 'January 2024', description: 'A dedicated Events Calendar view replaces the previous scattered event listings.' }
     ]
 };
 

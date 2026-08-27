@@ -239,6 +239,10 @@ function renderPage(page) {
             container.innerHTML = renderAnnouncementHistoryPage();
             attachAnnouncementHistoryListeners();
             break;
+        case 'whats-new-management':
+            container.innerHTML = renderWhatsNewManagementPage();
+            attachWhatsNewManagementListeners();
+            break;
         default:
             container.innerHTML = renderHomePage();
     }
