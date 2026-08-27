@@ -2580,6 +2580,320 @@ svg.icon {
     max-width: 420px;
 }
 
+/* ===== Explore Mental Health Services card (login brand panel) ===== */
+.explore-card {
+    position: absolute;
+    z-index: 2;
+    top: var(--spacing-xl);
+    right: var(--spacing-xl);
+    width: min(320px, calc(100% - var(--spacing-xl) * 2));
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.explore-card:hover,
+.explore-card:focus-visible {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.explore-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.explore-card-icon i {
+    width: 20px;
+    height: 20px;
+}
+
+.explore-card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.explore-card-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.explore-card-subtitle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+}
+
+.explore-card-arrow {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.explore-card:hover .explore-card-arrow {
+    transform: translateX(4px);
+}
+
+/* ===== Public Explore screen (guest access) ===== */
+.public-screen {
+    min-height: 100vh;
+    background-color: var(--color-page-bg);
+}
+
+.public-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 var(--spacing-lg);
+    background-color: var(--color-dark-green);
+}
+
+.public-topbar .mhis-logo {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.public-topbar .btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.public-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-xl);
+}
+
+.public-hero {
+    margin-bottom: var(--spacing-lg);
+}
+
+.public-hero h1 {
+    font-size: 26px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.public-hero p {
+    color: var(--color-text-secondary);
+    max-width: 640px;
+}
+
+.public-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.public-filter-bar .filter-group {
+    min-width: 200px;
+}
+
+.public-clear-filters {
+    margin-left: auto;
+    align-self: center;
+}
+
+.public-results-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .public-results-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.lebanon-map-panel {
+    position: relative;
+    overflow: hidden;
+    min-height: 440px;
+    background-color: var(--color-dark-green);
+    border-radius: var(--radius-lg);
+}
+
+.map-pins {
+    position: absolute;
+    inset: 0;
+}
+
+.map-pin {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transform: translate(-50%, -50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.15s ease;
+}
+
+.map-pin:hover {
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+.map-pin-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    border-radius: 50%;
+    background-color: var(--color-primary-green);
+    border: 2px solid #fff;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--shadow-md);
+}
+
+.map-pin.selected .map-pin-count {
+    background-color: var(--color-warning);
+    border-color: #fff;
+}
+
+.map-pin.is-empty .map-pin-count {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.map-pin-label {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.35);
+    white-space: nowrap;
+}
+
+.public-results .result-count {
+    margin-bottom: var(--spacing-sm);
+}
+
+.service-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.service-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.service-card-title {
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.service-card-org,
+.service-card-location {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.service-card-org i,
+.service-card-location i {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.service-card-pill {
+    align-self: flex-start;
+    margin-top: var(--spacing-xs);
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: var(--color-pale-green);
+    color: var(--color-primary-green);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.service-card-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: var(--spacing-xs);
+    padding-top: var(--spacing-xs);
+    border-top: 1px solid var(--color-border);
+}
+
+.service-card-contact span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.service-card-contact i {
+    width: 13px;
+    height: 13px;
+}
+
+.public-empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xl);
+    color: var(--color-text-secondary);
+    text-align: center;
+}
+
+.public-empty-state i {
+    width: 32px;
+    height: 32px;
+}
+
 /* ===== Registration wizard (modal) ===== */
 .wizard-step-label {
     font-size: 12px;

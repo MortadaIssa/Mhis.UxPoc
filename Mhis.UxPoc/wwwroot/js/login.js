@@ -37,9 +37,7 @@ function initializeLoginScreen() {
         showToast('Password reset is simulated in this POC.', 'info');
     });
     document.getElementById('registerOrgBtn').addEventListener('click', () => openRegistrationEmailStep());
-    document.getElementById('explorePublicBtn').addEventListener('click', () => {
-        showToast('The public Mental Health Services view is not part of this iteration.', 'info');
-    });
+    document.getElementById('explorePublicCard').addEventListener('click', () => showPublicExploreScreen());
 }
 
 // ===== Demo scenario switcher =====

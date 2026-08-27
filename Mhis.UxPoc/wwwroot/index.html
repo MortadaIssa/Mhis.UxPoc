@@ -61,11 +61,18 @@
                     <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">Log In</button>
                 </form>
                 <button type="button" class="btn btn-secondary btn-block" id="registerOrgBtn">Register Your Organization</button>
-                <button type="button" class="btn btn-link btn-block" id="explorePublicBtn">Explore Mental Health Services</button>
             </div>
             <p class="login-footer">&copy; 2026 National Mental Health Programme &middot; Ministry of Public Health, Lebanon</p>
         </div>
         <aside class="login-brand-panel">
+            <button type="button" class="explore-card" id="explorePublicCard">
+                <span class="explore-card-icon"><i data-lucide="map-pinned"></i></span>
+                <span class="explore-card-text">
+                    <span class="explore-card-title">Explore Mental Health Services</span>
+                    <span class="explore-card-subtitle">Browse public NGO activities across Lebanon — no sign-in required</span>
+                </span>
+                <i data-lucide="arrow-right" class="explore-card-arrow"></i>
+            </button>
             <svg class="lebanon-outline" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <g transform="translate(0.000000,1024.000000) scale(0.100000,-0.100000)" fill="none" stroke="currentColor" stroke-width="24" stroke-linejoin="round">
                     <path d="M7474 10223 c-27 -13 -33 -24 -43 -71 -6 -30 -12 -87 -12 -126 -2
@@ -136,6 +143,19 @@ l-15 52 -208 4 c-198 4 -208 3 -242 -17 -81 -50 -72 -53 -125 41 -26 47 -44
             </svg>
             <blockquote class="login-quote">&ldquo;All people living in Lebanon will have the opportunity to enjoy the best possible mental health and wellbeing&rdquo;</blockquote>
         </aside>
+    </div>
+
+    <!-- Public Explore Screen (guest access, no sign-in) -->
+    <div class="public-screen" id="publicScreen" hidden>
+        <div class="public-topbar">
+            <div class="mhis-logo">MHIS</div>
+            <button type="button" class="btn btn-primary" id="publicLoginBtn">
+                <i data-lucide="log-in"></i><span>Log In</span>
+            </button>
+        </div>
+        <div id="public-page-container">
+            <!-- Public Activities page is rendered here -->
+        </div>
     </div>
 
     <!-- Top Bar -->
@@ -247,6 +267,7 @@ l-15 52 -208 4 c-198 4 -208 3 -242 -17 -81 -50 -72 -53 -125 41 -26 47 -44
     <script src="js/pages/organization.js"></script>
     <script src="js/pages/facilities.js"></script>
     <script src="js/pages/providers.js"></script>
+    <script src="js/pages/public-activities.js"></script>
     <script src="js/pages/activities.js"></script>
     <script src="js/pages/registration.js"></script>
     <script src="js/pages/reviews.js"></script>

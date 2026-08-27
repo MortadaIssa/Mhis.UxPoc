@@ -32,6 +32,37 @@ const mockData = {
         { id: 4, name: "Mount Lebanon Mobile Unit", type: "Mobile Unit", governorate: "Mount Lebanon", caza: "Baabda", locality: "Hazmieh", contact: "+961 5 800 900" },
         { id: 5, name: "Southern Wellbeing Center", type: "Community Center", governorate: "South", caza: "Saida", locality: "Old Saida", contact: "+961 7 100 200" }
     ],
+    cazasByGovernorate: {
+        "Beirut": ["Beirut"],
+        "Mount Lebanon": ["Baabda", "Matn", "Kesrouan", "Aley"],
+        "North": ["Tripoli", "Zgharta", "Koura", "Akkar"],
+        "South": ["Saida", "Tyre", "Jezzine"],
+        "Bekaa": ["Zahle", "Baalbek", "West Bekaa"]
+    },
+    populationGroups: [
+        "Children", "Youth", "Women", "Older Persons",
+        "Persons with Disabilities", "Refugees & Displaced Persons", "General Population"
+    ],
+    // Public, guest-facing service directory shown on the "Explore Mental Health
+    // Services" page. Deliberately excludes internal/technical fields (referral
+    // status, facility status, nationality, age range) that mean nothing to a
+    // guest — see docs/UX-REFERENCE-NOTES.md.
+    publicServices: [
+        { id: 1, subActivity: "Psychiatric Care by Psychiatrists", organization: "INARA", facility: "Fouad Chehab GGFC 2", governorate: "Mount Lebanon", caza: "Matn", populationGroup: "General Population", interventionType: "In-person", contact: { name: "Dina Wehbi", phone: null, email: "dina@inara.org" } },
+        { id: 2, subActivity: "Psychotherapy by Clinical Psychologists", organization: "INARA", facility: "Fouad Chehab GGFC 2", governorate: "Mount Lebanon", caza: "Matn", populationGroup: "Youth", interventionType: "In-person, Remote", contact: { name: "Dina Wehbi", phone: null, email: "dina@inara.org" } },
+        { id: 3, subActivity: "Supporting Informal Group-Based Community MHPSS Activities", organization: "Medecins Du Monde", facility: "Douris AMEL PHCC", governorate: "Bekaa", caza: "Baalbek", populationGroup: "Refugees & Displaced Persons", interventionType: "In-person", contact: null },
+        { id: 4, subActivity: "Case Management for Children at Risk", organization: "International Rescue Committee", facility: "Central Health Clinic", governorate: "Beirut", caza: "Beirut", populationGroup: "Children", interventionType: "In-person", contact: { name: "Rita Aoun", phone: "+961 1 200 301", email: null } },
+        { id: 5, subActivity: "Community Awareness Sessions on Mental Health", organization: "Amel Association", facility: "Northern Community Center", governorate: "North", caza: "Tripoli", populationGroup: "General Population", interventionType: "In-person", contact: null },
+        { id: 6, subActivity: "Psychological First Aid", organization: "Makhzoumi Foundation", facility: "Northern Community Center", governorate: "North", caza: "Zgharta", populationGroup: "Women", interventionType: "In-person", contact: { name: "Hala Chami", phone: "+961 6 400 501", email: "h.chami@makhzoumi.org" } },
+        { id: 7, subActivity: "Individual Counselling Sessions", organization: "Embrace", facility: "Bekaa Mental Health Hospital", governorate: "Bekaa", caza: "Zahle", populationGroup: "Youth", interventionType: "In-person, Remote", contact: { name: "Karim Yousef", phone: "+961 8 600 701", email: null } },
+        { id: 8, subActivity: "Remote/Online Psychological Support", organization: "Embrace", facility: "Bekaa Mental Health Hospital", governorate: "Bekaa", caza: "Zahle", populationGroup: "General Population", interventionType: "Remote", contact: { name: "Embrace Lifeline", phone: "1564", email: null } },
+        { id: 9, subActivity: "Mobile Mental Health Outreach", organization: "Medair", facility: "Mount Lebanon Mobile Unit", governorate: "Mount Lebanon", caza: "Baabda", populationGroup: "Older Persons", interventionType: "In-person", contact: null },
+        { id: 10, subActivity: "Support Groups for Persons with Disabilities", organization: "Arcenciel", facility: "Southern Wellbeing Center", governorate: "South", caza: "Saida", populationGroup: "Persons with Disabilities", interventionType: "In-person", contact: { name: "Maya Fares", phone: "+961 7 100 201", email: "m.fares@arcenciel.org" } },
+        { id: 11, subActivity: "School-Based Mental Health Programme", organization: "War Child", facility: "Southern Wellbeing Center", governorate: "South", caza: "Tyre", populationGroup: "Children", interventionType: "In-person", contact: null },
+        { id: 12, subActivity: "Caregiver Support and Training", organization: "Community Health NGO", facility: "Central Health Clinic", governorate: "Beirut", caza: "Beirut", populationGroup: "Women", interventionType: "In-person", contact: { name: "Dr. Layla Haddad", phone: "+961 1 234 567", email: "l.haddad@communityhealthngo.org" } },
+        { id: 13, subActivity: "Substance Use Awareness and Referral", organization: "Skoun", facility: "Bekaa Mental Health Hospital", governorate: "Bekaa", caza: "West Bekaa", populationGroup: "Youth", interventionType: "In-person", contact: null },
+        { id: 14, subActivity: "Refugee Community MHPSS Outreach", organization: "Medecins Du Monde", facility: "Northern Community Center", governorate: "North", caza: "Akkar", populationGroup: "Refugees & Displaced Persons", interventionType: "In-person", contact: { name: "Elie Rahme", phone: "+961 6 400 502", email: "e.rahme@mdm.org" } }
+    ],
     providerTypes: ["Psychiatrist", "Psychologist", "Social Worker", "Psychiatric Nurse", "Counselor"],
     providers: [
         { id: 1, name: "Dr. Nour Khalil", type: "Psychiatrist", facility: "Central Health Clinic", phone: "+961 3 111 222", email: "n.khalil@chn.org" },
