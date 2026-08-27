@@ -75,17 +75,34 @@ business functions/branding — they are not designs to reproduce.
   (`UseDefaultFiles` + `UseStaticFiles`). There is no backend logic.
 - The POC is plain HTML, CSS, and vanilla JavaScript — no build step, no
   framework.
-- File layout actually in use (this superseded an earlier plan to keep a
-  separate `mock-data.js` — mock data now lives directly in `app.js`):
+- File layout actually in use (`app.js` was originally one 3,600+ line file;
+  it was split into the modules below so an edit to one page doesn't require
+  reading the whole thing — every file still shares one global scope via
+  plain `<script>` tags, so there is no import/export or build step):
   - `wwwroot/index.html` — shell markup (login screen, top bar, sidebar
-    mount point, shared modals).
-  - `wwwroot/js/app.js` — mock data, rendering functions, and interaction
-    /event-handling code for every page.
+    mount point, shared modals) and the ordered list of `<script>` tags.
   - `wwwroot/js/demo-session.js` — the demo "session" layer: which demo
     account is signed in, NGO registration-lifecycle state
     (incomplete/pending/rejected/approved), and `localStorage` persistence.
-    Loaded before `app.js`.
+    Loaded before everything else.
+  - `wwwroot/js/data.js` — all mock data plus shared `appState`/`calendarView`.
+  - `wwwroot/js/shared-ui.js` — reusable form modal, toast, and list-page
+    select helper, used across pages.
+  - `wwwroot/js/nav.js` — `NAV_DEFINITIONS` and sidebar rendering.
+  - `wwwroot/js/core.js` — app init/event listeners, the `renderPage`
+    dispatcher, `escapeHtml`, and the login/sign-in/sign-out flow.
+  - `wwwroot/js/notifications.js` — notification list and account-menu
+    dropdown.
+  - `wwwroot/js/pages/*.js` — one file per destination: `home.js`,
+    `resources.js`, `calendar.js`, `dashboards.js`, `organization.js`,
+    `facilities.js`, `providers.js`, `activities.js` (Activities + Surveys,
+    which are cross-referenced), `registration.js` (NGO registration
+    lifecycle), `admin.js` (administrator registration review).
   - `wwwroot/css/style.css` — all styling.
+  - When adding a new page-level render function, put it in the matching
+    `wwwroot/js/pages/*.js` file (or add a new one and register its
+    `<script>` tag in `index.html`) rather than growing an existing file
+    with unrelated pages.
 - Use reusable JavaScript rendering functions only where they reduce
   duplication.
 - Use semantic HTML and accessible labels.

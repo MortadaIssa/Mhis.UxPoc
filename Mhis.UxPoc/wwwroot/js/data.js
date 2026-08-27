@@ -1,0 +1,389 @@
+// MHIS Application JavaScript
+
+// Mock Data
+const mockData = {
+    organization: {
+        name: "Community Health NGO",
+        activities: 24,
+        facilities: 8,
+        providers: 15,
+        upcomingEvents: 3
+    },
+    organizationProfile: {
+        name: "Community Health NGO",
+        acronym: "CHN",
+        phone: "+961 1 234 567",
+        mobile: "+961 71 234 567",
+        email: "info@communityhealthngo.org",
+        directorName: "Dr. Layla Haddad",
+        directorEmail: "l.haddad@communityhealthngo.org",
+        directorMobile: "+961 70 111 222",
+        sectors: "Mental Health, Substance Use, Community Awareness",
+        website: "https://www.communityhealthngo.org",
+        linkedin: "https://www.linkedin.com/company/community-health-ngo",
+        daleelMadani: "https://daleel-madani.org/profile/community-health-ngo"
+    },
+    facilityTypes: ["Primary Health Care Center", "Hospital", "Community Center", "Mobile Unit"],
+    governorates: ["Beirut", "Mount Lebanon", "North", "South", "Bekaa"],
+    facilities: [
+        { id: 1, name: "Central Health Clinic", type: "Primary Health Care Center", governorate: "Beirut", caza: "Beirut", locality: "Achrafieh", contact: "+961 1 200 300" },
+        { id: 2, name: "Northern Community Center", type: "Community Center", governorate: "North", caza: "Tripoli", locality: "El Mina", contact: "+961 6 400 500" },
+        { id: 3, name: "Bekaa Mental Health Hospital", type: "Hospital", governorate: "Bekaa", caza: "Zahle", locality: "Zahle Center", contact: "+961 8 600 700" },
+        { id: 4, name: "Mount Lebanon Mobile Unit", type: "Mobile Unit", governorate: "Mount Lebanon", caza: "Baabda", locality: "Hazmieh", contact: "+961 5 800 900" },
+        { id: 5, name: "Southern Wellbeing Center", type: "Community Center", governorate: "South", caza: "Saida", locality: "Old Saida", contact: "+961 7 100 200" }
+    ],
+    providerTypes: ["Psychiatrist", "Psychologist", "Social Worker", "Psychiatric Nurse", "Counselor"],
+    providers: [
+        { id: 1, name: "Dr. Nour Khalil", type: "Psychiatrist", facility: "Central Health Clinic", phone: "+961 3 111 222", email: "n.khalil@chn.org" },
+        { id: 2, name: "Rana Saab", type: "Psychologist", facility: "Northern Community Center", phone: "+961 3 333 444", email: "r.saab@chn.org" },
+        { id: 3, name: "Karim Yousef", type: "Social Worker", facility: "Bekaa Mental Health Hospital", phone: "+961 3 555 666", email: "k.yousef@chn.org" },
+        { id: 4, name: "Maya Fares", type: "Psychiatric Nurse", facility: "Southern Wellbeing Center", phone: "+961 3 777 888", email: "m.fares@chn.org" },
+        { id: 5, name: "Dr. Omar Nassar", type: "Counselor", facility: "Central Health Clinic", phone: "+961 3 999 000", email: "o.nassar@chn.org" }
+    ],
+    focalPersons: [
+        { id: 1, area: "4Ws", name: "Sara Mansour", email: "s.mansour@chn.org", mobile: "+961 71 555 111" },
+        { id: 2, area: "Substance Use", name: "Elie Rahme", email: "e.rahme@chn.org", mobile: "+961 71 555 222" }
+    ],
+    // Surveys (Substance Use data collection) presented inside the MHIS shell.
+    surveysIntro: {
+        short: "The Substance Use Platform collects detailed data on prevention and treatment activities across populations and settings in Lebanon on an annual basis.",
+        full: "The Substance Use Platform collects detailed data on prevention and treatment activities across populations and settings in Lebanon on an annual basis. It maps existing prevention and treatment activities, identifies gaps, and keeps accurate, up-to-date information readily available. By centralising this information, it supports evidence-based policymaking, resource allocation, and strategic planning, feeds regular updates to the National Observatory of Drugs and Drug Addiction (NODDA), and encourages the scaling up of evidence-based interventions."
+    },
+    surveyTypes: ["Prevention", "Treatment", "Harm Reduction"],
+    surveyYears: ["2025", "2024", "2023"],
+    surveyStatuses: ["Draft", "Submitted"],
+    surveys: [
+        { id: 1, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2025", status: "Draft", updated: "12 Feb 2025" },
+        { id: 2, name: "Treatment Services Annual Survey", type: "Treatment", description: "Outpatient and residential treatment services and capacity.", year: "2025", status: "Draft", updated: "05 Feb 2025" },
+        { id: 3, name: "Harm Reduction Services Survey", type: "Harm Reduction", description: "Needle and syringe programmes, overdose prevention, and outreach.", year: "2024", status: "Submitted", updated: "18 Nov 2024" },
+        { id: 4, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2024", status: "Submitted", updated: "22 Oct 2024" },
+        { id: 5, name: "Treatment Services Annual Survey", type: "Treatment", description: "Outpatient and residential treatment services and capacity.", year: "2024", status: "Submitted", updated: "09 Oct 2024" },
+        { id: 6, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2023", status: "Submitted", updated: "30 Nov 2023" }
+    ],
+    // Dynamic activity configurations. Each config lists ONLY the sections/fields it needs.
+    // The activity form renders strictly from the selected config — no fixed tabs.
+    activityConfigs: [
+        {
+            id: "facility-service",
+            code: "3.2",
+            subCode: "3.2.1",
+            activity: "Service Provision",
+            subActivity: "Facility-Based Mental Health Service",
+            definition: "Clinical or psychosocial services delivered to individuals at a health facility, such as counselling, psychological intervention, or case management.",
+            keywords: ["service", "counselling", "counseling", "psychological intervention", "clinical", "case management", "support provided to children", "individual support", "therapy", "mhpss service"],
+            sections: [
+                {
+                    key: "general", title: "Activity Details", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
+                        { id: "description", label: "Description", type: "textarea", required: false }
+                    ]
+                },
+                {
+                    key: "location", title: "Location & Facility", fields: [
+                        { id: "facility", label: "Facility", type: "select", required: true, optionsFrom: "facilities" },
+                        { id: "governorate", label: "Governorate", type: "select", required: true, optionsFrom: "governorates" },
+                        { id: "locality", label: "Locality", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "beneficiaries", title: "Beneficiaries", fields: [
+                        { id: "beneficiaryType", label: "Beneficiary Type", type: "select", required: true, options: ["Adults", "Children", "Families", "Mixed"] },
+                        { id: "beneficiaryCount", label: "Number of Beneficiaries", type: "number", required: true }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "awareness",
+            code: "6.1",
+            subCode: "6.1.2",
+            activity: "Awareness & Information",
+            subActivity: "Community Awareness Campaign",
+            definition: "Public information and awareness work that spreads mental health messages to communities through campaigns, events, or media.",
+            keywords: ["community awareness", "awareness", "campaign", "mental health messages", "information session", "public", "stigma", "outreach messaging", "radio", "social media"],
+            sections: [
+                {
+                    key: "general", title: "Activity Details", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
+                        { id: "theme", label: "Campaign Theme", type: "text", required: true }
+                    ]
+                },
+                {
+                    key: "beneficiaries", title: "Beneficiaries", fields: [
+                        { id: "audience", label: "Target Audience", type: "select", required: true, options: ["General Public", "Youth", "Health Workers", "Caregivers"] },
+                        { id: "reach", label: "Estimated Reach", type: "number", required: true }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "coordination",
+            code: "8.4",
+            subCode: "8.4.1",
+            activity: "Coordination & Policy",
+            subActivity: "Policy / Research Coordination",
+            definition: "Coordination, working-group, policy, or research work carried out with partners at national or sub-national level.",
+            keywords: ["coordination", "policy", "research", "working group", "advocacy", "guidelines", "assessment", "study", "partners meeting"],
+            sections: [
+                {
+                    key: "general", title: "Activity Details", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
+                        { id: "partners", label: "Coordinating Partners", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        },
+        {
+            id: "training",
+            code: "5.3",
+            subCode: "5.3.2",
+            activity: "Capacity Building",
+            subActivity: "Training of Health Workers",
+            definition: "Training, coaching, or supervision delivered to providers and health workers to strengthen mental health service capacity.",
+            keywords: ["training", "we trained health workers", "capacity building", "coaching", "supervision", "workshop", "provider training", "trained staff", "skills"],
+            sections: [
+                {
+                    key: "general", title: "Activity Details", fields: [
+                        { id: "title", label: "Activity Title", type: "text", required: true },
+                        { id: "startDate", label: "Implementation Start Date", type: "date", required: true },
+                        { id: "endDate", label: "Implementation End Date", type: "date", required: true },
+                        { id: "topic", label: "Training Topic", type: "text", required: true }
+                    ]
+                },
+                {
+                    key: "providers", title: "Providers", fields: [
+                        { id: "providerType", label: "Providers Trained", type: "select", required: true, options: ["Psychiatrists", "Psychologists", "Social Workers", "Psychiatric Nurses", "General Practitioners", "Mixed"] },
+                        { id: "providerCount", label: "Number of Providers Trained", type: "number", required: true },
+                        { id: "trainer", label: "Lead Trainer", type: "text", required: false }
+                    ]
+                },
+                {
+                    key: "beneficiaries", title: "Beneficiaries", fields: [
+                        { id: "beneficiaryCount", label: "Indirect Beneficiaries Reached", type: "number", required: false }
+                    ]
+                },
+                {
+                    key: "funding", title: "Funding", fields: [
+                        { id: "donor", label: "Donor", type: "text", required: false },
+                        { id: "budget", label: "Budget (USD)", type: "number", required: false }
+                    ]
+                }
+            ]
+        }
+    ],
+    activities: [
+        {
+            id: 1, configId: "facility-service", state: "published",
+            data: { title: "Weekly Counselling Sessions", startDate: "2025-01-06", endDate: "2026-06-30", description: "Ongoing individual counselling.", facility: "Central Health Clinic", governorate: "Beirut", locality: "Achrafieh", beneficiaryType: "Adults", beneficiaryCount: 120, donor: "WHO", budget: 45000 },
+            updated: "2025-05-12"
+        },
+        {
+            id: 2, configId: "awareness", state: "draft",
+            data: { title: "World Mental Health Day Campaign", startDate: "2025-10-01", endDate: "2025-10-10", theme: "Mental Health for All", audience: "General Public", reach: 5000 },
+            updated: "2025-05-20"
+        },
+        {
+            id: 3, configId: "coordination", state: "completed",
+            data: { title: "National MHPSS Working Group", startDate: "2024-02-01", endDate: "2024-12-15", partners: "MoPH, UNICEF, NMHP", donor: "UNICEF", budget: 20000 },
+            updated: "2024-12-16"
+        },
+        {
+            id: 4, configId: "facility-service", state: "completed",
+            data: { title: "Mobile Clinic Outreach", startDate: "2024-03-01", endDate: "2024-09-30", description: "Rural outreach sessions.", facility: "Mount Lebanon Mobile Unit", governorate: "Mount Lebanon", locality: "Hazmieh", beneficiaryType: "Mixed", beneficiaryCount: 300, donor: "EU", budget: 60000 },
+            updated: "2024-10-02"
+        },
+        {
+            id: 5, configId: "training", state: "published",
+            data: { title: "PM+ Training for Health Workers", startDate: "2025-04-01", endDate: "2026-03-31", topic: "Problem Management Plus", providerType: "General Practitioners", providerCount: 28, trainer: "Dr. Nour Khalil", beneficiaryCount: 900, donor: "WHO", budget: 32000 },
+            updated: "2025-05-18"
+        }
+    ],
+    notifications: [
+        {
+            id: 1,
+            type: "announcement",
+            title: "New Activity Guidelines Released",
+            preview: "We have published updated guidelines for mental health awareness activities...",
+            fullContent: "We have published updated guidelines for mental health awareness activities. These new guidelines incorporate feedback from our partner organizations and reflect best practices in community mental health engagement. Please review them at your earliest convenience.",
+            timestamp: "2 hours ago",
+            unread: true
+        },
+        {
+            id: 2,
+            type: "action",
+            title: "Facility Verification Required",
+            preview: "Your facility 'Central Health Clinic' requires verification to continue operations...",
+            fullContent: "Your facility 'Central Health Clinic' requires verification to continue operations. Please review the verification checklist and submit the required documentation within 7 days.",
+            timestamp: "1 day ago",
+            unread: true,
+            action: "Review Facilities"
+        },
+        {
+            id: 3,
+            type: "event",
+            title: "Upcoming Training Session",
+            preview: "Join us for a training on Data Quality Standards scheduled for next month...",
+            fullContent: "Join us for a comprehensive training on Data Quality Standards scheduled for next month. This training will help your team ensure data accuracy and compliance with MHIS standards.",
+            timestamp: "3 days ago",
+            unread: true,
+            action: "View Event"
+        },
+        {
+            id: 4,
+            type: "system",
+            title: "System Maintenance Notice",
+            preview: "Scheduled maintenance will occur on Friday, 10 PM - 11 PM local time...",
+            fullContent: "Scheduled maintenance will occur on Friday, 10 PM - 11 PM local time. During this period, the system will be temporarily unavailable. We apologize for any inconvenience.",
+            timestamp: "5 days ago",
+            unread: false
+        }
+    ],
+    needsAttention: [
+        {
+            title: "Continue Activity Draft",
+            description: "Mental Health Awareness Activity - saved but not submitted. Last edited 2 days ago."
+        },
+        {
+            title: "Profile Update Required",
+            description: "Your 4Ws Focal Person information needs to be updated to remain current."
+        }
+    ],
+    announcements: [
+        {
+            title: "Updated Mental Health Guidelines 2024",
+            content: "New comprehensive guidelines have been released reflecting the latest best practices in community mental health programs.",
+            date: "March 15, 2024"
+        },
+        {
+            title: "Data Submission Deadline Extended",
+            content: "The deadline for Q1 activity data submission has been extended to April 30, 2024.",
+            date: "March 10, 2024"
+        },
+        {
+            title: "Welcome to MHIS",
+            content: "Thank you for joining the Mental Health Information System. Your organization profile is currently under review.",
+            date: "March 1, 2024"
+        }
+    ],
+    upcomingEvents: [
+        {
+            day: 22,
+            month: "Mar",
+            title: "Regional Mental Health Summit",
+            time: "10:00 AM - 4:00 PM"
+        },
+        {
+            day: 28,
+            month: "Mar",
+            title: "Data Quality Training",
+            time: "2:00 PM - 5:00 PM"
+        },
+        {
+            day: 5,
+            month: "Apr",
+            title: "Community Partners Networking",
+            time: "6:00 PM - 8:00 PM"
+        }
+    ]
+};
+
+// Application State
+let appState = {
+    currentPage: 'home',
+    notifications: mockData.notifications,
+    unreadCount: mockData.notifications.filter(n => n.unread).length,
+    profileDirty: false
+};
+
+// ===== Events Calendar mock data =====
+mockData.calendarEventTypes = [
+    { id: 'event', label: 'Event', color: '#1e7e34' },
+    { id: 'training', label: 'Training', color: '#1565c0' },
+    { id: 'awareness', label: 'Awareness Campaign', color: '#6a4c93' }
+];
+
+(function seedCalendarEvents() {
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+    const iso = (d) => d.toISOString().slice(0, 10);
+    const withOffset = (days) => {
+        const d = new Date(base);
+        d.setDate(d.getDate() + days);
+        return iso(d);
+    };
+    mockData.calendarEvents = [
+        { id: 1, title: 'Regional Mental Health Summit', type: 'event', status: 'confirmed', date: withOffset(2), startTime: '10:00', endTime: '16:00', location: 'Beirut Conference Center', description: 'Annual summit bringing together mental health practitioners across the region.' },
+        { id: 2, title: 'Data Quality Training', type: 'training', status: 'confirmed', date: withOffset(5), startTime: '14:00', endTime: '17:00', location: 'Central Health Clinic', description: 'Hands-on training for facility staff on the 4Ws data collection tools.' },
+        { id: 3, title: 'Community Awareness Campaign Kickoff', type: 'awareness', status: 'pending', date: withOffset(1), startTime: '09:00', endTime: '12:00', location: 'Northern Community Center', description: 'Launch event for the stigma-reduction awareness campaign.' },
+        { id: 4, title: 'Provider Onboarding Session', type: 'training', status: 'pending', date: withOffset(9), startTime: '11:00', endTime: '13:00', location: 'Bekaa Mental Health Hospital', description: '' },
+        { id: 5, title: 'Partners Networking Evening', type: 'event', status: 'confirmed', date: withOffset(12), startTime: '18:00', endTime: '20:00', location: 'Southern Wellbeing Center', description: '' },
+        { id: 6, title: 'Youth Awareness Workshop', type: 'awareness', status: 'confirmed', date: withOffset(-3), startTime: '10:00', endTime: '12:30', location: 'Mount Lebanon Mobile Unit', description: '' },
+        { id: 7, title: 'Cancelled Field Visit', type: 'event', status: 'canceled', date: withOffset(-1), startTime: '09:00', endTime: '11:00', location: 'Central Health Clinic', description: 'Cancelled due to weather conditions.' },
+        { id: 8, title: 'Psychological First Aid Training', type: 'training', status: 'confirmed', date: withOffset(16), startTime: '09:00', endTime: '15:00', location: 'Central Health Clinic', description: '' },
+        { id: 9, title: 'Mental Health Awareness Radio Spot Recording', type: 'awareness', status: 'canceled', date: withOffset(6), startTime: '13:00', endTime: '14:00', location: '', description: '' },
+        { id: 10, title: 'Monthly Coordination Meeting', type: 'event', status: 'confirmed', date: withOffset(0), startTime: '15:00', endTime: '16:00', location: 'Online', description: '' }
+    ];
+    mockData.calendarEventNextId = 11;
+})();
+
+let calendarView = {
+    mode: 'month',
+    currentDate: new Date()
+};
+
+// ===== Resources & Help mock data =====
+mockData.resources = {
+    glossary: [
+        { term: '4Ws', definition: 'The "Who, What, Where, When" mapping framework used to track mental health and psychosocial support activities.' },
+        { term: 'NGO', definition: 'Non-Governmental Organization implementing mental health and psychosocial support activities.' },
+        { term: 'NMHP', definition: 'National Mental Health Programme, the government body overseeing mental health services and reporting.' },
+        { term: 'MHPSS', definition: 'Mental Health and Psychosocial Support, the overall sector these activities belong to.' },
+        { term: 'Facility', definition: 'A physical location, such as a clinic or hospital, where activities or services are delivered.' },
+        { term: 'Provider', definition: 'An individual professional, such as a psychiatrist or social worker, delivering services.' },
+        { term: 'Sub-Activity', definition: 'A specific, catalog-defined type of work reported under a broader activity category.' },
+        { term: 'Focal Person', definition: 'The designated contact person within an NGO for a specific reporting area, such as 4Ws or Substance Use.' }
+    ],
+    annualReports: [
+        { title: 'MHIS Annual Report 2023', year: 2023, href: '#' },
+        { title: 'MHIS Annual Report 2022', year: 2022, href: '#' },
+        { title: 'MHIS Annual Report 2021', year: 2021, href: '#' },
+        { title: 'National Mental Health Programme Overview 2020', year: 2020, href: '#' }
+    ],
+    contact: {
+        organization: 'National Mental Health Programme (NMHP)',
+        email: 'support@mhis-lb.org',
+        phone: '+961 1 000 000',
+        address: 'Ministry of Public Health, Beirut, Lebanon',
+        hours: 'Sunday - Thursday, 9:00 AM - 4:00 PM'
+    },
+    whatsNew: [
+        { title: 'Improved Notifications', date: 'March 2024', description: 'Notifications now group by type and support quick actions directly from the bell menu.' },
+        { title: 'Dynamic Activity Forms', date: 'February 2024', description: 'Activity forms now adapt automatically based on the selected sub-activity.' },
+        { title: 'New Events Calendar', date: 'January 2024', description: 'A dedicated Events Calendar view replaces the previous scattered event listings.' }
+    ]
+};
+

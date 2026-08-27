@@ -1,0 +1,313 @@
+// Initialize Application
+document.addEventListener('DOMContentLoaded', () => {
+    loadDemoState();
+    initializeEventListeners();
+    updateNotificationBadge();
+    startApp();
+});
+
+// Event Listeners
+function initializeEventListeners() {
+    // Login screen
+    renderDemoAccountList();
+    document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
+    document.getElementById('explorePublicBtn').addEventListener('click', () => {
+        showToast('The public Mental Health Services view is not part of this iteration.', 'info');
+    });
+    document.getElementById('resetDemoBtn').addEventListener('click', () => {
+        resetDemoState();
+        showToast('Demo data has been reset.', 'success');
+        startApp();
+    });
+
+    // Account menu
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        handleSignOut();
+    });
+    document.getElementById('changePasswordBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        showToast('Changing the password is simulated in this POC.', 'info');
+    });
+
+    // Notification Bell
+    document.getElementById('notificationBell').addEventListener('click', toggleNotificationModal);
+
+    // Account Menu
+    document.getElementById('accountBtn').addEventListener('click', toggleAccountDropdown);
+    document.addEventListener('click', handleOutsideClick);
+
+    // Notification Modal
+    document.getElementById('closeNotifications').addEventListener('click', closeNotificationModal);
+    document.getElementById('markAllRead').addEventListener('click', markAllNotificationsAsRead);
+
+    // Modal
+    document.getElementById('closeModal').addEventListener('click', closeDetailModal);
+    document.getElementById('notificationDetailOverlay').addEventListener('click', handleModalBackdropClick);
+
+    // Reusable Form Modal
+    document.getElementById('closeFormModal').addEventListener('click', closeFormModal);
+    document.getElementById('formModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            closeFormModal();
+        }
+    });
+}
+
+// Navigation Handler
+function handleNavigation(e) {
+    e.preventDefault();
+    const page = e.currentTarget.getAttribute('data-page');
+
+    if (appState.profileDirty && page !== appState.currentPage) {
+        const proceed = confirm('You have unsaved changes. Leave this page and discard them?');
+        if (!proceed) {
+            return;
+        }
+        appState.profileDirty = false;
+    }
+
+    if (page === 'activities') {
+        // A direct sidebar click always returns to the My Activities list.
+        activitiesView.mode = 'list';
+        activityEditor = null;
+    }
+
+    setActivePage(page);
+    renderPage(page);
+    closeNotificationModal();
+}
+
+// Activate a sidebar item and update state (also used for internal links)
+function setActivePage(page) {
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-page') === page);
+    });
+    appState.currentPage = page;
+}
+
+// Navigate programmatically (used by in-page links)
+function navigateTo(page) {
+    if (appState.profileDirty && page !== appState.currentPage) {
+        const proceed = confirm('You have unsaved changes. Leave this page and discard them?');
+        if (!proceed) {
+            return;
+        }
+        appState.profileDirty = false;
+    }
+    setActivePage(page);
+    renderPage(page);
+    closeNotificationModal();
+}
+
+// Page Rendering
+function renderPage(page) {
+    const container = document.getElementById('page-container');
+
+    if (!getAllowedPages().includes(page)) {
+        page = 'home';
+        setActivePage(page);
+    }
+
+    if (page === 'home') {
+        if (isAdminUser()) {
+            container.innerHTML = renderAdminHomePage();
+            attachAdminHomeListeners();
+            refreshLucideIcons();
+            return;
+        }
+        if (!isCurrentNgoApproved()) {
+            container.innerHTML = renderRegistrationStatusHomePage();
+            attachRegistrationStatusHomeListeners();
+            refreshLucideIcons();
+            return;
+        }
+    }
+
+    if (page === 'organization-profile' && getCurrentRegistration()) {
+        container.innerHTML = renderRegistrationProfilePage();
+        attachRegistrationProfileListeners();
+        refreshLucideIcons();
+        return;
+    }
+
+    switch(page) {
+        case 'home':
+            container.innerHTML = renderHomePage();
+            attachHomePageListeners();
+            break;
+        case 'organization-profile':
+            container.innerHTML = renderOrganizationProfilePage();
+            attachOrganizationProfileListeners();
+            break;
+        case 'facilities':
+            container.innerHTML = renderFacilitiesPage();
+            attachFacilitiesListeners();
+            break;
+        case 'providers':
+            container.innerHTML = renderProvidersPage();
+            attachProvidersListeners();
+            break;
+        case 'activities':
+            container.innerHTML = renderActivitiesPage();
+            attachActivitiesListeners();
+            break;
+        case 'my-dashboard':
+            container.innerHTML = renderMyDashboardPage();
+            attachMyDashboardListeners();
+            break;
+        case 'advanced-dashboard':
+            container.innerHTML = renderAdvancedDashboardPage();
+            attachAdvancedDashboardListeners();
+            break;
+        case 'events-calendar':
+            container.innerHTML = renderEventsCalendarPage();
+            attachEventsCalendarListeners();
+            break;
+        case 'resources-help':
+            container.innerHTML = renderResourcesHelpPage();
+            attachResourcesHelpListeners();
+            break;
+        case 'surveys':
+            container.innerHTML = renderSurveysPage();
+            attachSurveysListeners();
+            break;
+        case 'organization-registrations':
+            container.innerHTML = renderOrganizationRegistrationsPage();
+            attachOrganizationRegistrationsListeners();
+            break;
+        case 'registration-review':
+            container.innerHTML = renderRegistrationReviewPage();
+            attachRegistrationReviewListeners();
+            break;
+        default:
+            container.innerHTML = renderHomePage();
+    }
+
+    refreshLucideIcons();
+}
+
+function refreshLucideIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+}
+
+// Utility Functions
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ===== Demo login screen =====
+function startApp() {
+    const loginScreen = document.getElementById('loginScreen');
+    const topBar = document.getElementById('topBar');
+    const appShell = document.getElementById('appShell');
+
+    if (!isSignedIn()) {
+        loginScreen.hidden = false;
+        topBar.hidden = true;
+        appShell.hidden = true;
+        document.getElementById('loginForm').reset();
+        clearLoginErrors();
+        return;
+    }
+
+    loginScreen.hidden = true;
+    topBar.hidden = false;
+    appShell.hidden = false;
+    updateTopBarIdentity();
+    renderSidebarNav();
+    navigateTo('home');
+}
+
+function renderDemoAccountList() {
+    const list = document.getElementById('demoAccountList');
+    list.innerHTML = DEMO_ACCOUNTS.map(account => `
+        <button type="button" class="demo-account" data-account="${escapeHtml(account.id)}">
+            <span class="demo-account-role">${escapeHtml(account.label)}</span>
+            <span class="demo-account-name">${escapeHtml(account.organization)}</span>
+            <span class="demo-account-description">${escapeHtml(account.description)}</span>
+            <span class="demo-account-email">${escapeHtml(account.email)}</span>
+        </button>`).join('');
+
+    list.querySelectorAll('.demo-account').forEach(btn => {
+        btn.addEventListener('click', () => signInAs(btn.getAttribute('data-account')));
+    });
+}
+
+function clearLoginErrors() {
+    document.getElementById('loginEmail-error').textContent = '';
+    document.getElementById('loginPassword-error').textContent = '';
+    document.getElementById('loginEmail').classList.remove('invalid');
+    document.getElementById('loginPassword').classList.remove('invalid');
+}
+
+function handleLoginSubmit(e) {
+    e.preventDefault();
+    clearLoginErrors();
+
+    const emailInput = document.getElementById('loginEmail');
+    const passwordInput = document.getElementById('loginPassword');
+    let valid = true;
+
+    if (!emailInput.value.trim()) {
+        emailInput.classList.add('invalid');
+        document.getElementById('loginEmail-error').textContent = 'This field is required.';
+        valid = false;
+    }
+    if (!passwordInput.value) {
+        passwordInput.classList.add('invalid');
+        document.getElementById('loginPassword-error').textContent = 'This field is required.';
+        valid = false;
+    }
+    if (!valid) {
+        return;
+    }
+
+    const account = getDemoAccountByEmail(emailInput.value);
+    if (!account) {
+        emailInput.classList.add('invalid');
+        document.getElementById('loginEmail-error').textContent = 'Unknown account. Use one of the demo accounts listed beside the form.';
+        return;
+    }
+
+    signInAs(account.id);
+}
+
+function signInAs(accountId) {
+    if (!demoSignIn(accountId)) {
+        return;
+    }
+    appState.profileDirty = false;
+    activitiesView.mode = 'list';
+    activityEditor = null;
+    adminView.selectedRegistrationId = null;
+    startApp();
+}
+
+function handleSignOut() {
+    if (appState.profileDirty) {
+        const proceed = confirm('You have unsaved changes. Log out and discard them?');
+        if (!proceed) {
+            return;
+        }
+        appState.profileDirty = false;
+    }
+    demoSignOut();
+    closeNotificationModal();
+    document.getElementById('accountDropdown').style.display = 'none';
+    startApp();
+}
+
+function updateTopBarIdentity() {
+    const account = getCurrentAccount();
+    if (!account) {
+        return;
+    }
+    const label = account.id === 'ngo-existing' ? mockData.organization.name : account.organization;
+    document.getElementById('topBarOrgName').textContent = label;
+}
+
