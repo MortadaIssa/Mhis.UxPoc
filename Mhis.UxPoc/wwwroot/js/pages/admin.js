@@ -7,6 +7,9 @@ let adminView = {
 
 function renderAdminHomePage() {
     const pending = countRegistrationsByStatus(REGISTRATION_STATUS.pendingReview);
+    const eventsPending = countEventReviewsByStatus(EVENT_REVIEW_STATUS.pendingReview);
+    const duplicatesPending = countFacilityDuplicatesByStatus(FACILITY_DUPLICATE_STATUS.pendingReview);
+    const customValuesPending = countPendingCustomValuesByStatus(CUSTOM_VALUE_STATUS.pendingReview);
     return `
         <div class="home-page">
             <div class="welcome-section">
@@ -18,17 +21,17 @@ function renderAdminHomePage() {
                     <div class="tile-label">New Organization Registrations</div>
                     <div class="tile-value">${pending}</div>
                 </div>
-                <div class="tile">
+                <div class="tile tile-action" data-admin-tile="event-reviews">
                     <div class="tile-label">Events to Review</div>
-                    <div class="tile-value">4</div>
+                    <div class="tile-value">${eventsPending}</div>
                 </div>
-                <div class="tile">
+                <div class="tile tile-action" data-admin-tile="facility-duplicates">
                     <div class="tile-label">Potential Duplicate Facilities</div>
-                    <div class="tile-value">2</div>
+                    <div class="tile-value">${duplicatesPending}</div>
                 </div>
-                <div class="tile">
+                <div class="tile tile-action" data-admin-tile="pending-custom-values">
                     <div class="tile-label">Pending Custom Values</div>
-                    <div class="tile-value">6</div>
+                    <div class="tile-value">${customValuesPending}</div>
                 </div>
             </div>
 
@@ -47,6 +50,19 @@ function attachAdminHomeListeners() {
     };
     document.getElementById('adminRegistrationsBtn')?.addEventListener('click', goToRegistrations);
     document.querySelector('[data-admin-tile="registrations"]')?.addEventListener('click', goToRegistrations);
+
+    document.querySelector('[data-admin-tile="event-reviews"]')?.addEventListener('click', () => {
+        reviewsView.eventStatusFilter = EVENT_REVIEW_STATUS.pendingReview;
+        navigateTo('event-reviews');
+    });
+    document.querySelector('[data-admin-tile="facility-duplicates"]')?.addEventListener('click', () => {
+        reviewsView.duplicateStatusFilter = FACILITY_DUPLICATE_STATUS.pendingReview;
+        navigateTo('facility-duplicates');
+    });
+    document.querySelector('[data-admin-tile="pending-custom-values"]')?.addEventListener('click', () => {
+        reviewsView.customValueStatusFilter = CUSTOM_VALUE_STATUS.pendingReview;
+        navigateTo('pending-custom-values');
+    });
 }
 
 function getFilteredRegistrations() {

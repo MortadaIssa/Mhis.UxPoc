@@ -387,3 +387,114 @@ mockData.resources = {
     ]
 };
 
+// ===== Admin Reviews mock data =====
+const EVENT_REVIEW_STATUS = {
+    pendingReview: 'Pending Review',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    needsModification: 'Needs Modification'
+};
+
+const FACILITY_DUPLICATE_STATUS = {
+    pendingReview: 'Pending Review',
+    linked: 'Linked',
+    confirmedDistinct: 'Confirmed Distinct'
+};
+
+const CUSTOM_VALUE_STATUS = {
+    pendingReview: 'Pending Review',
+    accepted: 'Accepted',
+    merged: 'Merged'
+};
+
+mockData.eventReviews = [
+    {
+        id: 1, organization: 'Community Health NGO', eventTitle: 'World Mental Health Day Community Fair',
+        visibility: 'Public', startDate: '2025-10-10', endDate: '2025-10-10', location: 'Central Health Clinic', governorate: 'Beirut',
+        description: 'A public awareness fair with information booths, screenings, and activities for World Mental Health Day.',
+        submittedDate: '02 Feb 2025', status: EVENT_REVIEW_STATUS.pendingReview, reviewNote: '', reviewedDate: ''
+    },
+    {
+        id: 2, organization: 'Cedars Psychosocial Support Society', eventTitle: 'Internal Staff Debrief Session',
+        visibility: 'Private', startDate: '2025-02-14', endDate: '2025-02-14', location: 'Bekaa Mental Health Hospital', governorate: 'Bekaa',
+        description: 'Internal debrief session for field staff following recent outreach activities.',
+        submittedDate: '05 Feb 2025', status: EVENT_REVIEW_STATUS.pendingReview, reviewNote: '', reviewedDate: ''
+    },
+    {
+        id: 3, organization: 'Southern Care Network', eventTitle: 'Youth Resilience Workshop Series – Session 3',
+        visibility: 'Public', startDate: '2025-03-01', endDate: '2025-03-01', location: 'Southern Wellbeing Center', governorate: 'South',
+        description: 'Third session of an ongoing youth resilience-building workshop series.',
+        submittedDate: '07 Feb 2025', status: EVENT_REVIEW_STATUS.pendingReview, reviewNote: '', reviewedDate: ''
+    },
+    {
+        id: 4, organization: 'Bekaa Wellbeing Initiative', eventTitle: 'Community Mental Health Open Day',
+        visibility: 'Public', startDate: '2025-03-20', endDate: '2025-03-20', location: '', governorate: 'Bekaa',
+        description: 'An open day for the community to learn about available mental health services.',
+        submittedDate: '20 Jan 2025', status: EVENT_REVIEW_STATUS.needsModification,
+        reviewNote: 'Specify the exact facility/venue and expected attendee count before resubmitting.', reviewedDate: '22 Jan 2025'
+    },
+    {
+        id: 5, organization: 'Coastal Recovery Group', eventTitle: 'Substance Use Awareness Public Talk',
+        visibility: 'Public', startDate: '2025-01-15', endDate: '2025-01-15', location: 'Online', governorate: '',
+        description: 'A public talk raising awareness on substance use prevention and support services.',
+        submittedDate: '05 Jan 2025', status: EVENT_REVIEW_STATUS.approved, reviewNote: '', reviewedDate: '08 Jan 2025'
+    }
+];
+
+mockData.facilityDuplicates = [
+    {
+        id: 1,
+        newFacility: { name: 'Achrafieh Community Wellness Point', type: 'Community Center', governorate: 'Beirut', caza: 'Beirut', locality: 'Achrafieh', contact: '+961 1 200 111', submittedBy: 'Hope Mental Health Association', submittedDate: '03 Feb 2025' },
+        candidates: [
+            { facilityId: 1, name: 'Central Health Clinic', type: 'Primary Health Care Center', governorate: 'Beirut', caza: 'Beirut', locality: 'Achrafieh', contact: '+961 1 200 300', supportedBy: 'Community Health NGO', supportStart: '2022-01-01', supportEnd: '', distanceMeters: 14 }
+        ],
+        status: FACILITY_DUPLICATE_STATUS.pendingReview, linkedCandidateId: null, resolutionNote: '', resolvedDate: ''
+    },
+    {
+        id: 2,
+        newFacility: { name: 'Tripoli Family Support Center', type: 'Community Center', governorate: 'North', caza: 'Tripoli', locality: 'El Mina', contact: '+961 6 400 111', submittedBy: 'Coastal Recovery Group', submittedDate: '06 Feb 2025' },
+        candidates: [
+            { facilityId: 2, name: 'Northern Community Center', type: 'Community Center', governorate: 'North', caza: 'Tripoli', locality: 'El Mina', contact: '+961 6 400 500', supportedBy: 'Community Health NGO', supportStart: '2021-06-01', supportEnd: '', distanceMeters: 9 },
+            { facilityId: 201, name: 'El Mina Family Wellness Hub', type: 'Community Center', governorate: 'North', caza: 'Tripoli', locality: 'El Mina', contact: '+961 6 400 720', supportedBy: 'Southern Care Network', supportStart: '2023-03-01', supportEnd: '2024-12-31', distanceMeters: 18 }
+        ],
+        status: FACILITY_DUPLICATE_STATUS.pendingReview, linkedCandidateId: null, resolutionNote: '', resolvedDate: ''
+    },
+    {
+        id: 3,
+        newFacility: { name: 'Hazmieh Outreach Unit', type: 'Mobile Unit', governorate: 'Mount Lebanon', caza: 'Baabda', locality: 'Hazmieh', contact: '+961 5 800 111', submittedBy: 'Bright Minds Foundation', submittedDate: '18 Jan 2025' },
+        candidates: [
+            { facilityId: 4, name: 'Mount Lebanon Mobile Unit', type: 'Mobile Unit', governorate: 'Mount Lebanon', caza: 'Baabda', locality: 'Hazmieh', contact: '+961 5 800 900', supportedBy: 'Community Health NGO', supportStart: '2020-05-01', supportEnd: '', distanceMeters: 17 }
+        ],
+        status: FACILITY_DUPLICATE_STATUS.linked, linkedCandidateId: 4, resolutionNote: '', resolvedDate: '22 Jan 2025'
+    },
+    {
+        id: 4,
+        newFacility: { name: 'Zahle Riverside Clinic', type: 'Primary Health Care Center', governorate: 'Bekaa', caza: 'Zahle', locality: 'Zahle Center', contact: '+961 8 600 111', submittedBy: 'Cedars Psychosocial Support Society', submittedDate: '10 Jan 2025' },
+        candidates: [
+            { facilityId: 3, name: 'Bekaa Mental Health Hospital', type: 'Hospital', governorate: 'Bekaa', caza: 'Zahle', locality: 'Zahle Center', contact: '+961 8 600 700', supportedBy: 'Community Health NGO', supportStart: '2019-09-01', supportEnd: '', distanceMeters: 19 }
+        ],
+        status: FACILITY_DUPLICATE_STATUS.confirmedDistinct, linkedCandidateId: null,
+        resolutionNote: 'Separate outpatient building on the opposite side of the hospital compound.', resolvedDate: '12 Jan 2025'
+    }
+];
+
+mockData.pendingCustomValues = [
+    { id: 1, lookupKey: 'facilityTypes', lookupLabel: 'Facility Type', proposedValue: 'Youth Drop-in Center', submittedBy: 'Hope Mental Health Association', submittedDate: '04 Feb 2025', context: 'Entered while adding a new facility with no matching type in the list.', status: CUSTOM_VALUE_STATUS.pendingReview, mergedIntoValue: '', resolvedDate: '' },
+    { id: 2, lookupKey: 'providerTypes', lookupLabel: 'Provider Type', proposedValue: 'Occupational Therapist', submittedBy: 'Southern Care Network', submittedDate: '06 Feb 2025', context: 'Entered while adding a new provider with no matching type in the list.', status: CUSTOM_VALUE_STATUS.pendingReview, mergedIntoValue: '', resolvedDate: '' },
+    { id: 3, lookupKey: 'providerTypes', lookupLabel: 'Provider Type', proposedValue: 'Peer Support Worker', submittedBy: 'Bekaa Wellbeing Initiative', submittedDate: '29 Jan 2025', context: 'Entered while adding a new provider with no matching type in the list.', status: CUSTOM_VALUE_STATUS.pendingReview, mergedIntoValue: '', resolvedDate: '' },
+    { id: 4, lookupKey: 'facilityTypes', lookupLabel: 'Facility Type', proposedValue: 'Outpatient Counselling Room', submittedBy: 'Cedars Psychosocial Support Society', submittedDate: '20 Jan 2025', context: 'Entered while adding a new facility with no matching type in the list.', status: CUSTOM_VALUE_STATUS.merged, mergedIntoValue: 'Community Center', resolvedDate: '23 Jan 2025' },
+    { id: 5, lookupKey: 'providerTypes', lookupLabel: 'Provider Type', proposedValue: 'Clinical Supervisor', submittedBy: 'Coastal Recovery Group', submittedDate: '10 Jan 2025', context: 'Entered while adding a new provider with no matching type in the list.', status: CUSTOM_VALUE_STATUS.accepted, mergedIntoValue: '', resolvedDate: '12 Jan 2025' }
+];
+
+function countEventReviewsByStatus(status) {
+    return mockData.eventReviews.filter(r => r.status === status).length;
+}
+
+function countFacilityDuplicatesByStatus(status) {
+    return mockData.facilityDuplicates.filter(r => r.status === status).length;
+}
+
+function countPendingCustomValuesByStatus(status) {
+    return mockData.pendingCustomValues.filter(r => r.status === status).length;
+}
+

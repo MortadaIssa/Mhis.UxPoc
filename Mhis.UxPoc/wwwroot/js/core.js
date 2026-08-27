@@ -171,6 +171,26 @@ function renderPage(page) {
             container.innerHTML = renderRegistrationReviewPage();
             attachRegistrationReviewListeners();
             break;
+        case 'event-reviews':
+            container.innerHTML = renderEventReviewsPage();
+            attachEventReviewsListeners();
+            break;
+        case 'event-review':
+            container.innerHTML = renderEventReviewDetailPage();
+            attachEventReviewDetailListeners();
+            break;
+        case 'facility-duplicates':
+            container.innerHTML = renderFacilityDuplicatesPage();
+            attachFacilityDuplicatesListeners();
+            break;
+        case 'facility-duplicate-review':
+            container.innerHTML = renderFacilityDuplicateReviewPage();
+            attachFacilityDuplicateReviewListeners();
+            break;
+        case 'pending-custom-values':
+            container.innerHTML = renderPendingCustomValuesPage();
+            attachPendingCustomValuesListeners();
+            break;
         default:
             container.innerHTML = renderHomePage();
     }

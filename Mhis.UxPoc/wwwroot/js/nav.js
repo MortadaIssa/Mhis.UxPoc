@@ -10,7 +10,10 @@ const NAV_DEFINITIONS = {
     'advanced-dashboard': { label: 'Advanced Dashboard', icon: 'bar-chart-3' },
     'events-calendar': { label: 'Events Calendar', icon: 'calendar-days' },
     'resources-help': { label: 'Resources & Help', icon: 'circle-help' },
-    'organization-registrations': { label: 'Organization Registrations', icon: 'file-check' }
+    'organization-registrations': { label: 'Organization Registrations', icon: 'file-check' },
+    'event-reviews': { label: 'Event Reviews', icon: 'calendar-check' },
+    'facility-duplicates': { label: 'Potential Duplicate Facilities', icon: 'git-merge' },
+    'pending-custom-values': { label: 'Pending Custom Values', icon: 'list-plus' }
 };
 
 function getNavigationForCurrentUser() {
@@ -18,6 +21,10 @@ function getNavigationForCurrentUser() {
         return [
             { type: 'item', page: 'home' },
             { type: 'item', page: 'organization-registrations' },
+            { type: 'section', label: 'Reviews' },
+            { type: 'item', page: 'event-reviews', subsection: true },
+            { type: 'item', page: 'facility-duplicates', subsection: true },
+            { type: 'item', page: 'pending-custom-values', subsection: true },
             { type: 'item', page: 'resources-help' }
         ];
     }
@@ -53,8 +60,8 @@ function getAllowedPages() {
         .map(entry => entry.page);
 
     if (isAdminUser()) {
-        // Reached from the registrations list, not from the sidebar.
-        pages.push('registration-review');
+        // Reached from a list page, not from the sidebar.
+        pages.push('registration-review', 'event-review', 'facility-duplicate-review');
     }
     return pages;
 }

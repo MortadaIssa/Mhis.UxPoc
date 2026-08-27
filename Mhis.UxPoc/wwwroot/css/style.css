@@ -2560,6 +2560,27 @@ svg.icon {
     border-color: #f5c2c7;
 }
 
+.reg-status-info {
+    background-color: #e3f2fd;
+    color: var(--color-info);
+    border-color: #90caf9;
+}
+
+/* ===== Two-sided comparison (Potential Duplicate Facilities) ===== */
+.compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .compare-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .status-text {
     font-size: 14px;
     color: var(--color-text-secondary);
