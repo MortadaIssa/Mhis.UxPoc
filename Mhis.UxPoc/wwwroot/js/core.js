@@ -231,6 +231,14 @@ function renderPage(page) {
             container.innerHTML = renderUserManagementPage();
             attachUserManagementListeners();
             break;
+        case 'audience-groups':
+            container.innerHTML = renderAudienceGroupsPage();
+            attachAudienceGroupsListeners();
+            break;
+        case 'announcement-history':
+            container.innerHTML = renderAnnouncementHistoryPage();
+            attachAnnouncementHistoryListeners();
+            break;
         default:
             container.innerHTML = renderHomePage();
     }

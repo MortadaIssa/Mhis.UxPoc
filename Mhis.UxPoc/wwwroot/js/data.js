@@ -197,27 +197,27 @@ const mockData = {
     ],
     activities: [
         {
-            id: 1, configId: "facility-service", state: "published",
+            id: 1, configId: "facility-service", state: "published", organization: "Community Health NGO",
             data: { title: "Weekly Counselling Sessions", startDate: "2025-01-06", endDate: "2026-06-30", description: "Ongoing individual counselling.", facility: "Central Health Clinic", governorate: "Beirut", locality: "Achrafieh", beneficiaryType: "Adults", beneficiaryCount: 120, donor: "WHO", budget: 45000 },
             updated: "2025-05-12"
         },
         {
-            id: 2, configId: "awareness", state: "draft",
+            id: 2, configId: "awareness", state: "draft", organization: "Southern Care Network",
             data: { title: "World Mental Health Day Campaign", startDate: "2025-10-01", endDate: "2025-10-10", theme: "Mental Health for All", audience: "General Public", reach: 5000 },
             updated: "2025-05-20"
         },
         {
-            id: 3, configId: "coordination", state: "completed",
+            id: 3, configId: "coordination", state: "completed", organization: "Coastal Recovery Group",
             data: { title: "National MHPSS Working Group", startDate: "2024-02-01", endDate: "2024-12-15", partners: "MoPH, UNICEF, NMHP", donor: "UNICEF", budget: 20000 },
             updated: "2024-12-16"
         },
         {
-            id: 4, configId: "facility-service", state: "completed",
+            id: 4, configId: "facility-service", state: "completed", organization: "Southern Care Network",
             data: { title: "Mobile Clinic Outreach", startDate: "2024-03-01", endDate: "2024-09-30", description: "Rural outreach sessions.", facility: "Mount Lebanon Mobile Unit", governorate: "Mount Lebanon", locality: "Hazmieh", beneficiaryType: "Mixed", beneficiaryCount: 300, donor: "EU", budget: 60000 },
             updated: "2024-10-02"
         },
         {
-            id: 5, configId: "training", state: "published",
+            id: 5, configId: "training", state: "published", organization: "Community Health NGO",
             data: { title: "PM+ Training for Health Workers", startDate: "2025-04-01", endDate: "2026-03-31", topic: "Problem Management Plus", providerType: "General Practitioners", providerCount: 28, trainer: "Dr. Nour Khalil", beneficiaryCount: 900, donor: "WHO", budget: 32000 },
             updated: "2025-05-18"
         }
@@ -496,5 +496,49 @@ function countFacilityDuplicatesByStatus(status) {
 
 function countPendingCustomValuesByStatus(status) {
     return mockData.pendingCustomValues.filter(r => r.status === status).length;
+}
+
+// ===== Admin Announcements mock data =====
+// The organizations with real system access today: the two Approved
+// registrations, plus 'Community Health NGO' (the "Existing NGO" demo
+// account's org, which is approved but — same limitation User Management
+// already has — isn't tracked in demoState.registrations at all).
+function getAnnouncementOrganizationDirectory() {
+    return ['Community Health NGO', 'Southern Care Network', 'Coastal Recovery Group'];
+}
+
+mockData.announcementGroups = [
+    {
+        id: 1,
+        name: 'Beirut Facility-Based Services',
+        description: 'NGOs running facility-based services in Beirut.',
+        criteria: { activityTypes: ['facility-service'], locations: ['Beirut'], fundingSources: [], organizations: [] }
+    },
+    {
+        id: 2,
+        name: 'WHO-Funded Programs',
+        description: 'NGOs with at least one WHO-funded activity.',
+        criteria: { activityTypes: [], locations: [], fundingSources: ['WHO'], organizations: [] }
+    },
+    {
+        id: 3,
+        name: 'Substance Use Partners',
+        description: 'Manually selected partner organizations for substance-use coordination updates.',
+        criteria: { activityTypes: [], locations: [], fundingSources: [], organizations: ['Coastal Recovery Group', 'Community Health NGO'] }
+    }
+];
+
+mockData.announcementLogs = [
+    { id: 1, groupId: 1, groupName: 'Beirut Facility-Based Services', title: 'Updated Facility Service Guidelines', message: 'Please review the updated clinical service guidelines for facility-based programs, effective immediately.', sentDate: '2025-05-15', sentBy: 'NMHP Administrator', recipients: ['Community Health NGO'] },
+    { id: 2, groupId: 2, groupName: 'WHO-Funded Programs', title: 'WHO Reporting Deadline Reminder', message: 'A reminder that WHO-funded activity reports for this quarter are due by the end of the month.', sentDate: '2025-06-02', sentBy: 'NMHP Administrator', recipients: ['Community Health NGO'] },
+    { id: 3, groupId: 1, groupName: 'Beirut Facility-Based Services', title: 'Beirut Facility Site Visits Scheduled', message: 'NMHP will be conducting routine site visits to Beirut-based facilities over the coming weeks.', sentDate: '2025-06-20', sentBy: 'NMHP Administrator', recipients: ['Community Health NGO'] }
+];
+
+function getLastSentDateForGroup(groupId) {
+    const logs = mockData.announcementLogs.filter(l => l.groupId === groupId);
+    if (!logs.length) {
+        return '';
+    }
+    return logs.reduce((latest, l) => (l.sentDate > latest ? l.sentDate : latest), logs[0].sentDate);
 }
 

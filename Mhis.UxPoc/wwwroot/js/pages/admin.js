@@ -42,6 +42,9 @@ function renderAdminHomePage() {
                 <button class="btn btn-secondary" id="adminUserManagementBtn">
                     <i data-lucide="users-round"></i><span>User Management</span>
                 </button>
+                <button class="btn btn-secondary" id="adminCreateAnnouncementBtn">
+                    <i data-lucide="megaphone"></i><span>Create Announcement</span>
+                </button>
             </div>
         </div>`;
 }
@@ -54,6 +57,7 @@ function attachAdminHomeListeners() {
     document.getElementById('adminRegistrationsBtn')?.addEventListener('click', goToRegistrations);
     document.querySelector('[data-admin-tile="registrations"]')?.addEventListener('click', goToRegistrations);
     document.getElementById('adminUserManagementBtn')?.addEventListener('click', () => navigateTo('user-management'));
+    document.getElementById('adminCreateAnnouncementBtn')?.addEventListener('click', () => navigateTo('audience-groups'));
 
     document.querySelector('[data-admin-tile="event-reviews"]')?.addEventListener('click', () => {
         reviewsView.eventStatusFilter = EVENT_REVIEW_STATUS.pendingReview;

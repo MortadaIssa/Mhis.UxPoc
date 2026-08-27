@@ -14,7 +14,9 @@ const NAV_DEFINITIONS = {
     'event-reviews': { label: 'Event Reviews', icon: 'calendar-check' },
     'facility-duplicates': { label: 'Potential Duplicate Facilities', icon: 'git-merge' },
     'pending-custom-values': { label: 'Pending Custom Values', icon: 'list-plus' },
-    'user-management': { label: 'User Management', icon: 'users-round' }
+    'user-management': { label: 'User Management', icon: 'users-round' },
+    'audience-groups': { label: 'Audience Groups', icon: 'megaphone' },
+    'announcement-history': { label: 'Announcement History', icon: 'history' }
 };
 
 function getNavigationForCurrentUser() {
@@ -27,6 +29,9 @@ function getNavigationForCurrentUser() {
             { type: 'item', page: 'facility-duplicates', subsection: true },
             { type: 'item', page: 'pending-custom-values', subsection: true },
             { type: 'item', page: 'user-management' },
+            { type: 'section', label: 'Announcements' },
+            { type: 'item', page: 'audience-groups', subsection: true },
+            { type: 'item', page: 'announcement-history', subsection: true },
             { type: 'item', page: 'resources-help' }
         ];
     }
