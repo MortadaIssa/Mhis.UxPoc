@@ -160,10 +160,16 @@ function openFacilityForm(id) {
 function deleteFacility(id) {
     const f = mockData.facilities.find(x => x.id === id);
     if (!f) return;
-    if (confirm(`Delete facility "${f.name}"? This cannot be undone.`)) {
-        mockData.facilities = mockData.facilities.filter(x => x.id !== id);
-        showToast('Facility deleted.', 'success');
-        renderFacilityRows();
-    }
+    showConfirmDialog({
+        title: 'Delete Facility',
+        message: `Delete facility "${f.name}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        tone: 'danger',
+        onConfirm: () => {
+            mockData.facilities = mockData.facilities.filter(x => x.id !== id);
+            showToast('Facility deleted.', 'success');
+            renderFacilityRows();
+        }
+    });
 }
 

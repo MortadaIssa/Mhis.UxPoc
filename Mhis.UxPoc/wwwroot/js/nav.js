@@ -14,7 +14,7 @@ const NAV_DEFINITIONS = {
     'event-reviews': { label: 'Event Reviews', icon: 'calendar-check' },
     'facility-duplicates': { label: 'Potential Duplicate Facilities', icon: 'git-merge' },
     'pending-custom-values': { label: 'Pending Custom Values', icon: 'list-plus' },
-    'organizations-users': { label: 'Organizations & Users', icon: 'users-round' }
+    'user-management': { label: 'User Management', icon: 'users-round' }
 };
 
 function getNavigationForCurrentUser() {
@@ -26,7 +26,7 @@ function getNavigationForCurrentUser() {
             { type: 'item', page: 'event-reviews', subsection: true },
             { type: 'item', page: 'facility-duplicates', subsection: true },
             { type: 'item', page: 'pending-custom-values', subsection: true },
-            { type: 'item', page: 'organizations-users' },
+            { type: 'item', page: 'user-management' },
             { type: 'item', page: 'resources-help' }
         ];
     }

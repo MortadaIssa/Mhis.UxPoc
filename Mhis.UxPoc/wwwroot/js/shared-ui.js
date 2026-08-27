@@ -19,6 +19,43 @@ function closeFormModal() {
     overlay.classList.remove('modal-wide');
 }
 
+// ===== Reusable Confirmation Dialog =====
+// Single component for every "are you sure?" decision in the app (never use
+// window.confirm). Pass tone: 'primary' for a neutral/positive action,
+// 'danger' for one that revokes access or deletes data.
+let confirmDialogHandler = null;
+
+function showConfirmDialog({ title, message, confirmLabel = 'Confirm', cancelLabel = 'Cancel', tone = 'primary', onConfirm }) {
+    document.getElementById('confirmDialogTitle').textContent = title;
+    document.getElementById('confirmDialogMessage').textContent = message;
+
+    const confirmBtn = document.getElementById('confirmDialogConfirmBtn');
+    confirmBtn.textContent = confirmLabel;
+    confirmBtn.className = `btn ${tone === 'danger' ? 'btn-danger' : 'btn-primary'}`;
+    document.getElementById('confirmDialogCancelBtn').textContent = cancelLabel;
+
+    const icon = document.getElementById('confirmDialogIcon');
+    icon.className = `confirm-dialog-icon confirm-dialog-icon-${tone}`;
+    icon.innerHTML = `<i data-lucide="${tone === 'danger' ? 'triangle-alert' : 'circle-help'}"></i>`;
+
+    const overlay = document.getElementById('confirmDialogOverlay');
+    overlay.style.display = 'flex';
+    overlay.classList.add('show');
+
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+
+    confirmDialogHandler = onConfirm;
+}
+
+function closeConfirmDialog() {
+    const overlay = document.getElementById('confirmDialogOverlay');
+    overlay.style.display = 'none';
+    overlay.classList.remove('show');
+    confirmDialogHandler = null;
+}
+
 // ===== Toast =====
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');

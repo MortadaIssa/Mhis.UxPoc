@@ -89,7 +89,8 @@ function createRegistrationSeed() {
             status: REGISTRATION_STATUS.incomplete,
             submittedDate: '',
             rejectionReason: '',
-            accountAccess: ACCOUNT_ACCESS.active
+            accountAccess: ACCOUNT_ACCESS.active,
+            role: 'Organization Admin'
         },
         {
             id: 102,
@@ -110,7 +111,8 @@ function createRegistrationSeed() {
             status: REGISTRATION_STATUS.rejected,
             submittedDate: '18 Jan 2025',
             rejectionReason: 'The Substance Use focal person is missing and the director contact details could not be verified. Please complete both and resubmit.',
-            accountAccess: ACCOUNT_ACCESS.active
+            accountAccess: ACCOUNT_ACCESS.active,
+            role: 'Organization Admin'
         },
         {
             id: 103,
@@ -131,7 +133,8 @@ function createRegistrationSeed() {
             status: REGISTRATION_STATUS.pendingReview,
             submittedDate: '04 Feb 2025',
             rejectionReason: '',
-            accountAccess: ACCOUNT_ACCESS.active
+            accountAccess: ACCOUNT_ACCESS.active,
+            role: 'Organization Admin'
         },
         {
             id: 104,
@@ -152,7 +155,8 @@ function createRegistrationSeed() {
             status: REGISTRATION_STATUS.pendingReview,
             submittedDate: '29 Jan 2025',
             rejectionReason: '',
-            accountAccess: ACCOUNT_ACCESS.active
+            accountAccess: ACCOUNT_ACCESS.active,
+            role: 'Organization Admin'
         },
         {
             id: 105,
@@ -173,7 +177,8 @@ function createRegistrationSeed() {
             status: REGISTRATION_STATUS.approved,
             submittedDate: '11 Dec 2024',
             rejectionReason: '',
-            accountAccess: ACCOUNT_ACCESS.active
+            accountAccess: ACCOUNT_ACCESS.active,
+            role: 'Organization Admin'
         },
         {
             id: 106,
@@ -194,7 +199,8 @@ function createRegistrationSeed() {
             status: REGISTRATION_STATUS.approved,
             submittedDate: '02 Oct 2024',
             rejectionReason: '',
-            accountAccess: ACCOUNT_ACCESS.inactive
+            accountAccess: ACCOUNT_ACCESS.inactive,
+            role: 'Organization Admin'
         }
     ];
 }

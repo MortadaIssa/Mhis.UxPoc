@@ -156,11 +156,17 @@ function openProviderForm(id) {
 function deleteProvider(id) {
     const p = mockData.providers.find(x => x.id === id);
     if (!p) return;
-    if (confirm(`Delete provider "${p.name}"? This cannot be undone.`)) {
-        mockData.providers = mockData.providers.filter(x => x.id !== id);
-        showToast('Provider deleted.', 'success');
-        renderProviderRows();
-    }
+    showConfirmDialog({
+        title: 'Delete Provider',
+        message: `Delete provider "${p.name}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        tone: 'danger',
+        onConfirm: () => {
+            mockData.providers = mockData.providers.filter(x => x.id !== id);
+            showToast('Provider deleted.', 'success');
+            renderProviderRows();
+        }
+    });
 }
 
 // Shared validation for modal forms (required inputs/selects + email format)

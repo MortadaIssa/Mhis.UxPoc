@@ -327,11 +327,17 @@ function duplicateActivity(id) {
 function deleteActivity(id) {
     const a = mockData.activities.find(x => x.id === id);
     if (!a) return;
-    if (confirm(`Delete draft activity "${a.data.title}"? This cannot be undone.`)) {
-        mockData.activities = mockData.activities.filter(x => x.id !== id);
-        showToast('Activity deleted.', 'success');
-        renderActivityRows();
-    }
+    showConfirmDialog({
+        title: 'Delete Draft Activity',
+        message: `Delete draft activity "${a.data.title}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        tone: 'danger',
+        onConfirm: () => {
+            mockData.activities = mockData.activities.filter(x => x.id !== id);
+            showToast('Activity deleted.', 'success');
+            renderActivityRows();
+        }
+    });
 }
 
 // ---------- Activity discovery (smart catalog search) ----------
@@ -723,18 +729,37 @@ function rebuildEditorActions() {
 }
 
 function editorChangeActivity() {
-    const proceed = !activityEditor.dirty || confirm('Changing the activity will reset details that no longer apply. Continue?');
-    if (!proceed) return;
-    startActivityDiscovery();
+    if (!activityEditor.dirty) {
+        startActivityDiscovery();
+        return;
+    }
+    showConfirmDialog({
+        title: 'Change Activity?',
+        message: 'Changing the activity will reset details that no longer apply. Continue?',
+        confirmLabel: 'Continue',
+        tone: 'danger',
+        onConfirm: startActivityDiscovery
+    });
 }
 
 function editorCancel() {
+    const proceedToCancel = () => {
+        activityEditor = null;
+        showActivitiesView('list');
+    };
+
     if (activityEditor && activityEditor.dirty && !activityEditor.viewOnly) {
-        const proceed = confirm('Discard your changes and return to My Activities?');
-        if (!proceed) return;
+        showConfirmDialog({
+            title: 'Discard Unsaved Changes?',
+            message: 'Discard your changes and return to My Activities?',
+            confirmLabel: 'Discard Changes',
+            tone: 'danger',
+            onConfirm: proceedToCancel
+        });
+        return;
     }
-    activityEditor = null;
-    showActivitiesView('list');
+
+    proceedToCancel();
 }
 
 function editorSaveDraft() {

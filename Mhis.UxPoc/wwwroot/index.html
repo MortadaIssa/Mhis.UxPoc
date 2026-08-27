@@ -202,6 +202,19 @@ l-15 52 -208 4 c-198 4 -208 3 -242 -17 -81 -50 -72 -53 -125 41 -26 47 -44
         </div>
     </div>
 
+    <!-- Reusable Confirmation Dialog (used app-wide for any Confirm/Cancel decision) -->
+    <div class="modal-overlay" id="confirmDialogOverlay" style="display: none;">
+        <div class="confirm-dialog">
+            <div class="confirm-dialog-icon" id="confirmDialogIcon"></div>
+            <h3 class="confirm-dialog-title" id="confirmDialogTitle"></h3>
+            <p class="confirm-dialog-message" id="confirmDialogMessage"></p>
+            <div class="confirm-dialog-actions">
+                <button type="button" class="btn btn-secondary" id="confirmDialogCancelBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmDialogConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
@@ -237,7 +250,7 @@ l-15 52 -208 4 c-198 4 -208 3 -242 -17 -81 -50 -72 -53 -125 41 -26 47 -44
     <script src="js/pages/activities.js"></script>
     <script src="js/pages/registration.js"></script>
     <script src="js/pages/reviews.js"></script>
-    <script src="js/pages/organizations-users.js"></script>
+    <script src="js/pages/user-management.js"></script>
     <script src="js/pages/admin.js"></script>
 </body>
 </html>

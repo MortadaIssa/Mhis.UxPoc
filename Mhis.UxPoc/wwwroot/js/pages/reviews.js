@@ -492,26 +492,32 @@ function attachFacilityDuplicateReviewListeners() {
     document.querySelectorAll('[data-link-candidate]').forEach(btn => {
         btn.addEventListener('click', () => {
             const candidateFacilityId = Number(btn.getAttribute('data-link-candidate'));
-            openFormModal(
-                'Link Facility',
-                `<p>Link this new facility as the same physical facility as the selected existing record? This cannot be undone.</p>`,
-                `<button type="button" class="btn btn-secondary" id="cancelLinkBtn">Cancel</button>
-                 <button type="button" class="btn btn-primary" id="confirmLinkBtn">Confirm Link</button>`
-            );
-            document.getElementById('cancelLinkBtn').addEventListener('click', closeFormModal);
-            document.getElementById('confirmLinkBtn').addEventListener('click', () => {
-                const d = linkFacilityDuplicate(reviewsView.selectedDuplicateId, candidateFacilityId);
-                closeFormModal();
-                showToast(`${d.newFacility.name} has been linked.`, 'success');
-                renderPage('facility-duplicate-review');
+            showConfirmDialog({
+                title: 'Link Facility',
+                message: 'Link this new facility as the same physical facility as the selected existing record? This cannot be undone.',
+                confirmLabel: 'Confirm Link',
+                tone: 'primary',
+                onConfirm: () => {
+                    const d = linkFacilityDuplicate(reviewsView.selectedDuplicateId, candidateFacilityId);
+                    showToast(`${d.newFacility.name} has been linked.`, 'success');
+                    renderPage('facility-duplicate-review');
+                }
             });
         });
     });
 
     document.getElementById('confirmDistinctBtn')?.addEventListener('click', () => {
-        const d = confirmFacilityDistinct(reviewsView.selectedDuplicateId);
-        showToast(`${d.newFacility.name} has been confirmed as a distinct facility.`, 'success');
-        renderPage('facility-duplicate-review');
+        showConfirmDialog({
+            title: 'Confirm as Distinct Facility',
+            message: 'Confirm this is a genuinely distinct facility, separate from the candidate match(es) shown?',
+            confirmLabel: 'Confirm as Distinct',
+            tone: 'primary',
+            onConfirm: () => {
+                const d = confirmFacilityDistinct(reviewsView.selectedDuplicateId);
+                showToast(`${d.newFacility.name} has been confirmed as a distinct facility.`, 'success');
+                renderPage('facility-duplicate-review');
+            }
+        });
     });
 }
 

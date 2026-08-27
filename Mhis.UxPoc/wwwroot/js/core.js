@@ -43,6 +43,21 @@ function initializeEventListeners() {
             closeFormModal();
         }
     });
+
+    // Reusable Confirmation Dialog
+    document.getElementById('confirmDialogCancelBtn').addEventListener('click', closeConfirmDialog);
+    document.getElementById('confirmDialogConfirmBtn').addEventListener('click', () => {
+        const handler = confirmDialogHandler;
+        closeConfirmDialog();
+        if (handler) {
+            handler();
+        }
+    });
+    document.getElementById('confirmDialogOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            closeConfirmDialog();
+        }
+    });
 }
 
 // Navigation Handler
@@ -50,23 +65,33 @@ function handleNavigation(e) {
     e.preventDefault();
     const page = e.currentTarget.getAttribute('data-page');
 
-    if (appState.profileDirty && page !== appState.currentPage) {
-        const proceed = confirm('You have unsaved changes. Leave this page and discard them?');
-        if (!proceed) {
-            return;
+    const proceedToPage = () => {
+        if (page === 'activities') {
+            // A direct sidebar click always returns to the My Activities list.
+            activitiesView.mode = 'list';
+            activityEditor = null;
         }
-        appState.profileDirty = false;
+
+        setActivePage(page);
+        renderPage(page);
+        closeNotificationModal();
+    };
+
+    if (appState.profileDirty && page !== appState.currentPage) {
+        showConfirmDialog({
+            title: 'Discard Unsaved Changes?',
+            message: 'You have unsaved changes. Leave this page and discard them?',
+            confirmLabel: 'Discard Changes',
+            tone: 'danger',
+            onConfirm: () => {
+                appState.profileDirty = false;
+                proceedToPage();
+            }
+        });
+        return;
     }
 
-    if (page === 'activities') {
-        // A direct sidebar click always returns to the My Activities list.
-        activitiesView.mode = 'list';
-        activityEditor = null;
-    }
-
-    setActivePage(page);
-    renderPage(page);
-    closeNotificationModal();
+    proceedToPage();
 }
 
 // Activate a sidebar item and update state (also used for internal links)
@@ -79,16 +104,27 @@ function setActivePage(page) {
 
 // Navigate programmatically (used by in-page links)
 function navigateTo(page) {
+    const proceedToPage = () => {
+        setActivePage(page);
+        renderPage(page);
+        closeNotificationModal();
+    };
+
     if (appState.profileDirty && page !== appState.currentPage) {
-        const proceed = confirm('You have unsaved changes. Leave this page and discard them?');
-        if (!proceed) {
-            return;
-        }
-        appState.profileDirty = false;
+        showConfirmDialog({
+            title: 'Discard Unsaved Changes?',
+            message: 'You have unsaved changes. Leave this page and discard them?',
+            confirmLabel: 'Discard Changes',
+            tone: 'danger',
+            onConfirm: () => {
+                appState.profileDirty = false;
+                proceedToPage();
+            }
+        });
+        return;
     }
-    setActivePage(page);
-    renderPage(page);
-    closeNotificationModal();
+
+    proceedToPage();
 }
 
 // Page Rendering
@@ -191,9 +227,9 @@ function renderPage(page) {
             container.innerHTML = renderPendingCustomValuesPage();
             attachPendingCustomValuesListeners();
             break;
-        case 'organizations-users':
-            container.innerHTML = renderOrganizationsUsersPage();
-            attachOrganizationsUsersListeners();
+        case 'user-management':
+            container.innerHTML = renderUserManagementPage();
+            attachUserManagementListeners();
             break;
         default:
             container.innerHTML = renderHomePage();
@@ -250,17 +286,28 @@ function signInAs(accountId) {
 }
 
 function handleSignOut() {
+    const proceedToSignOut = () => {
+        demoSignOut();
+        closeNotificationModal();
+        document.getElementById('accountDropdown').style.display = 'none';
+        startApp();
+    };
+
     if (appState.profileDirty) {
-        const proceed = confirm('You have unsaved changes. Log out and discard them?');
-        if (!proceed) {
-            return;
-        }
-        appState.profileDirty = false;
+        showConfirmDialog({
+            title: 'Discard Unsaved Changes?',
+            message: 'You have unsaved changes. Log out and discard them?',
+            confirmLabel: 'Log Out',
+            tone: 'danger',
+            onConfirm: () => {
+                appState.profileDirty = false;
+                proceedToSignOut();
+            }
+        });
+        return;
     }
-    demoSignOut();
-    closeNotificationModal();
-    document.getElementById('accountDropdown').style.display = 'none';
-    startApp();
+
+    proceedToSignOut();
 }
 
 function updateTopBarIdentity() {
