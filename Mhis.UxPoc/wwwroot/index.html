@@ -14,33 +14,59 @@
     <!-- Login Screen -->
     <div class="login-screen" id="loginScreen" hidden>
         <div class="login-panel">
-            <div class="login-brand">
-                <div class="login-logo">MHIS</div>
-                <p class="login-subtitle">Mental Health Information System</p>
+            <div class="demo-switcher">
+                <button type="button" class="demo-switcher-toggle" id="demoSwitcherToggle" aria-expanded="false">
+                    <i data-lucide="sliders-horizontal"></i>
+                    <span>Demo Scenarios</span>
+                    <i data-lucide="chevron-down"></i>
+                </button>
+                <div class="demo-switcher-popover" id="demoSwitcherPopover" hidden>
+                    <div class="demo-switcher-header">
+                        <span class="demo-chip">Demo</span>
+                        <p>Pick a scenario to prefill the form below, then submit it yourself.</p>
+                    </div>
+                    <div class="demo-switcher-list" id="demoSwitcherList"></div>
+                    <button type="button" class="btn btn-link btn-block" id="resetDemoBtn">Reset demo data</button>
+                </div>
             </div>
+
+            <div class="login-brand">
+                <div class="login-logo"><i data-lucide="leaf"></i></div>
+                <div>
+                    <p class="login-eyebrow">Lebanese Republic &middot; Ministry of Public Health</p>
+                    <h1 class="login-title">National Mental Health Programme</h1>
+                </div>
+            </div>
+
             <form class="login-form" id="loginForm" novalidate>
                 <div class="form-field">
-                    <label for="loginEmail">Email <span class="required">*</span></label>
-                    <input type="email" id="loginEmail" autocomplete="username" data-required="true" />
+                    <label for="loginEmail">Email or Username</label>
+                    <input type="text" id="loginEmail" autocomplete="username" data-required="true" />
                     <div class="field-error" id="loginEmail-error"></div>
                 </div>
                 <div class="form-field">
-                    <label for="loginPassword">Password <span class="required">*</span></label>
-                    <input type="password" id="loginPassword" autocomplete="current-password" data-required="true" />
+                    <div class="form-field-label-row">
+                        <label for="loginPassword">Password</label>
+                        <button type="button" class="link-btn" id="forgotPasswordBtn">Forgot password?</button>
+                    </div>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" autocomplete="current-password" data-required="true" />
+                        <button type="button" class="password-toggle-btn" id="toggleLoginPasswordBtn" aria-label="Show password">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
                     <div class="field-error" id="loginPassword-error"></div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">Log In</button>
             </form>
+            <button type="button" class="btn btn-secondary btn-block" id="registerOrgBtn">Register Your Organization</button>
             <button type="button" class="btn btn-link btn-block" id="explorePublicBtn">Explore Mental Health Services</button>
         </div>
-        <aside class="demo-panel">
-            <div class="demo-panel-header">
-                <span class="demo-chip">Demo</span>
-                <h2>Demo accounts</h2>
-                <p>Select an account to open the matching MHIS experience.</p>
-            </div>
-            <div class="demo-account-list" id="demoAccountList"></div>
-            <button type="button" class="btn btn-link" id="resetDemoBtn">Reset demo data</button>
+        <aside class="login-brand-panel">
+            <svg class="lebanon-outline" viewBox="0 0 200 420" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M100 8c4 14 14 22 26 26-6 10-2 20 6 24-8 8-6 20 2 26-10 6-12 18-4 28-12 4-16 16-8 26-14 2-20 14-14 26-14 4-18 16-10 28-12 6-14 18-6 28-10 8-10 20 0 28-8 10-6 22 4 28-6 12-2 24 8 28-4 12 2 22 12 24-2 12 6 20 16 20 10 0 18-8 16-20 10-2 16-12 12-24 10-4 14-16 8-28 10-6 12-18 4-28 8-10 8-22-2-28 8-12 4-24-10-28 6-10 2-22-10-28 8-10 4-22-8-26 8-10 4-22-8-28 4-10 0-22-12-26 8-6 10-16 2-26 8-6 10-16 2-26 8-4 12-14 6-24 12-4 22-12 26-26z" stroke="currentColor" stroke-width="2" opacity="0.35"/>
+            </svg>
+            <blockquote class="login-quote">&ldquo;All people living in Lebanon will have the opportunity to enjoy the best possible mental health and wellbeing&rdquo;</blockquote>
         </aside>
     </div>
 
@@ -131,6 +157,7 @@
     <script src="js/shared-ui.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/core.js"></script>
+    <script src="js/login.js"></script>
     <script src="js/notifications.js"></script>
     <script src="js/pages/home.js"></script>
     <script src="js/pages/resources.js"></script>

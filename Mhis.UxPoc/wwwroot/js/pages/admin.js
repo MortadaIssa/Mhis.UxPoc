@@ -68,7 +68,7 @@ function renderOrganizationRegistrationsPage() {
                     <div class="cell-secondary">${escapeHtml(r.acronym || '')}</div>
                 </td>
                 <td>${escapeHtml(r.submittedDate || 'Not submitted')}</td>
-                <td><span class="reg-status reg-status-${registrationStatusClass(r.status)}">${escapeHtml(r.status)}</span></td>
+                <td><span class="reg-status reg-status-${registrationStatusClass(r.status)}"><i data-lucide="${registrationStatusIcon(r.status)}"></i><span>${escapeHtml(r.status)}</span></span></td>
                 <td>${escapeHtml(r.accountAccess)}</td>
                 <td class="actions-cell">
                     <button type="button" class="btn btn-link" data-review="${r.id}">Review</button>
@@ -175,7 +175,7 @@ function renderRegistrationReviewPage() {
             <button type="button" class="link-back" id="registrationBackBtn"><i data-lucide="arrow-left"></i> Back to Organization Registrations</button>
             <div class="page-header">
                 <h1 class="page-title">${escapeHtml(r.organization)}</h1>
-                <div class="reg-status reg-status-${registrationStatusClass(r.status)}">${escapeHtml(r.status)}</div>
+                ${renderRegStatusPill(r.status)}
             </div>
             <p class="status-text">Submitted registration details are read-only. NMHP can approve or reject the registration but cannot change the submitted information.</p>
 

@@ -55,7 +55,7 @@ function renderRegistrationStatusHomePage() {
         <div class="home-page">
             <div class="welcome-section">
                 <h1 class="welcome-heading">Welcome, ${escapeHtml(orgName)}</h1>
-                <div class="reg-status reg-status-${registrationStatusClass(registration.status)}">${escapeHtml(registration.status)}</div>
+                ${renderRegStatusPill(registration.status)}
             </div>
             ${bodyHTML}
         </div>`;
@@ -72,6 +72,19 @@ function registrationStatusClass(status) {
         case REGISTRATION_STATUS.pendingReview: return 'pending';
         default: return 'incomplete';
     }
+}
+
+function registrationStatusIcon(status) {
+    switch (status) {
+        case REGISTRATION_STATUS.approved: return 'circle-check';
+        case REGISTRATION_STATUS.rejected: return 'circle-x';
+        case REGISTRATION_STATUS.pendingReview: return 'clock';
+        default: return 'circle-alert';
+    }
+}
+
+function renderRegStatusPill(status) {
+    return `<div class="reg-status reg-status-${registrationStatusClass(status)}"><i data-lucide="${registrationStatusIcon(status)}"></i><span>${escapeHtml(status)}</span></div>`;
 }
 
 function renderRegistrationProfilePage() {
@@ -109,7 +122,7 @@ function renderRegistrationProfilePage() {
         <div class="page">
             <div class="page-header">
                 <h1 class="page-title">Organization Profile</h1>
-                <div class="reg-status reg-status-${registrationStatusClass(r.status)}">${escapeHtml(r.status)}</div>
+                ${renderRegStatusPill(r.status)}
             </div>
             ${bannerHTML}
             <form id="registrationProfileForm" class="profile-form" novalidate>

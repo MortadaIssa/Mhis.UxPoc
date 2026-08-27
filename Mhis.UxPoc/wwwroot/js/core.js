@@ -8,17 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event Listeners
 function initializeEventListeners() {
-    // Login screen
-    renderDemoAccountList();
-    document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
-    document.getElementById('explorePublicBtn').addEventListener('click', () => {
-        showToast('The public Mental Health Services view is not part of this iteration.', 'info');
-    });
-    document.getElementById('resetDemoBtn').addEventListener('click', () => {
-        resetDemoState();
-        showToast('Demo data has been reset.', 'success');
-        startApp();
-    });
+    // Login screen (login form, demo scenario switcher, registration wizard)
+    initializeLoginScreen();
 
     // Account menu
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
@@ -221,60 +212,6 @@ function startApp() {
     updateTopBarIdentity();
     renderSidebarNav();
     navigateTo('home');
-}
-
-function renderDemoAccountList() {
-    const list = document.getElementById('demoAccountList');
-    list.innerHTML = DEMO_ACCOUNTS.map(account => `
-        <button type="button" class="demo-account" data-account="${escapeHtml(account.id)}">
-            <span class="demo-account-role">${escapeHtml(account.label)}</span>
-            <span class="demo-account-name">${escapeHtml(account.organization)}</span>
-            <span class="demo-account-description">${escapeHtml(account.description)}</span>
-            <span class="demo-account-email">${escapeHtml(account.email)}</span>
-        </button>`).join('');
-
-    list.querySelectorAll('.demo-account').forEach(btn => {
-        btn.addEventListener('click', () => signInAs(btn.getAttribute('data-account')));
-    });
-}
-
-function clearLoginErrors() {
-    document.getElementById('loginEmail-error').textContent = '';
-    document.getElementById('loginPassword-error').textContent = '';
-    document.getElementById('loginEmail').classList.remove('invalid');
-    document.getElementById('loginPassword').classList.remove('invalid');
-}
-
-function handleLoginSubmit(e) {
-    e.preventDefault();
-    clearLoginErrors();
-
-    const emailInput = document.getElementById('loginEmail');
-    const passwordInput = document.getElementById('loginPassword');
-    let valid = true;
-
-    if (!emailInput.value.trim()) {
-        emailInput.classList.add('invalid');
-        document.getElementById('loginEmail-error').textContent = 'This field is required.';
-        valid = false;
-    }
-    if (!passwordInput.value) {
-        passwordInput.classList.add('invalid');
-        document.getElementById('loginPassword-error').textContent = 'This field is required.';
-        valid = false;
-    }
-    if (!valid) {
-        return;
-    }
-
-    const account = getDemoAccountByEmail(emailInput.value);
-    if (!account) {
-        emailInput.classList.add('invalid');
-        document.getElementById('loginEmail-error').textContent = 'Unknown account. Use one of the demo accounts listed beside the form.';
-        return;
-    }
-
-    signInAs(account.id);
 }
 
 function signInAs(accountId) {

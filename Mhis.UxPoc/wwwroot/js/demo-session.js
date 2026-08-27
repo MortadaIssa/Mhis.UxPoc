@@ -5,6 +5,11 @@
 
 const DEMO_STORAGE_KEY = 'mhis-demo-state';
 
+// Fully simulated — the POC has no backend, so a fixed code stands in for a
+// real emailed verification code during the registration wizard.
+const DEMO_VERIFICATION_CODE = '123456';
+const DEMO_LOGIN_PASSWORD_HINT = 'demo1234';
+
 const REGISTRATION_STATUS = {
     incomplete: 'Incomplete',
     pendingReview: 'Pending Review',
@@ -17,7 +22,9 @@ const ACCOUNT_ACCESS = {
     inactive: 'Inactive'
 };
 
-// Demo accounts offered on the login screen.
+// Demo accounts offered on the login screen. `loginIdentifier` is what gets
+// typed/filled into the single Email-or-Username field — NGOs sign in with
+// their email, the administrator signs in with a username (not an email).
 const DEMO_ACCOUNTS = [
     {
         id: 'ngo-existing',
@@ -25,6 +32,7 @@ const DEMO_ACCOUNTS = [
         label: 'Existing NGO',
         organization: 'Community Health NGO',
         email: 'info@communityhealthngo.org',
+        loginIdentifier: 'info@communityhealthngo.org',
         description: 'Approved organization with full access to MHIS.',
         registrationId: null
     },
@@ -34,6 +42,7 @@ const DEMO_ACCOUNTS = [
         label: 'New NGO',
         organization: 'Hope Mental Health Association',
         email: 'contact@hopemha.org',
+        loginIdentifier: 'contact@hopemha.org',
         description: 'Newly created account that still has to complete and submit its profile.',
         registrationId: 101
     },
@@ -43,6 +52,7 @@ const DEMO_ACCOUNTS = [
         label: 'NGO with a returned registration',
         organization: 'Bright Minds Foundation',
         email: 'info@brightmindsfoundation.org',
+        loginIdentifier: 'info@brightmindsfoundation.org',
         description: 'Registration returned by NMHP with a reason to address.',
         registrationId: 102
     },
@@ -52,6 +62,7 @@ const DEMO_ACCOUNTS = [
         label: 'NMHP Administrator',
         organization: 'NMHP Administrator',
         email: 'admin@nmhp.gov.lb',
+        loginIdentifier: 'nmhp.admin',
         description: 'Reviews organization registrations and approves or rejects them.',
         registrationId: null
     }
@@ -198,6 +209,11 @@ function loadDemoState() {
     try {
         const raw = window.localStorage.getItem(DEMO_STORAGE_KEY);
         if (!raw) {
+            // Nothing has ever been persisted in this browser — open on the
+            // approved Existing NGO experience, the first scenario shown in
+            // a client demo, instead of the login screen.
+            demoState.accountId = 'ngo-existing';
+            saveDemoState();
             return;
         }
         const parsed = JSON.parse(raw);
@@ -239,6 +255,11 @@ function getDemoAccount(accountId) {
 function getDemoAccountByEmail(email) {
     const value = (email || '').trim().toLowerCase();
     return DEMO_ACCOUNTS.find(a => a.email.toLowerCase() === value) || null;
+}
+
+function getDemoAccountByLoginIdentifier(identifier) {
+    const value = (identifier || '').trim().toLowerCase();
+    return DEMO_ACCOUNTS.find(a => a.loginIdentifier.toLowerCase() === value) || null;
 }
 
 function getCurrentAccount() {
@@ -338,4 +359,28 @@ function rejectRegistration(id, reason) {
     registration.rejectionReason = reason;
     saveDemoState();
     return registration;
+}
+
+// ===== New organization registration wizard (login screen) =====
+// Completing the wizard signs the demo in as the seeded "New NGO" account
+// (id 101), reset to its pristine incomplete state so the registration demo
+// can be run repeatedly, with the email the presenter typed bound onto it.
+function completeNewNgoRegistration(email) {
+    const account = getDemoAccount('ngo-new');
+    const pristine = createRegistrationSeed().find(r => r.id === 101);
+    const index = demoState.registrations.findIndex(r => r.id === 101);
+    if (index === -1) {
+        return null;
+    }
+    demoState.registrations[index] = pristine;
+
+    const enteredEmail = (email || '').trim();
+    if (enteredEmail) {
+        pristine.email = enteredEmail;
+        account.email = enteredEmail;
+        account.loginIdentifier = enteredEmail;
+    }
+
+    demoSignIn('ngo-new');
+    return pristine;
 }
