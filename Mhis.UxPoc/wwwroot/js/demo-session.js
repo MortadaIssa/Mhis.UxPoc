@@ -361,6 +361,27 @@ function rejectRegistration(id, reason) {
     return registration;
 }
 
+// ===== Organizations & Users: account access (separate from registration review) =====
+function activateAccountAccess(id) {
+    const registration = getRegistrationById(id);
+    if (!registration) {
+        return null;
+    }
+    registration.accountAccess = ACCOUNT_ACCESS.active;
+    saveDemoState();
+    return registration;
+}
+
+function deactivateAccountAccess(id) {
+    const registration = getRegistrationById(id);
+    if (!registration) {
+        return null;
+    }
+    registration.accountAccess = ACCOUNT_ACCESS.inactive;
+    saveDemoState();
+    return registration;
+}
+
 // ===== New organization registration wizard (login screen) =====
 // Completing the wizard signs the demo in as the seeded "New NGO" account
 // (id 101), reset to its pristine incomplete state so the registration demo

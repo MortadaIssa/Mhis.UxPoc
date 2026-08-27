@@ -191,6 +191,10 @@ function renderPage(page) {
             container.innerHTML = renderPendingCustomValuesPage();
             attachPendingCustomValuesListeners();
             break;
+        case 'organizations-users':
+            container.innerHTML = renderOrganizationsUsersPage();
+            attachOrganizationsUsersListeners();
+            break;
         default:
             container.innerHTML = renderHomePage();
     }

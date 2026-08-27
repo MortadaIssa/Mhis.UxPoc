@@ -13,7 +13,8 @@ const NAV_DEFINITIONS = {
     'organization-registrations': { label: 'Organization Registrations', icon: 'file-check' },
     'event-reviews': { label: 'Event Reviews', icon: 'calendar-check' },
     'facility-duplicates': { label: 'Potential Duplicate Facilities', icon: 'git-merge' },
-    'pending-custom-values': { label: 'Pending Custom Values', icon: 'list-plus' }
+    'pending-custom-values': { label: 'Pending Custom Values', icon: 'list-plus' },
+    'organizations-users': { label: 'Organizations & Users', icon: 'users-round' }
 };
 
 function getNavigationForCurrentUser() {
@@ -25,6 +26,7 @@ function getNavigationForCurrentUser() {
             { type: 'item', page: 'event-reviews', subsection: true },
             { type: 'item', page: 'facility-duplicates', subsection: true },
             { type: 'item', page: 'pending-custom-values', subsection: true },
+            { type: 'item', page: 'organizations-users' },
             { type: 'item', page: 'resources-help' }
         ];
     }
