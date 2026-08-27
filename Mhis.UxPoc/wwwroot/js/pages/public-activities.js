@@ -43,8 +43,13 @@ function renderPublicActivitiesPage() {
     container.innerHTML = `
         <div class="public-page">
             <div class="public-hero">
-                <h1>Find Mental Health Support Near You</h1>
-                <p>Browse mental health and psychosocial support activities offered by NGOs across Lebanon. Pick a region on the map or use the filters below.</p>
+                <div class="public-hero-text">
+                    <h1>Find Mental Health Support Near You</h1>
+                    <p>Browse mental health and psychosocial support activities offered by NGOs across Lebanon. Pick a region on the map or use the filters below.</p>
+                </div>
+                <button type="button" class="btn btn-primary" id="publicLoginBtn">
+                    <i data-lucide="log-in"></i><span>Log In</span>
+                </button>
             </div>
 
             <div class="public-filter-bar">
@@ -58,7 +63,9 @@ function renderPublicActivitiesPage() {
                     <label>Who It's For</label>
                     ${renderMultiSelectDropdown('publicPopulationGroupFilter', mockData.populationGroups, [], 'Any population group')}
                 </div>
-                <button type="button" class="link-btn public-clear-filters" id="publicClearFiltersBtn" hidden>Clear filters</button>
+                <button type="button" class="btn btn-secondary public-clear-filters" id="publicClearFiltersBtn" hidden>
+                    <i data-lucide="x"></i><span>Clear filters</span>
+                </button>
             </div>
 
             <div class="public-results-layout">
@@ -174,6 +181,8 @@ function populateCazaOptions() {
 }
 
 function attachPublicActivitiesListeners() {
+    document.getElementById('publicLoginBtn').addEventListener('click', () => showLoginScreenFromPublic());
+
     document.getElementById('publicSearch').addEventListener('input', (e) => {
         publicFilters.query = e.target.value;
         renderPublicResults();

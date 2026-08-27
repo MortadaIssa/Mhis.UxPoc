@@ -11,9 +11,6 @@ function initializeEventListeners() {
     // Login screen (login form, demo scenario switcher, registration wizard)
     initializeLoginScreen();
 
-    // Public Explore screen (guest access)
-    document.getElementById('publicLoginBtn').addEventListener('click', () => showLoginScreenFromPublic());
-
     // Account menu
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();

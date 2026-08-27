@@ -2585,38 +2585,46 @@ svg.icon {
     position: absolute;
     z-index: 2;
     top: var(--spacing-xl);
-    right: var(--spacing-xl);
-    width: min(320px, calc(100% - var(--spacing-xl) * 2));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(360px, calc(100% - var(--spacing-xl) * 2));
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--color-surface);
+    border: none;
     border-radius: var(--radius-lg);
-    backdrop-filter: blur(6px);
-    color: #fff;
+    color: var(--color-text-primary);
     text-align: left;
     cursor: pointer;
-    transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    animation: explore-card-pop 2.4s ease-in-out infinite;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .explore-card:hover,
 .explore-card:focus-visible {
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
+    animation-play-state: paused;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    transform: translateX(-50%) translateY(-2px);
+}
+
+@keyframes explore-card-pop {
+    0%, 100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(255, 193, 7, 0.5); }
+    50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 8px rgba(255, 193, 7, 0); }
 }
 
 .explore-card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--color-warning);
+    color: #fff;
 }
 
 .explore-card-icon i {
@@ -2634,11 +2642,12 @@ svg.icon {
 .explore-card-title {
     font-size: 15px;
     font-weight: 700;
+    color: var(--color-dark-green);
 }
 
 .explore-card-subtitle {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--color-text-secondary);
     line-height: 1.4;
 }
 
@@ -2646,6 +2655,7 @@ svg.icon {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
+    color: var(--color-primary-green);
     transition: transform 0.15s ease;
 }
 
@@ -2674,11 +2684,6 @@ svg.icon {
     letter-spacing: 0.5px;
 }
 
-.public-topbar .btn i {
-    width: 16px;
-    height: 16px;
-}
-
 .public-page {
     max-width: 1200px;
     margin: 0 auto;
@@ -2686,6 +2691,10 @@ svg.icon {
 }
 
 .public-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
 }
 
@@ -2697,6 +2706,21 @@ svg.icon {
 .public-hero p {
     color: var(--color-text-secondary);
     max-width: 640px;
+}
+
+.public-hero .btn {
+    flex-shrink: 0;
+}
+
+.public-hero .btn i {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 640px) {
+    .public-hero {
+        flex-direction: column;
+    }
 }
 
 .public-filter-bar {
@@ -2718,6 +2742,13 @@ svg.icon {
 .public-clear-filters {
     margin-left: auto;
     align-self: center;
+    padding: 9px 16px;
+    font-size: 13px;
+}
+
+.public-clear-filters i {
+    width: 14px;
+    height: 14px;
 }
 
 .public-results-layout {
