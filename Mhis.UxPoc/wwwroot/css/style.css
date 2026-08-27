@@ -2592,7 +2592,7 @@ svg.icon {
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--color-surface);
+    background: var(--color-hover-green);
     border: none;
     border-radius: var(--radius-lg);
     color: var(--color-text-primary);

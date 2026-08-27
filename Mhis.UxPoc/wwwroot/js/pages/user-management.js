@@ -49,9 +49,9 @@ function renderUserManagementPage() {
                 <td>${renderAccountAccessPill(r.accountAccess)}</td>
                 <td class="actions-cell">
                     ${r.accountAccess === ACCOUNT_ACCESS.active
-                        ? `<button type="button" class="btn btn-link" data-deactivate="${r.id}">Deactivate</button>`
-                        : `<button type="button" class="btn btn-link" data-activate="${r.id}">Activate</button>`}
-                    <button type="button" class="btn btn-link" data-reset-password="${r.id}">Reset Password</button>
+                        ? `<button type="button" class="icon-action danger" title="Deactivate" aria-label="Deactivate ${escapeHtml(r.organization)}" data-deactivate="${r.id}"><i data-lucide="user-x"></i></button>`
+                        : `<button type="button" class="icon-action" title="Activate" aria-label="Activate ${escapeHtml(r.organization)}" data-activate="${r.id}"><i data-lucide="user-check"></i></button>`}
+                    <button type="button" class="icon-action" title="Reset Password" aria-label="Reset Password for ${escapeHtml(r.organization)}" data-reset-password="${r.id}"><i data-lucide="key-round"></i></button>
                 </td>
             </tr>`).join('')
         : '<tr><td colspan="5" class="empty-cell">No users match the current filters.</td></tr>';

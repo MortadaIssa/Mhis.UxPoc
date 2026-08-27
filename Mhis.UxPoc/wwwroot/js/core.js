@@ -275,6 +275,7 @@ function startApp() {
         appShell.hidden = true;
         document.getElementById('loginForm').reset();
         clearLoginErrors();
+        refreshLucideIcons();
         return;
     }
 
