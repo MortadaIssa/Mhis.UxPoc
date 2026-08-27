@@ -77,8 +77,8 @@ function renderOrganizationProfilePage() {
                 </section>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
                     <button type="button" class="btn btn-secondary" id="profileCancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>`;

@@ -21,6 +21,11 @@ function initializeEventListeners() {
         showToast('Changing the password is simulated in this POC.', 'info');
     });
 
+    // Calendar shortcut
+    document.getElementById('calendarShortcutBtn').addEventListener('click', () => {
+        navigateTo(isAdminUser() ? 'event-reviews' : 'events-calendar');
+    });
+
     // Notification Bell
     document.getElementById('notificationBell').addEventListener('click', toggleNotificationModal);
 

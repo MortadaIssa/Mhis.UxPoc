@@ -60,49 +60,61 @@ function renderHomePage() {
                 </button>
             </div>
 
-            <div class="summary-tiles">
-                <div class="tile">
-                    <div class="tile-label">Activities</div>
-                    <div class="tile-value">${data.organization.activities}</div>
+            <div class="home-row">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Needs Attention</h3>
+                    </div>
+                    <div class="section-content">
+                        ${needsAttentionHTML}
+                    </div>
                 </div>
-                <div class="tile">
-                    <div class="tile-label">Facilities</div>
-                    <div class="tile-value">${data.organization.facilities}</div>
-                </div>
-                <div class="tile">
-                    <div class="tile-label">Providers</div>
-                    <div class="tile-value">${data.organization.providers}</div>
-                </div>
-                <div class="tile">
-                    <div class="tile-label">Upcoming Events</div>
-                    <div class="tile-value">${data.organization.upcomingEvents}</div>
-                </div>
+
+                <button type="button" class="section-card home-clickable-card" id="upcomingEventsCard">
+                    <div class="section-header">
+                        <h3>Upcoming Events</h3>
+                        <span class="section-header-link">View calendar <i data-lucide="chevron-right"></i></span>
+                    </div>
+                    <div class="section-content">
+                        ${eventsHTML}
+                    </div>
+                </button>
             </div>
 
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>Needs Attention</h3>
+            <div class="home-row">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Recent Announcements</h3>
+                    </div>
+                    <div class="section-content">
+                        ${announcementsHTML}
+                    </div>
                 </div>
-                <div class="section-content">
-                    ${needsAttentionHTML}
-                </div>
-            </div>
 
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>Recent Announcements</h3>
-                </div>
-                <div class="section-content">
-                    ${announcementsHTML}
-                </div>
-            </div>
-
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>Upcoming Events</h3>
-                </div>
-                <div class="section-content">
-                    ${eventsHTML}
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Overview</h3>
+                    </div>
+                    <div class="section-content">
+                        <div class="home-stat-grid">
+                            <div class="home-stat-tile">
+                                <div class="home-stat-value">${data.organization.activities}</div>
+                                <div class="home-stat-label">Activities</div>
+                            </div>
+                            <div class="home-stat-tile">
+                                <div class="home-stat-value">${data.organization.facilities}</div>
+                                <div class="home-stat-label">Facilities</div>
+                            </div>
+                            <div class="home-stat-tile">
+                                <div class="home-stat-value">${data.organization.providers}</div>
+                                <div class="home-stat-label">Providers</div>
+                            </div>
+                            <div class="home-stat-tile">
+                                <div class="home-stat-value">${mockData.surveys.length}</div>
+                                <div class="home-stat-label">Surveys</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -117,6 +129,9 @@ function attachHomePageListeners() {
     });
     document.getElementById('viewDashboardBtn')?.addEventListener('click', () => {
         document.querySelector('[data-page="my-dashboard"]').click();
+    });
+    document.getElementById('upcomingEventsCard')?.addEventListener('click', () => {
+        navigateTo('events-calendar');
     });
 }
 

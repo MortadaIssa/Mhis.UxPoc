@@ -178,7 +178,7 @@ function renderMyActivitiesList() {
             <div class="page-header">
                 <h1 class="page-title">My Activities</h1>
                 <button class="btn btn-primary" id="logActivityBtn">
-                    <i data-lucide="plus"></i><span>Log Activity</span>
+                    <i data-lucide="plus"></i><span>Add Activity</span>
                 </button>
             </div>
             <div class="list-toolbar">
@@ -388,7 +388,7 @@ function renderActivityDiscovery() {
             <div class="page-header">
                 <div>
                     <button class="link-back" id="discoveryBackBtn"><i data-lucide="arrow-left"></i> Back to My Activities</button>
-                    <h1 class="page-title">Log Activity</h1>
+                    <h1 class="page-title">Add Activity</h1>
                     <p class="page-lead">What activity are you reporting?</p>
                 </div>
             </div>
@@ -490,7 +490,7 @@ function renderActivityEditorPage() {
     }
     const steps = editorSteps(cfg);
     const readonly = s.viewOnly;
-    const title = readonly ? 'View Activity' : (s.id ? 'Edit Activity' : 'Log Activity');
+    const title = readonly ? 'View Activity' : (s.id ? 'Edit Activity' : 'Add Activity');
 
     const stepperHTML = steps.map((step, i) => {
         const classes = ['stepper-item'];
