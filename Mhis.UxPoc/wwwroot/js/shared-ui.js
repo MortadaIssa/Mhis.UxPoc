@@ -83,3 +83,92 @@ function renderSelect(id, label, options, selected) {
         </div>`;
 }
 
+// ===== Reusable multi-select dropdown (search + checkbox list) =====
+// A single global "click outside closes the open panel" listener, registered
+// once here rather than per render, so opening/closing this component
+// repeatedly (e.g. every time a modal is reopened) never piles up listeners.
+document.addEventListener('click', (e) => {
+    document.querySelectorAll('.multiselect').forEach(wrap => {
+        if (!wrap.contains(e.target)) {
+            const panel = wrap.querySelector('.multiselect-panel');
+            if (panel) {
+                panel.hidden = true;
+            }
+        }
+    });
+});
+
+function renderMultiSelectDropdown(id, options, selectedValues, placeholder) {
+    const normalized = options.map(o => (typeof o === 'string' ? { value: o, label: o } : o));
+    const selectedSet = new Set(selectedValues);
+    const selectedLabels = normalized.filter(o => selectedSet.has(o.value)).map(o => o.label);
+    const optionsHTML = normalized.map(o => `
+        <label class="multiselect-option" data-label="${escapeHtml(o.label.toLowerCase())}">
+            <input type="checkbox" value="${escapeHtml(o.value)}"${selectedSet.has(o.value) ? ' checked' : ''} />
+            <span>${escapeHtml(o.label)}</span>
+        </label>`).join('');
+
+    return `
+        <div class="multiselect">
+            <button type="button" class="multiselect-control${selectedLabels.length ? ' has-value' : ''}" id="${id}-control">
+                <span class="multiselect-value">${selectedLabels.length ? escapeHtml(selectedLabels.join(', ')) : escapeHtml(placeholder || 'Select...')}</span>
+                <i data-lucide="chevron-down"></i>
+            </button>
+            <div class="multiselect-panel" id="${id}-panel" hidden>
+                <div class="multiselect-search-wrap">
+                    <i data-lucide="search"></i>
+                    <input type="text" class="multiselect-search" id="${id}-search" placeholder="Search..." autocomplete="off" />
+                </div>
+                <div class="multiselect-options" id="${id}-options">${optionsHTML || '<div class="multiselect-empty">No options.</div>'}</div>
+            </div>
+            <input type="hidden" id="${id}" value="${selectedValues.join(',')}" />
+        </div>`;
+}
+
+function attachMultiSelectDropdown(id, onChange) {
+    const control = document.getElementById(`${id}-control`);
+    const panel = document.getElementById(`${id}-panel`);
+    const search = document.getElementById(`${id}-search`);
+    const optionsContainer = document.getElementById(`${id}-options`);
+    const hiddenInput = document.getElementById(id);
+    const valueDisplay = control.querySelector('.multiselect-value');
+    const placeholder = valueDisplay.textContent;
+
+    const updateDisplay = () => {
+        const checked = Array.from(optionsContainer.querySelectorAll('input[type="checkbox"]:checked'));
+        const values = checked.map(cb => cb.value);
+        const labels = checked.map(cb => cb.closest('label').querySelector('span').textContent);
+        hiddenInput.value = values.join(',');
+        control.classList.toggle('has-value', labels.length > 0);
+        valueDisplay.textContent = labels.length ? labels.join(', ') : placeholder;
+        if (onChange) {
+            onChange(values);
+        }
+    };
+
+    control.addEventListener('click', () => {
+        const wasHidden = panel.hidden;
+        document.querySelectorAll('.multiselect-panel').forEach(p => { p.hidden = true; });
+        panel.hidden = !wasHidden;
+        if (!panel.hidden && search) {
+            search.value = '';
+            optionsContainer.querySelectorAll('.multiselect-option').forEach(o => { o.style.display = ''; });
+            search.focus();
+        }
+    });
+
+    if (search) {
+        search.addEventListener('input', () => {
+            const query = search.value.trim().toLowerCase();
+            optionsContainer.querySelectorAll('.multiselect-option').forEach(opt => {
+                const label = opt.getAttribute('data-label') || '';
+                opt.style.display = !query || label.includes(query) ? '' : 'none';
+            });
+        });
+    }
+
+    optionsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateDisplay);
+    });
+}
+

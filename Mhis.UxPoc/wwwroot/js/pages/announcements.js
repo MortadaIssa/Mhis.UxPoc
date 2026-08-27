@@ -5,8 +5,31 @@
 // time, instead of the admin having to redefine the audience every time.
 let announcementsView = {
     groupSearch: '',
+    historySearch: '',
     historyGroupFilter: ''
 };
+
+// The 4 criteria dimensions a group can be built from, and where each one's
+// value options come from — used by the row-based criteria builder below.
+const ANNOUNCEMENT_CRITERIA_FIELDS = [
+    { key: 'activityTypes', label: 'Activity Type' },
+    { key: 'locations', label: 'Location' },
+    { key: 'fundingSources', label: 'Funding Source' },
+    { key: 'organizations', label: 'Organizations' }
+];
+
+function getAnnouncementCriteriaFieldOptions(key) {
+    if (key === 'activityTypes') {
+        return mockData.activityConfigs.map(c => ({ value: c.id, label: c.subActivity }));
+    }
+    if (key === 'locations') {
+        return mockData.governorates;
+    }
+    if (key === 'fundingSources') {
+        return getFundingSourceOptions();
+    }
+    return getAnnouncementOrganizationDirectory();
+}
 
 function getAnnouncementGroupById(id) {
     return mockData.announcementGroups.find(g => g.id === id);
@@ -58,19 +81,6 @@ function renderGroupCriteriaSummary(group) {
 function getFilteredAnnouncementGroups() {
     const query = announcementsView.groupSearch.trim().toLowerCase();
     return mockData.announcementGroups.filter(g => !query || g.name.toLowerCase().includes(query));
-}
-
-function renderMultiSelect(id, label, options, selectedValues) {
-    const opts = options.map(o => {
-        const value = typeof o === 'string' ? o : o.value;
-        const text = typeof o === 'string' ? o : o.label;
-        return `<option value="${escapeHtml(value)}"${selectedValues.includes(value) ? ' selected' : ''}>${escapeHtml(text)}</option>`;
-    }).join('');
-    return `
-        <div class="form-field">
-            <label for="${id}">${escapeHtml(label)}</label>
-            <select id="${id}" multiple size="4">${opts}</select>
-        </div>`;
 }
 
 // ===== Audience Groups (list page) =====
@@ -156,13 +166,65 @@ function attachAudienceGroupsListeners() {
 }
 
 // ===== Audience Group mutations =====
+// The criteria builder is a small table of rows (Field + "is any of" values),
+// echoing the row-based Field/Operator/Value pattern from the legacy
+// Announcement Criteria screen — admins add only the criteria dimensions
+// they actually want, instead of seeing all 4 dimensions at once. Each row's
+// value cell is the shared searchable multi-select dropdown
+// (renderMultiSelectDropdown/attachMultiSelectDropdown in shared-ui.js).
+// "Operator" is always "is any of" (an organization matches a field if it
+// has an activity in ANY of that row's selected values) — there is only one
+// operator today, so it is shown as a fixed label rather than a dropdown.
 function openAudienceGroupForm(id) {
     const editing = typeof id === 'number';
     const g = editing
         ? getAnnouncementGroupById(id)
         : { name: '', description: '', criteria: { activityTypes: [], locations: [], fundingSources: [], organizations: [] } };
 
-    const activityTypeOptions = mockData.activityConfigs.map(c => ({ value: c.id, label: c.subActivity }));
+    let rowSeq = 0;
+
+    const renderCriteriaRow = (key, values) => {
+        const rowId = rowSeq++;
+        const fieldOptionsHTML = ANNOUNCEMENT_CRITERIA_FIELDS
+            .map(f => `<option value="${f.key}"${f.key === key ? ' selected' : ''}>${escapeHtml(f.label)}</option>`)
+            .join('');
+        return `
+            <tr class="criteria-row" data-row-id="${rowId}">
+                <td>
+                    <select class="criteria-field-select" id="grp-row-field-${rowId}">${fieldOptionsHTML}</select>
+                </td>
+                <td>is any of</td>
+                <td id="grp-row-value-cell-${rowId}">
+                    ${renderMultiSelectDropdown(`grp-row-value-${rowId}`, getAnnouncementCriteriaFieldOptions(key), values, 'Select values...')}
+                </td>
+                <td class="actions-col">
+                    <button type="button" class="icon-action danger" title="Remove Criteria" aria-label="Remove Criteria" data-remove-row="${rowId}"><i data-lucide="trash-2"></i></button>
+                </td>
+            </tr>`;
+    };
+
+    const attachCriteriaRow = (rowId) => {
+        attachMultiSelectDropdown(`grp-row-value-${rowId}`);
+        document.getElementById(`grp-row-field-${rowId}`).addEventListener('change', (e) => {
+            const cell = document.getElementById(`grp-row-value-cell-${rowId}`);
+            cell.innerHTML = renderMultiSelectDropdown(`grp-row-value-${rowId}`, getAnnouncementCriteriaFieldOptions(e.target.value), [], 'Select values...');
+            attachMultiSelectDropdown(`grp-row-value-${rowId}`);
+            refreshLucideIcons();
+        });
+        document.querySelector(`[data-remove-row="${rowId}"]`).addEventListener('click', (e) => {
+            e.target.closest('tr').remove();
+        });
+    };
+
+    // Seed one row per criteria dimension that already has values; an empty,
+    // brand-new group starts with a single blank row rather than four.
+    const initialRows = ANNOUNCEMENT_CRITERIA_FIELDS
+        .map(f => ({ key: f.key, values: g.criteria[f.key] }))
+        .filter(r => r.values.length);
+    if (!initialRows.length) {
+        initialRows.push({ key: ANNOUNCEMENT_CRITERIA_FIELDS[0].key, values: [] });
+    }
+    const rowsHTML = initialRows.map(r => renderCriteriaRow(r.key, r.values)).join('');
 
     openFormModal(editing ? 'Edit Audience Group' : 'New Audience Group', `
         <form id="audienceGroupForm" class="modal-form" novalidate>
@@ -175,17 +237,24 @@ function openAudienceGroupForm(id) {
                 <label for="grp-description">Description</label>
                 <textarea id="grp-description" rows="2">${escapeHtml(g.description || '')}</textarea>
             </div>
-            <p class="status-text">An organization matches this group if it has an activity satisfying every criterion selected below, or if it is explicitly picked under Organizations. Leave a list empty to skip that criterion. Hold Ctrl (Cmd on Mac) to select multiple options.</p>
-            <div class="form-grid">
-                ${renderMultiSelect('grp-activity-types', 'Activity Type', activityTypeOptions, g.criteria.activityTypes)}
-                ${renderMultiSelect('grp-locations', 'Location', mockData.governorates, g.criteria.locations)}
-                ${renderMultiSelect('grp-funding-sources', 'Funding Source', getFundingSourceOptions(), g.criteria.fundingSources)}
-                ${renderMultiSelect('grp-organizations', 'Organizations', getAnnouncementOrganizationDirectory(), g.criteria.organizations)}
-            </div>
+            <p class="status-text">An organization matches this group if it has an activity satisfying every criterion below, or if it is explicitly picked under Organizations.</p>
+            <table class="criteria-table">
+                <thead><tr><th>Field</th><th>Operator</th><th>Value</th><th></th></tr></thead>
+                <tbody id="grpCriteriaRows">${rowsHTML}</tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" id="addCriteriaRowBtn"><i data-lucide="plus"></i><span>Add Criteria</span></button>
         </form>`,
         `<button type="button" class="btn btn-secondary" id="cancelAudienceGroupBtn">Cancel</button>
          <button type="button" class="btn btn-primary" id="saveAudienceGroupBtn">${editing ? 'Save Changes' : 'Create Group'}</button>`,
         true);
+
+    initialRows.forEach((row, idx) => attachCriteriaRow(idx));
+
+    document.getElementById('addCriteriaRowBtn').addEventListener('click', () => {
+        document.getElementById('grpCriteriaRows').insertAdjacentHTML('beforeend', renderCriteriaRow(ANNOUNCEMENT_CRITERIA_FIELDS[0].key, []));
+        attachCriteriaRow(rowSeq - 1);
+        refreshLucideIcons();
+    });
 
     document.getElementById('cancelAudienceGroupBtn').addEventListener('click', closeFormModal);
     document.getElementById('saveAudienceGroupBtn').addEventListener('click', () => {
@@ -194,13 +263,14 @@ function openAudienceGroupForm(id) {
             return;
         }
 
-        const getSelected = (selectId) => Array.from(document.getElementById(selectId).selectedOptions).map(o => o.value);
-        const criteria = {
-            activityTypes: getSelected('grp-activity-types'),
-            locations: getSelected('grp-locations'),
-            fundingSources: getSelected('grp-funding-sources'),
-            organizations: getSelected('grp-organizations')
-        };
+        const criteria = { activityTypes: [], locations: [], fundingSources: [], organizations: [] };
+        document.querySelectorAll('#grpCriteriaRows .criteria-row').forEach(tr => {
+            const rowId = tr.getAttribute('data-row-id');
+            const key = document.getElementById(`grp-row-field-${rowId}`).value;
+            const values = document.getElementById(`grp-row-value-${rowId}`).value.split(',').filter(Boolean);
+            criteria[key] = [...new Set([...criteria[key], ...values])];
+        });
+
         const name = document.getElementById('grp-name').value.trim();
         const description = document.getElementById('grp-description').value.trim();
 
@@ -318,8 +388,10 @@ function sendAnnouncement(groupId, title, message) {
 
 // ===== Announcement History (combined + per-group log) =====
 function getFilteredAnnouncementLogs() {
+    const query = announcementsView.historySearch.trim().toLowerCase();
     return mockData.announcementLogs
         .filter(l => !announcementsView.historyGroupFilter || l.groupName === announcementsView.historyGroupFilter)
+        .filter(l => !query || l.title.toLowerCase().includes(query) || l.message.toLowerCase().includes(query))
         .slice()
         .sort((a, b) => b.sentDate.localeCompare(a.sentDate));
 }
@@ -348,6 +420,10 @@ function renderAnnouncementHistoryPage() {
                 <h1 class="page-title">Announcement History</h1>
             </div>
             <div class="list-toolbar">
+                <div class="search-group">
+                    <i data-lucide="search"></i>
+                    <input type="search" id="announcementHistorySearch" placeholder="Search announcements..." aria-label="Search announcements" value="${escapeHtml(announcementsView.historySearch)}" />
+                </div>
                 ${renderSelect('announcementHistoryGroupFilter', 'Group', groupNames, announcementsView.historyGroupFilter)}
             </div>
             <div class="result-count">${logs.length} announcement${logs.length === 1 ? '' : 's'}</div>
@@ -361,6 +437,12 @@ function renderAnnouncementHistoryPage() {
 }
 
 function attachAnnouncementHistoryListeners() {
+    document.getElementById('announcementHistorySearch').addEventListener('input', (e) => {
+        announcementsView.historySearch = e.target.value;
+        renderPage('announcement-history');
+        document.getElementById('announcementHistorySearch').focus();
+    });
+
     document.getElementById('announcementHistoryGroupFilter').addEventListener('change', (e) => {
         announcementsView.historyGroupFilter = e.target.value;
         renderPage('announcement-history');

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 5199 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "Bash(powershell -NoProfile -Command \"Stop-Process -Id 32216 -Force\")"
+    ]
+  }
+}
