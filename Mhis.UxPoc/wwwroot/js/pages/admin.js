@@ -163,19 +163,11 @@ function renderRegistrationReviewPage() {
         return renderOrganizationRegistrationsPage();
     }
 
-    const row = (label, value) => `
-        <div class="detail-row">
-            <div class="detail-label">${escapeHtml(label)}</div>
-            <div class="detail-value">${escapeHtml(value || '-')}</div>
-        </div>`;
-
-    const focalHTML = r.focalPersons.map(f => `
-        <tr>
-            <td>${escapeHtml(f.area)}</td>
-            <td>${escapeHtml(f.name || '-')}</td>
-            <td>${escapeHtml(f.email || '-')}</td>
-            <td>${escapeHtml(f.mobile || '-')}</td>
-        </tr>`).join('');
+    const values = {
+        name: r.organization, acronym: r.acronym, phone: r.phone, mobile: r.mobile, email: r.email,
+        directorName: r.directorName, directorEmail: r.directorEmail, directorMobile: r.directorMobile,
+        sectors: r.sectors, website: r.website, linkedin: r.linkedin, daleelMadani: r.daleelMadani
+    };
 
     let actionsHTML = '';
     if (r.status === REGISTRATION_STATUS.pendingReview) {
@@ -204,31 +196,13 @@ function renderRegistrationReviewPage() {
                 ${renderRegStatusPill(r.status)}
             </div>
             <p class="status-text">Submitted registration details are read-only. NMHP can approve or reject the registration but cannot change the submitted information.</p>
+            ${r.submittedDate ? `<p class="status-text">Submitted on ${escapeHtml(r.submittedDate)}.</p>` : ''}
 
-            <section class="profile-section">
-                <h2 class="profile-section-title">General Information</h2>
-                ${row('Organization Name', r.organization)}
-                ${row('Acronym', r.acronym)}
-                ${row('Institution Phone Number', r.phone)}
-                ${row('Institution Mobile Number', r.mobile)}
-                ${row('Institution Email', r.email)}
-                ${row('Director Name', r.directorName)}
-                ${row('Director Email', r.directorEmail)}
-                ${row('Director Mobile Number', r.directorMobile)}
-                ${row('Sectors / Areas of Responsibility', r.sectors)}
-                ${row('Organization Website', r.website)}
-                ${row('Submitted', r.submittedDate)}
-            </section>
+            <div class="profile-form">
+                ${renderOrgProfileFields(values, true)}
+            </div>
 
-            <section class="profile-section">
-                <h2 class="profile-section-title">Focal Persons</h2>
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Area</th><th>Name</th><th>Email</th><th>Mobile</th></tr>
-                    </thead>
-                    <tbody>${focalHTML}</tbody>
-                </table>
-            </section>
+            ${renderFocalPersonsSection(r.focalPersons, true)}
 
             ${actionsHTML}
         </div>`;

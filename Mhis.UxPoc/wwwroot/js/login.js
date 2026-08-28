@@ -149,6 +149,23 @@ function wirePasswordToggle(buttonId, inputId) {
 }
 
 // ===== Registration wizard (Email -> Verify -> Password) =====
+// Personal webmail providers can't be an organization's shared sign-in
+// address, so registration requires an organizational email instead.
+const PERSONAL_EMAIL_DOMAINS = [
+    'gmail.com', 'googlemail.com', 'yahoo.com', 'ymail.com', 'outlook.com',
+    'hotmail.com', 'live.com', 'msn.com', 'icloud.com', 'me.com', 'mac.com',
+    'aol.com', 'protonmail.com', 'proton.me', 'gmx.com', 'zoho.com', 'yandex.com'
+];
+
+function isPersonalEmailDomain(email) {
+    const at = email.lastIndexOf('@');
+    if (at === -1) {
+        return false;
+    }
+    const domain = email.slice(at + 1).trim().toLowerCase();
+    return PERSONAL_EMAIL_DOMAINS.includes(domain);
+}
+
 function openRegistrationEmailStep() {
     const bodyHTML = `
         <p class="wizard-step-label">Step 1 of 3 &middot; Email</p>
@@ -159,7 +176,7 @@ function openRegistrationEmailStep() {
                 <div class="field-error" id="regEmail-error"></div>
             </div>
         </div>
-        <p class="wizard-hint">We'll use this address for signing in to MHIS.</p>`;
+        <p class="wizard-hint">Please use an organizational email address that you and your team can access — not a personal address like Gmail or Outlook. This will become your MHIS sign-in username.</p>`;
     const footerHTML = `
         <button type="button" class="modal-btn" id="regCancelBtn">Cancel</button>
         <button type="button" class="modal-btn primary" id="regSendCodeBtn">Send Verification Code</button>`;
@@ -175,6 +192,11 @@ function openRegistrationEmailStep() {
         if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             input.classList.add('invalid');
             errorEl.textContent = 'Enter a valid email address.';
+            return;
+        }
+        if (isPersonalEmailDomain(value)) {
+            input.classList.add('invalid');
+            errorEl.textContent = 'This looks like a personal email address. Please enter one from your organization instead (for example, name@yourngo.org) — it will become your MHIS sign-in username, so make sure it\'s an address your organization manages.';
             return;
         }
         showToast(`Verification code sent to ${value} (demo code: ${DEMO_VERIFICATION_CODE}).`, 'info');

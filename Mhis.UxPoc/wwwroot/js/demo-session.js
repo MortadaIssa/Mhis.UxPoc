@@ -82,10 +82,9 @@ function createRegistrationSeed() {
             directorMobile: '',
             sectors: '',
             website: '',
-            focalPersons: [
-                { area: '4Ws', name: '', email: '', mobile: '' },
-                { area: 'Substance Use', name: '', email: '', mobile: '' }
-            ],
+            linkedin: '',
+            daleelMadani: '',
+            focalPersons: [],
             status: REGISTRATION_STATUS.incomplete,
             submittedDate: '',
             rejectionReason: '',
@@ -104,9 +103,10 @@ function createRegistrationSeed() {
             directorMobile: '+961 70 555 010',
             sectors: 'Community Awareness',
             website: 'https://www.brightmindsfoundation.org',
+            linkedin: '',
+            daleelMadani: '',
             focalPersons: [
-                { area: '4Ws', name: 'Lara Aoun', email: 'l.aoun@brightmindsfoundation.org', mobile: '+961 71 555 011' },
-                { area: 'Substance Use', name: '', email: '', mobile: '' }
+                { area: '4Ws', name: 'Lara Aoun', email: 'l.aoun@brightmindsfoundation.org', mobile: '+961 71 555 011' }
             ],
             status: REGISTRATION_STATUS.rejected,
             submittedDate: '18 Jan 2025',
@@ -126,6 +126,8 @@ function createRegistrationSeed() {
             directorMobile: '+961 70 555 020',
             sectors: 'Mental Health, Psychosocial Support',
             website: 'https://www.cedarspss.org',
+            linkedin: 'https://www.linkedin.com/company/cedars-pss',
+            daleelMadani: 'https://daleel-madani.org/profile/cedars-pss',
             focalPersons: [
                 { area: '4Ws', name: 'Joseph Khoury', email: 'j.khoury@cedarspss.org', mobile: '+961 71 555 021' },
                 { area: 'Substance Use', name: 'Nada Zeidan', email: 'n.zeidan@cedarspss.org', mobile: '+961 71 555 022' }
@@ -148,6 +150,8 @@ function createRegistrationSeed() {
             directorMobile: '+961 70 555 030',
             sectors: 'Mental Health, Substance Use',
             website: '',
+            linkedin: '',
+            daleelMadani: '',
             focalPersons: [
                 { area: '4Ws', name: 'Rita Salameh', email: 'r.salameh@bekaawellbeing.org', mobile: '+961 71 555 031' },
                 { area: 'Substance Use', name: 'Ali Daher', email: 'a.daher@bekaawellbeing.org', mobile: '+961 71 555 032' }
@@ -170,6 +174,8 @@ function createRegistrationSeed() {
             directorMobile: '+961 70 555 040',
             sectors: 'Mental Health',
             website: 'https://www.southerncare.org',
+            linkedin: 'https://www.linkedin.com/company/southern-care-network',
+            daleelMadani: 'https://daleel-madani.org/profile/southern-care-network',
             focalPersons: [
                 { area: '4Ws', name: 'Hadi Sleiman', email: 'h.sleiman@southerncare.org', mobile: '+961 71 555 041' },
                 { area: 'Substance Use', name: 'Maya Chahine', email: 'm.chahine@southerncare.org', mobile: '+961 71 555 042' }
@@ -192,6 +198,8 @@ function createRegistrationSeed() {
             directorMobile: '+961 70 555 050',
             sectors: 'Substance Use',
             website: '',
+            linkedin: '',
+            daleelMadani: '',
             focalPersons: [
                 { area: '4Ws', name: 'Sandy Rizk', email: 's.rizk@coastalrecovery.org', mobile: '+961 71 555 051' },
                 { area: 'Substance Use', name: 'Fadi Nehme', email: 'f.nehme@coastalrecovery.org', mobile: '+961 71 555 052' }
