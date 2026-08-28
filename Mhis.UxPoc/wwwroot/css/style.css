@@ -405,11 +405,15 @@ svg.icon {
 }
 
 .notification-type {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--color-text-secondary);
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--notif-type-color, var(--color-text-secondary));
+    background-color: color-mix(in srgb, var(--notif-type-color, var(--color-text-secondary)) 16%, white);
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
 }
 
 .notification-unread-indicator {
@@ -772,7 +776,7 @@ svg.icon {
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-md);
-    align-items: start;
+    align-items: stretch;
 }
 
 .home-row:last-child {
@@ -788,6 +792,8 @@ svg.icon {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-md);
+    flex: 1;
+    align-content: center;
 }
 
 .home-stat-tile {
@@ -825,10 +831,16 @@ svg.icon {
 .home-row .section-card {
     margin-bottom: 0;
     width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .home-row .section-content {
     padding: var(--spacing-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 260px;
 }
 
 .home-row .attention-item,
@@ -2980,7 +2992,7 @@ svg.icon {
 
 .public-clear-filters {
     margin-left: auto;
-    align-self: center;
+    align-self: flex-end;
     padding: 9px 16px;
     font-size: 13px;
 }

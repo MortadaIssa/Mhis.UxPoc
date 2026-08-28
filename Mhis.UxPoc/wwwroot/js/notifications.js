@@ -16,10 +16,10 @@ function closeNotificationModal() {
 }
 
 const NOTIFICATION_TYPE_META = {
-    announcement: { icon: 'megaphone', label: 'Announcement' },
-    action: { icon: 'circle-alert', label: 'Action Required' },
-    event: { icon: 'calendar-days', label: 'Event' },
-    system: { icon: 'settings', label: 'System' }
+    announcement: { icon: 'megaphone', label: 'Announcement', color: 'var(--color-primary-green)' },
+    action: { icon: 'circle-alert', label: 'Action Required', color: 'var(--color-warning)' },
+    event: { icon: 'calendar-days', label: 'Event', color: 'var(--color-info)' },
+    system: { icon: 'settings', label: 'System', color: '#3730a3' }
 };
 
 function renderNotificationList() {
@@ -37,13 +37,13 @@ function renderNotificationList() {
     }
 
     list.innerHTML = appState.notifications.map(notification => {
-        const meta = NOTIFICATION_TYPE_META[notification.type] || { icon: 'bell', label: notification.type };
+        const meta = NOTIFICATION_TYPE_META[notification.type] || { icon: 'bell', label: notification.type, color: 'var(--color-text-secondary)' };
         return `
         <div class="notification-item ${notification.unread ? 'unread' : ''}" data-notification-id="${notification.id}">
             <div class="notification-icon"><i data-lucide="${meta.icon}"></i></div>
             <div class="notification-body">
                 <div class="notification-item-header">
-                    <span class="notification-type">${escapeHtml(meta.label)}</span>
+                    <span class="notification-type" style="--notif-type-color: ${meta.color}">${escapeHtml(meta.label)}</span>
                     ${notification.unread ? '<div class="notification-unread-indicator"></div>' : ''}
                 </div>
                 <div class="notification-title">${escapeHtml(notification.title)}</div>

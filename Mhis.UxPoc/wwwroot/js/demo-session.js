@@ -399,8 +399,9 @@ function deactivateAccountAccess(id) {
 // ===== New organization registration wizard (login screen) =====
 // Completing the wizard signs the demo in as the seeded "New NGO" account
 // (id 101), reset to its pristine incomplete state so the registration demo
-// can be run repeatedly, with the email the presenter typed bound onto it.
-function completeNewNgoRegistration(email) {
+// can be run repeatedly, with the organization name and email the presenter
+// typed bound onto it.
+function completeNewNgoRegistration(email, organizationName) {
     const account = getDemoAccount('ngo-new');
     const pristine = createRegistrationSeed().find(r => r.id === 101);
     const index = demoState.registrations.findIndex(r => r.id === 101);
@@ -414,6 +415,12 @@ function completeNewNgoRegistration(email) {
         pristine.email = enteredEmail;
         account.email = enteredEmail;
         account.loginIdentifier = enteredEmail;
+    }
+
+    const enteredOrgName = (organizationName || '').trim();
+    if (enteredOrgName) {
+        pristine.organization = enteredOrgName;
+        account.organization = enteredOrgName;
     }
 
     demoSignIn('ngo-new');

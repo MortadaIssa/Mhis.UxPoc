@@ -115,6 +115,7 @@ function renderOrganizationRegistrationsPage() {
                     <div class="cell-primary">${escapeHtml(r.organization)}</div>
                     <div class="cell-secondary">${escapeHtml(r.acronym || '')}</div>
                 </td>
+                <td>${escapeHtml(r.email || '—')}</td>
                 <td>${escapeHtml(r.submittedDate || 'Not submitted')}</td>
                 <td><span class="reg-status reg-status-${registrationStatusClass(r.status)}"><i data-lucide="${registrationStatusIcon(r.status)}"></i><span>${escapeHtml(r.status)}</span></span></td>
                 <td class="actions-cell">
@@ -125,7 +126,7 @@ function renderOrganizationRegistrationsPage() {
                             : `<button type="button" class="icon-action" title="View" aria-label="View ${escapeHtml(r.organization)}" data-review="${r.id}"><i data-lucide="eye"></i></button>`}
                 </td>
             </tr>`).join('')
-        : '<tr><td colspan="4" class="empty-cell">No registrations match the current filters.</td></tr>';
+        : '<tr><td colspan="5" class="empty-cell">No registrations match the current filters.</td></tr>';
 
     const statusOptions = [
         REGISTRATION_STATUS.incomplete,
@@ -151,6 +152,7 @@ function renderOrganizationRegistrationsPage() {
                 <thead>
                     <tr>
                         <th>Organization</th>
+                        <th>Email</th>
                         <th>Submitted</th>
                         <th>Registration Status</th>
                         <th>Actions</th>

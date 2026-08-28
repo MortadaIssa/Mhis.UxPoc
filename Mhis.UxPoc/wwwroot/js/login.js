@@ -166,13 +166,20 @@ function isPersonalEmailDomain(email) {
     return PERSONAL_EMAIL_DOMAINS.includes(domain);
 }
 
-function openRegistrationEmailStep() {
+function openRegistrationEmailStep(prefill) {
+    const prevOrgName = (prefill && prefill.organizationName) || '';
+    const prevEmail = (prefill && prefill.email) || '';
     const bodyHTML = `
-        <p class="wizard-step-label">Step 1 of 3 &middot; Email</p>
+        <p class="wizard-step-label">Step 1 of 3 &middot; Organization &amp; Email</p>
         <div class="modal-form">
             <div class="form-field">
+                <label for="regOrgName">Organization Name</label>
+                <input type="text" id="regOrgName" data-required="true" autocomplete="organization" value="${escapeHtml(prevOrgName)}" />
+                <div class="field-error" id="regOrgName-error"></div>
+            </div>
+            <div class="form-field">
                 <label for="regEmail">Email Address</label>
-                <input type="email" id="regEmail" data-required="true" autocomplete="email" />
+                <input type="email" id="regEmail" data-required="true" autocomplete="email" value="${escapeHtml(prevEmail)}" />
                 <div class="field-error" id="regEmail-error"></div>
             </div>
         </div>
@@ -184,27 +191,43 @@ function openRegistrationEmailStep() {
 
     document.getElementById('regCancelBtn').addEventListener('click', closeFormModal);
     document.getElementById('regSendCodeBtn').addEventListener('click', () => {
-        const input = document.getElementById('regEmail');
-        const errorEl = document.getElementById('regEmail-error');
-        const value = input.value.trim();
-        errorEl.textContent = '';
-        input.classList.remove('invalid');
-        if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            input.classList.add('invalid');
-            errorEl.textContent = 'Enter a valid email address.';
+        const orgInput = document.getElementById('regOrgName');
+        const orgErrorEl = document.getElementById('regOrgName-error');
+        const emailInput = document.getElementById('regEmail');
+        const emailErrorEl = document.getElementById('regEmail-error');
+        const orgName = orgInput.value.trim();
+        const emailValue = emailInput.value.trim();
+
+        orgInput.classList.remove('invalid');
+        orgErrorEl.textContent = '';
+        emailInput.classList.remove('invalid');
+        emailErrorEl.textContent = '';
+
+        let valid = true;
+        if (!orgName) {
+            orgInput.classList.add('invalid');
+            orgErrorEl.textContent = 'Enter your organization\'s name.';
+            valid = false;
+        }
+        if (!emailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+            emailInput.classList.add('invalid');
+            emailErrorEl.textContent = 'Enter a valid email address.';
+            valid = false;
+        } else if (isPersonalEmailDomain(emailValue)) {
+            emailInput.classList.add('invalid');
+            emailErrorEl.textContent = 'This looks like a personal email address. Please enter one from your organization instead (for example, name@yourngo.org) — it will become your MHIS sign-in username, so make sure it\'s an address your organization manages.';
+            valid = false;
+        }
+        if (!valid) {
             return;
         }
-        if (isPersonalEmailDomain(value)) {
-            input.classList.add('invalid');
-            errorEl.textContent = 'This looks like a personal email address. Please enter one from your organization instead (for example, name@yourngo.org) — it will become your MHIS sign-in username, so make sure it\'s an address your organization manages.';
-            return;
-        }
-        showToast(`Verification code sent to ${value} (demo code: ${DEMO_VERIFICATION_CODE}).`, 'info');
-        openRegistrationVerifyStep(value);
+
+        showToast(`Verification code sent to ${emailValue} (demo code: ${DEMO_VERIFICATION_CODE}).`, 'info');
+        openRegistrationVerifyStep(emailValue, orgName);
     });
 }
 
-function openRegistrationVerifyStep(email) {
+function openRegistrationVerifyStep(email, organizationName) {
     const bodyHTML = `
         <p class="wizard-step-label">Step 2 of 3 &middot; Verify Email</p>
         <p class="wizard-hint">Enter the 6-digit code sent to <strong>${escapeHtml(email)}</strong>.</p>
@@ -221,7 +244,7 @@ function openRegistrationVerifyStep(email) {
         <button type="button" class="modal-btn primary" id="regVerifyBtn">Verify</button>`;
     openFormModal('Register Your Organization', bodyHTML, footerHTML);
 
-    document.getElementById('regBackToEmailBtn').addEventListener('click', () => openRegistrationEmailStep());
+    document.getElementById('regBackToEmailBtn').addEventListener('click', () => openRegistrationEmailStep({ organizationName, email }));
     document.getElementById('regResendBtn').addEventListener('click', () => {
         showToast(`Verification code resent (demo code: ${DEMO_VERIFICATION_CODE}).`, 'info');
     });
@@ -235,11 +258,11 @@ function openRegistrationVerifyStep(email) {
             errorEl.textContent = `Incorrect code. Use ${DEMO_VERIFICATION_CODE} for this demo.`;
             return;
         }
-        openRegistrationPasswordStep(email);
+        openRegistrationPasswordStep(email, organizationName);
     });
 }
 
-function openRegistrationPasswordStep(email) {
+function openRegistrationPasswordStep(email, organizationName) {
     const bodyHTML = `
         <p class="wizard-step-label">Step 3 of 3 &middot; Create Password</p>
         <div class="modal-form">
@@ -268,7 +291,7 @@ function openRegistrationPasswordStep(email) {
     wirePasswordToggle('toggleRegPasswordBtn', 'regPassword');
     wirePasswordToggle('toggleRegPasswordConfirmBtn', 'regPasswordConfirm');
 
-    document.getElementById('regBackToVerifyBtn').addEventListener('click', () => openRegistrationVerifyStep(email));
+    document.getElementById('regBackToVerifyBtn').addEventListener('click', () => openRegistrationVerifyStep(email, organizationName));
     document.getElementById('regCreateBtn').addEventListener('click', () => {
         const pw = document.getElementById('regPassword');
         const pwConfirm = document.getElementById('regPasswordConfirm');
@@ -295,7 +318,7 @@ function openRegistrationPasswordStep(email) {
         }
 
         closeFormModal();
-        completeNewNgoRegistration(email);
+        completeNewNgoRegistration(email, organizationName);
         signInAs('ngo-new');
         showToast('Account created. Complete your organization profile to continue.', 'success');
     });
