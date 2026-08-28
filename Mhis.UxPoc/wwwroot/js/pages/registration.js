@@ -109,7 +109,7 @@ function renderRegistrationProfilePage() {
 
     const actionsHTML = readOnly ? '' : `
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">${r.status === REGISTRATION_STATUS.rejected ? 'Resubmit for Review' : 'Submit for Review'}</button>
+            <button type="submit" form="registrationProfileForm" class="btn btn-primary">${r.status === REGISTRATION_STATUS.rejected ? 'Resubmit for Review' : 'Submit for Review'}</button>
             <button type="button" class="btn btn-secondary" id="regProfileSaveBtn">Save Draft</button>
         </div>`;
 
@@ -122,10 +122,11 @@ function renderRegistrationProfilePage() {
             ${bannerHTML}
             <form id="registrationProfileForm" class="profile-form" novalidate>
                 ${renderOrgProfileFields(values, readOnly)}
-                ${actionsHTML}
             </form>
 
             ${renderFocalPersonsSection(r.focalPersons, readOnly)}
+
+            ${actionsHTML}
         </div>`;
 }
 

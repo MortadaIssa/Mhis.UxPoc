@@ -59,9 +59,6 @@ function renderCalendarToolbar() {
                 <button class="cal-btn cal-icon-btn" id="calPrevBtn" title="Previous" aria-label="Previous"><i data-lucide="chevron-left"></i></button>
                 <button class="cal-btn cal-icon-btn" id="calNextBtn" title="Next" aria-label="Next"><i data-lucide="chevron-right"></i></button>
                 <button class="cal-btn cal-today-btn" id="calTodayBtn">Today</button>
-                <button class="cal-btn cal-add-btn" id="calAddEventBtn">
-                    <i data-lucide="plus"></i><span>Add Event</span>
-                </button>
             </div>
         </div>`;
 }
@@ -158,6 +155,9 @@ function renderEventsCalendarPage() {
         <div class="page calendar-page">
             <div class="page-header">
                 <h1 class="page-title">Events Calendar</h1>
+                <button class="btn btn-primary" id="calAddEventBtn">
+                    <i data-lucide="plus"></i><span>Add Event</span>
+                </button>
             </div>
             ${renderCalendarLegend()}
             ${renderCalendarToolbar()}

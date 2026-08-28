@@ -10,13 +10,14 @@ function renderOrganizationProfilePage() {
 
             <form id="profileForm" class="profile-form" novalidate>
                 ${renderOrgProfileFields(p, false)}
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="profileCancelBtn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
             </form>
 
             ${renderFocalPersonsSection(mockData.focalPersons, false)}
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="profileCancelBtn">Cancel</button>
+                <button type="submit" form="profileForm" class="btn btn-primary">Save Changes</button>
+            </div>
         </div>`;
 }
 
