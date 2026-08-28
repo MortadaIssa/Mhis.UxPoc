@@ -17,24 +17,27 @@ const NAV_DEFINITIONS = {
     'user-management': { label: 'User Management', icon: 'users-round' },
     'audience-groups': { label: 'Audience Groups', icon: 'megaphone' },
     'announcement-history': { label: 'Announcement History', icon: 'history' },
-    'whats-new-management': { label: "What's New Management", icon: 'newspaper' }
+    'whats-new-management': { label: "What's New Management", icon: 'newspaper' },
+    'contact-us': { label: 'Contact Us', icon: 'mail' }
 };
 
 function getNavigationForCurrentUser() {
     if (isAdminUser()) {
         return [
             { type: 'item', page: 'home' },
-            { type: 'item', page: 'organization-registrations' },
+            { type: 'section', label: 'Organization & Users' },
+            { type: 'item', page: 'organization-registrations', subsection: true },
+            { type: 'item', page: 'user-management', subsection: true },
             { type: 'section', label: 'Reviews' },
             { type: 'item', page: 'event-reviews', subsection: true },
             { type: 'item', page: 'facility-duplicates', subsection: true },
             { type: 'item', page: 'pending-custom-values', subsection: true },
-            { type: 'item', page: 'user-management' },
             { type: 'section', label: 'Announcements' },
             { type: 'item', page: 'audience-groups', subsection: true },
             { type: 'item', page: 'announcement-history', subsection: true },
-            { type: 'item', page: 'whats-new-management' },
-            { type: 'item', page: 'resources-help' }
+            { type: 'section', label: 'Content & Resources' },
+            { type: 'item', page: 'whats-new-management', subsection: true },
+            { type: 'item', page: 'resources-help', subsection: true }
         ];
     }
 
@@ -44,22 +47,26 @@ function getNavigationForCurrentUser() {
         return [
             { type: 'item', page: 'home' },
             { type: 'item', page: 'organization-profile' },
-            { type: 'item', page: 'resources-help' }
+            { type: 'item', page: 'resources-help' },
+            { type: 'item', page: 'contact-us' }
         ];
     }
 
     return [
         { type: 'item', page: 'home' },
         { type: 'item', page: 'organization-profile' },
-        { type: 'item', page: 'facilities' },
-        { type: 'item', page: 'providers' },
-        { type: 'item', page: 'activities' },
-        { type: 'item', page: 'surveys' },
-        { type: 'section', label: 'Dashboards' },
+        { type: 'section', label: 'Data Entry' },
+        { type: 'item', page: 'facilities', subsection: true },
+        { type: 'item', page: 'providers', subsection: true },
+        { type: 'item', page: 'activities', subsection: true },
+        { type: 'section', label: 'Reporting' },
+        { type: 'item', page: 'surveys', subsection: true },
         { type: 'item', page: 'my-dashboard', subsection: true },
         { type: 'item', page: 'advanced-dashboard', subsection: true },
-        { type: 'item', page: 'events-calendar' },
-        { type: 'item', page: 'resources-help' }
+        { type: 'section', label: 'Resources & Support' },
+        { type: 'item', page: 'events-calendar', subsection: true },
+        { type: 'item', page: 'resources-help', subsection: true },
+        { type: 'item', page: 'contact-us', subsection: true }
     ];
 }
 

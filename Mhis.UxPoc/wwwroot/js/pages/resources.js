@@ -6,8 +6,7 @@ const RESOURCE_TOPICS = [
     { key: 'about-mhis', label: 'About MHIS', icon: 'info', description: 'Learn about the Mental Health Information System.' },
     { key: 'about-nmhp', label: 'About NMHP', icon: 'info', description: 'Learn about the National Mental Health Programme.' },
     { key: 'whats-new', label: 'What\u2019s New', icon: 'sparkles', description: 'Recent updates and improvements to MHIS.' },
-    { key: 'annual-reports', label: 'Annual Reports', icon: 'file-text', description: 'Published annual reports.' },
-    { key: 'contact-us', label: 'Contact Us', icon: 'mail', description: 'Get in touch with the NMHP support team.' }
+    { key: 'annual-reports', label: 'Annual Reports', icon: 'file-text', description: 'Published annual reports.' }
 ];
 
 function getResourceTopic(key) {
@@ -69,9 +68,6 @@ function renderResourceTopicPage(topicKey) {
             break;
         case 'annual-reports':
             bodyHTML = renderAnnualReportsResource();
-            break;
-        case 'contact-us':
-            bodyHTML = renderContactUsResource();
             break;
         default:
             bodyHTML = renderStaticResource(topic ? topic.label : 'Resource', 'Content coming soon.');
@@ -165,7 +161,8 @@ function renderAnnualReportsResource() {
         </div>`;
 }
 
-function renderContactUsResource() {
+// ===== Contact Us (top-level page) =====
+function renderContactUsPage() {
     const c = mockData.resources.contact;
     const rows = [
         ['Organization', c.organization],
@@ -176,16 +173,62 @@ function renderContactUsResource() {
     ];
 
     return `
-        <div class="page-header">
-            <div>
-                <h1 class="page-title">Contact Us</h1>
+        <div class="page">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Contact Us</h1>
+                    <p class="page-lead">Send a message to the NMHP support team.</p>
+                </div>
             </div>
-        </div>
-        <div class="section-card">
-            <div class="section-content">
-                <dl class="detail-list">${rows.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl>
+            <div class="contact-layout">
+                <div class="section-card">
+                    <div class="section-content">
+                        <form id="contactUsForm" class="modal-form" novalidate>
+                            <div class="form-field">
+                                <label for="contact-name">Name <span class="required">*</span></label>
+                                <input type="text" id="contact-name" data-required="true" />
+                                <div class="field-error" id="contact-name-error"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="contact-email">Email <span class="required">*</span></label>
+                                <input type="email" id="contact-email" data-required="true" />
+                                <div class="field-error" id="contact-email-error"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="contact-subject">Subject <span class="required">*</span></label>
+                                <input type="text" id="contact-subject" data-required="true" />
+                                <div class="field-error" id="contact-subject-error"></div>
+                            </div>
+                            <div class="form-field">
+                                <label for="contact-message">Message <span class="required">*</span></label>
+                                <textarea id="contact-message" rows="6" data-required="true"></textarea>
+                                <div class="field-error" id="contact-message-error"></div>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="contactUsSubmitBtn">
+                                <i data-lucide="send"></i>
+                                <span>Send Message</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="section-card">
+                    <div class="section-content">
+                        <dl class="detail-list">${rows.map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`).join('')}</dl>
+                    </div>
+                </div>
             </div>
         </div>`;
+}
+
+function attachContactUsListeners() {
+    document.getElementById('contactUsSubmitBtn').addEventListener('click', () => {
+        const form = document.getElementById('contactUsForm');
+        if (!validateModalForm(form)) {
+            return;
+        }
+        form.reset();
+        showToast('Your message has been sent to the NMHP support team.', 'success');
+    });
 }
 
 function filterResourceCatalog(query) {

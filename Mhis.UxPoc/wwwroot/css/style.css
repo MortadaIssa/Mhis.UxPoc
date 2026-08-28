@@ -1439,6 +1439,19 @@ svg.icon {
     color: var(--color-text-primary);
 }
 
+.contact-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .contact-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ===== Toast ===== */
 .toast-container {
     position: fixed;

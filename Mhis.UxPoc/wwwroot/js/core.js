@@ -200,6 +200,10 @@ function renderPage(page) {
             container.innerHTML = renderResourcesHelpPage();
             attachResourcesHelpListeners();
             break;
+        case 'contact-us':
+            container.innerHTML = renderContactUsPage();
+            attachContactUsListeners();
+            break;
         case 'surveys':
             container.innerHTML = renderSurveysPage();
             attachSurveysListeners();
