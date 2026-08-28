@@ -465,15 +465,24 @@ function editorSteps(cfg) {
 function openActivityEditor(id, viewOnly, configId) {
     const editing = typeof id === 'number';
     const existing = editing ? mockData.activities.find(a => a.id === id) : null;
+    const resolvedConfigId = editing ? existing.configId : (configId || '');
+    // A completed record is opened straight into the read-only Review step —
+    // there is nothing left to edit, so stepping through every section first
+    // just adds friction. The stepper stays clickable if the user wants to
+    // look at an individual section.
+    const cfg = getActivityConfig(resolvedConfigId);
+    const steps = cfg ? editorSteps(cfg) : [];
+    const visited = {};
+    if (viewOnly) steps.forEach(step => { visited[step.key] = true; });
     activityEditor = {
         id: editing ? existing.id : null,
-        configId: editing ? existing.configId : (configId || ''),
+        configId: resolvedConfigId,
         state: editing ? existing.state : 'draft',
         data: editing ? Object.assign({}, existing.data) : {},
         originalData: editing ? JSON.stringify(existing.data) : JSON.stringify({}),
         viewOnly: !!viewOnly,
-        step: 0,
-        visited: {},
+        step: viewOnly ? Math.max(steps.length - 1, 0) : 0,
+        visited: visited,
         dirty: false
     };
     showActivitiesView('editor');
@@ -530,7 +539,6 @@ function renderActivityEditorPage() {
             <div class="editor-actions">
                 <button type="button" class="btn btn-secondary" id="editorCancelBtn">Cancel</button>
                 <div class="editor-actions-right">
-                    ${s.step > 0 ? '<button type="button" class="btn btn-secondary" id="editorBackStepBtn">Back</button>' : ''}
                     ${readonly ? '' : '<button type="button" class="btn btn-secondary" id="editorSaveDraftBtn">Save Draft</button>'}
                     ${renderEditorPrimaryAction()}
                 </div>
@@ -628,9 +636,6 @@ function attachActivityEditorListeners() {
         btn.addEventListener('click', () => editorGoToStep(parseInt(btn.getAttribute('data-step'))));
     });
 
-    const backStep = document.getElementById('editorBackStepBtn');
-    if (backStep) backStep.addEventListener('click', () => editorGoToStep(s.step - 1));
-
     const continueBtn = document.getElementById('editorContinueBtn');
     if (continueBtn) continueBtn.addEventListener('click', () => editorGoToStep(s.step + 1));
 
@@ -711,13 +716,10 @@ function rebuildEditorActions() {
     const steps = editorSteps(cfg);
     const right = document.querySelector('.editor-actions-right');
     let html = '';
-    if (s.step > 0) html += '<button type="button" class="btn btn-secondary" id="editorBackStepBtn">Back</button>';
     if (!s.viewOnly) html += '<button type="button" class="btn btn-secondary" id="editorSaveDraftBtn">Save Draft</button>';
     html += renderEditorPrimaryAction();
     right.innerHTML = html;
 
-    const backStep = document.getElementById('editorBackStepBtn');
-    if (backStep) backStep.addEventListener('click', () => editorGoToStep(s.step - 1));
     const continueBtn = document.getElementById('editorContinueBtn');
     if (continueBtn) continueBtn.addEventListener('click', () => editorGoToStep(s.step + 1));
     const saveDraft = document.getElementById('editorSaveDraftBtn');

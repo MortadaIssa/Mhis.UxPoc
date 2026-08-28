@@ -15,25 +15,48 @@ function closeNotificationModal() {
     document.getElementById('notificationModal').style.display = 'none';
 }
 
+const NOTIFICATION_TYPE_META = {
+    announcement: { icon: 'megaphone', label: 'Announcement' },
+    action: { icon: 'circle-alert', label: 'Action Required' },
+    event: { icon: 'calendar-days', label: 'Event' },
+    system: { icon: 'settings', label: 'System' }
+};
+
 function renderNotificationList() {
     const list = document.getElementById('notificationList');
-    list.innerHTML = appState.notifications.map(notification => `
+    const subtitle = document.getElementById('notificationSubtitle');
+    const unreadCount = appState.notifications.filter(n => n.unread).length;
+    if (subtitle) subtitle.textContent = unreadCount > 0 ? `${unreadCount} unread` : 'You\'re all caught up';
+
+    const markAllBtn = document.getElementById('markAllRead');
+    if (markAllBtn) markAllBtn.disabled = unreadCount === 0;
+
+    if (appState.notifications.length === 0) {
+        list.innerHTML = '<div class="notification-empty">No notifications yet.</div>';
+        return;
+    }
+
+    list.innerHTML = appState.notifications.map(notification => {
+        const meta = NOTIFICATION_TYPE_META[notification.type] || { icon: 'bell', label: notification.type };
+        return `
         <div class="notification-item ${notification.unread ? 'unread' : ''}" data-notification-id="${notification.id}">
-            <div class="notification-item-header">
-                <div style="display: flex; gap: 8px; align-items: start;">
-                    <span class="notification-type ${notification.type}">${notification.type}</span>
+            <div class="notification-icon"><i data-lucide="${meta.icon}"></i></div>
+            <div class="notification-body">
+                <div class="notification-item-header">
+                    <span class="notification-type">${escapeHtml(meta.label)}</span>
                     ${notification.unread ? '<div class="notification-unread-indicator"></div>' : ''}
                 </div>
+                <div class="notification-title">${escapeHtml(notification.title)}</div>
+                <div class="notification-preview">${escapeHtml(notification.preview)}</div>
+                <div class="notification-time">${notification.timestamp}</div>
             </div>
-            <div class="notification-title">${escapeHtml(notification.title)}</div>
-            <div class="notification-preview">${escapeHtml(notification.preview)}</div>
-            <div class="notification-time">${notification.timestamp}</div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
 
     document.querySelectorAll('.notification-item').forEach(item => {
         item.addEventListener('click', handleNotificationClick);
     });
+    if (window.lucide) window.lucide.createIcons();
 }
 
 function handleNotificationClick(e) {

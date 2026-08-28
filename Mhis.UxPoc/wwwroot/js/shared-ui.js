@@ -58,6 +58,13 @@ function closeConfirmDialog() {
 
 // ===== Toast =====
 function showToast(message, type = 'success') {
+    // The login screen sits on the same dark-green brand background as a
+    // success/info toast, so the toast is effectively invisible there — and
+    // none of the login-flow confirmations need a toast to be understood.
+    // Skip them entirely while the login screen is showing.
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen && !loginScreen.hidden) return;
+
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
