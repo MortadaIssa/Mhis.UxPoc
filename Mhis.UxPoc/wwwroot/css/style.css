@@ -11,6 +11,7 @@
     --color-dark-green: #164620;
     --color-pale-green: #e8f5e9;
     --color-hover-green: #f0f8f0;
+    --color-unread-hover: #d9eeda;
     --color-page-bg: #f8f9fa;
     --color-surface: #ffffff;
     --color-text-primary: #1f2937;
@@ -309,16 +310,30 @@ svg.icon {
     cursor: pointer;
     color: var(--color-text-secondary);
     padding: 0;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s ease;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.close-btn i,
+.close-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 .close-btn:hover {
+    background-color: var(--color-page-bg);
     color: var(--color-text-primary);
+}
+
+.close-btn:focus-visible {
+    outline: 2px solid var(--color-primary-green);
+    outline-offset: 2px;
 }
 
 .notification-list {
@@ -343,12 +358,12 @@ svg.icon {
 }
 
 .notification-item.unread {
-    background-color: var(--color-hover-green);
+    background-color: var(--color-pale-green);
     border-left-color: var(--color-primary-green);
 }
 
 .notification-item.unread:hover {
-    background-color: var(--color-pale-green);
+    background-color: var(--color-unread-hover);
 }
 
 .notification-icon {
@@ -358,9 +373,16 @@ svg.icon {
     width: 36px;
     height: 36px;
     border-radius: 999px;
-    background: var(--color-pale-green);
-    color: var(--color-primary-green);
+    background: var(--color-page-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
     flex-shrink: 0;
+}
+
+.notification-item.unread .notification-icon {
+    background: var(--color-primary-green);
+    border-color: var(--color-primary-green);
+    color: #ffffff;
 }
 
 .notification-icon i,
@@ -391,19 +413,24 @@ svg.icon {
 }
 
 .notification-unread-indicator {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background-color: var(--color-primary-green);
+    box-shadow: 0 0 0 2px var(--color-pale-green);
     flex-shrink: 0;
 }
 
 .notification-title {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-xs);
     font-size: 13px;
     line-height: 1.4;
+}
+
+.notification-item.unread .notification-title {
+    font-weight: 700;
 }
 
 .notification-preview {
