@@ -204,10 +204,12 @@ function renderContactUsPage() {
                                 <textarea id="contact-message" rows="6" data-required="true"></textarea>
                                 <div class="field-error" id="contact-message-error"></div>
                             </div>
-                            <button type="button" class="btn btn-primary" id="contactUsSubmitBtn">
-                                <i data-lucide="send"></i>
-                                <span>Send Message</span>
-                            </button>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-primary" id="contactUsSubmitBtn">
+                                    <i data-lucide="send"></i>
+                                    <span>Send Message</span>
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -16,35 +16,59 @@ function renderAdminHomePage() {
                 <h1 class="welcome-heading">Welcome, NMHP Administrator</h1>
             </div>
 
-            <div class="summary-tiles">
-                <div class="tile tile-action" data-admin-tile="registrations">
-                    <div class="tile-label">New Organization Registrations</div>
-                    <div class="tile-value">${pending}</div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Needs Your Attention</h3>
                 </div>
-                <div class="tile tile-action" data-admin-tile="event-reviews">
-                    <div class="tile-label">Events to Review</div>
-                    <div class="tile-value">${eventsPending}</div>
-                </div>
-                <div class="tile tile-action" data-admin-tile="facility-duplicates">
-                    <div class="tile-label">Potential Duplicate Facilities</div>
-                    <div class="tile-value">${duplicatesPending}</div>
-                </div>
-                <div class="tile tile-action" data-admin-tile="pending-custom-values">
-                    <div class="tile-label">Pending Custom Values</div>
-                    <div class="tile-value">${customValuesPending}</div>
+                <div class="section-content">
+                    <div class="summary-tiles">
+                        <div class="tile tile-action" data-admin-tile="registrations">
+                            <div class="tile-icon"><i data-lucide="file-check"></i></div>
+                            <div class="tile-value">${pending}</div>
+                            <div class="tile-label">New Organization Registrations</div>
+                        </div>
+                        <div class="tile tile-action" data-admin-tile="event-reviews">
+                            <div class="tile-icon"><i data-lucide="calendar-check"></i></div>
+                            <div class="tile-value">${eventsPending}</div>
+                            <div class="tile-label">Events to Review</div>
+                        </div>
+                        <div class="tile tile-action" data-admin-tile="facility-duplicates">
+                            <div class="tile-icon"><i data-lucide="git-merge"></i></div>
+                            <div class="tile-value">${duplicatesPending}</div>
+                            <div class="tile-label">Potential Duplicate Facilities</div>
+                        </div>
+                        <div class="tile tile-action" data-admin-tile="pending-custom-values">
+                            <div class="tile-icon"><i data-lucide="list-plus"></i></div>
+                            <div class="tile-value">${customValuesPending}</div>
+                            <div class="tile-label">Pending Custom Values</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="adminRegistrationsBtn">
-                    <i data-lucide="file-check"></i><span>Review Organization Registrations</span>
-                </button>
-                <button class="btn btn-secondary" id="adminUserManagementBtn">
-                    <i data-lucide="users-round"></i><span>User Management</span>
-                </button>
-                <button class="btn btn-secondary" id="adminCreateAnnouncementBtn">
-                    <i data-lucide="megaphone"></i><span>Create Announcement</span>
-                </button>
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="section-content">
+                    <div class="resource-card-grid">
+                        <button type="button" class="resource-card" id="adminRegistrationsBtn">
+                            <div class="resource-card-icon"><i data-lucide="file-check"></i></div>
+                            <div class="resource-card-label">Review Organization Registrations</div>
+                            <div class="resource-card-description">Approve or reject pending organization applications.</div>
+                        </button>
+                        <button type="button" class="resource-card" id="adminUserManagementBtn">
+                            <div class="resource-card-icon"><i data-lucide="users-round"></i></div>
+                            <div class="resource-card-label">User Management</div>
+                            <div class="resource-card-description">Manage organization accounts and access.</div>
+                        </button>
+                        <button type="button" class="resource-card" id="adminCreateAnnouncementBtn">
+                            <div class="resource-card-icon"><i data-lucide="megaphone"></i></div>
+                            <div class="resource-card-label">Create Announcement</div>
+                            <div class="resource-card-description">Compose and send a message to organizations.</div>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>`;
 }
@@ -57,7 +81,7 @@ function attachAdminHomeListeners() {
     document.getElementById('adminRegistrationsBtn')?.addEventListener('click', goToRegistrations);
     document.querySelector('[data-admin-tile="registrations"]')?.addEventListener('click', goToRegistrations);
     document.getElementById('adminUserManagementBtn')?.addEventListener('click', () => navigateTo('user-management'));
-    document.getElementById('adminCreateAnnouncementBtn')?.addEventListener('click', () => navigateTo('audience-groups'));
+    document.getElementById('adminCreateAnnouncementBtn')?.addEventListener('click', () => openComposeAnnouncementForm());
 
     document.querySelector('[data-admin-tile="event-reviews"]')?.addEventListener('click', () => {
         reviewsView.eventStatusFilter = EVENT_REVIEW_STATUS.pendingReview;

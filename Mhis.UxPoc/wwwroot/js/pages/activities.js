@@ -208,7 +208,7 @@ function renderMyActivitiesList() {
                 <thead>
                     <tr>
                         <th>Code</th><th>Activity</th><th>Location</th><th>Facility</th>
-                        <th>Implementation Dates</th><th>Last Updated</th><th class="actions-col">Actions</th>
+                        <th>Implementation Dates</th><th>Last Updated</th><th>Status</th><th class="actions-col">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="activityTableBody"></tbody>
@@ -233,7 +233,7 @@ function renderActivityRows() {
     const body = document.getElementById('activityTableBody');
     document.getElementById('activityCount').textContent = `${rows.length} activit${rows.length === 1 ? 'y' : 'ies'} found`;
     if (rows.length === 0) {
-        body.innerHTML = `<tr><td colspan="7" class="empty-row">No activities match your filters.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="8" class="empty-row">No activities match your filters.</td></tr>`;
         return;
     }
     body.innerHTML = rows.map(a => {
@@ -272,10 +272,8 @@ function renderActivityRows() {
                 <td>${location}</td>
                 <td>${facility}</td>
                 <td>${period}</td>
-                <td>
-                    ${escapeHtml(a.updated || '—')}
-                    <span class="state-chip ${labelClass}">${escapeHtml(label)}</span>
-                </td>
+                <td>${escapeHtml(a.updated || '—')}</td>
+                <td><span class="state-chip ${labelClass}">${escapeHtml(label)}</span></td>
                 <td class="actions-col">${actions}</td>
             </tr>`;
     }).join('');

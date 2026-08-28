@@ -156,7 +156,7 @@ function attachAudienceGroupsListeners() {
             } else if (action === 'delete') {
                 confirmDeleteAnnouncementGroup(id);
             } else if (action === 'send') {
-                openSendAnnouncementForm(id);
+                openComposeAnnouncementForm(id);
             } else if (action === 'log') {
                 announcementsView.historyGroupFilter = getAnnouncementGroupById(id).name;
                 navigateTo('announcement-history');
@@ -329,15 +329,35 @@ function confirmDeleteAnnouncementGroup(id) {
     });
 }
 
-function openSendAnnouncementForm(id) {
-    const g = getAnnouncementGroupById(id);
-    if (!g) {
-        return;
-    }
-    const recipients = getGroupMemberOrganizations(g);
+// Composes and sends an announcement. Called with a group id from the
+// per-row "Send" action on Audience Groups (group is fixed, no picker
+// shown); called with no id from the admin home "Create Announcement" quick
+// action, which instead lets the admin pick the audience group as the first
+// step of the same form, so that shortcut goes straight to publishing an
+// announcement rather than to the group-management list.
+function openComposeAnnouncementForm(id) {
+    const preset = typeof id === 'number';
+    const groups = mockData.announcementGroups;
+    let selectedGroup = preset ? getAnnouncementGroupById(id) : groups[0];
 
-    openFormModal(`Send Announcement — ${g.name}`, `
+    const recipientsText = (group) => {
+        const recipients = group ? getGroupMemberOrganizations(group) : [];
+        return recipients.length
+            ? `Will be sent to ${recipients.length} organization${recipients.length === 1 ? '' : 's'}: ${escapeHtml(recipients.join(', '))}`
+            : 'No organizations currently match this group’s criteria — sending now will reach no one.';
+    };
+
+    const groupFieldHTML = preset ? '' : `
+        <div class="form-field">
+            <label for="ann-group">Audience Group <span class="required">*</span></label>
+            <select id="ann-group" data-required="true">
+                ${groups.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('')}
+            </select>
+        </div>`;
+
+    openFormModal(preset ? `Send Announcement — ${selectedGroup.name}` : 'Send Announcement', `
         <form id="sendAnnouncementForm" class="modal-form" novalidate>
+            ${groupFieldHTML}
             <div class="form-field">
                 <label for="ann-title">Title <span class="required">*</span></label>
                 <input type="text" id="ann-title" data-required="true" />
@@ -348,12 +368,17 @@ function openSendAnnouncementForm(id) {
                 <textarea id="ann-message" rows="5" data-required="true"></textarea>
                 <div class="field-error" id="ann-message-error"></div>
             </div>
-            <p class="status-text">${recipients.length
-                ? `Will be sent to ${recipients.length} organization${recipients.length === 1 ? '' : 's'}: ${escapeHtml(recipients.join(', '))}`
-                : 'No organizations currently match this group’s criteria — sending now will reach no one.'}</p>
+            <p class="status-text" id="ann-recipients-preview">${recipientsText(selectedGroup)}</p>
         </form>`,
         `<button type="button" class="btn btn-secondary" id="cancelSendAnnouncementBtn">Cancel</button>
          <button type="button" class="btn btn-primary" id="confirmSendAnnouncementBtn">Send</button>`);
+
+    if (!preset) {
+        document.getElementById('ann-group').addEventListener('change', (e) => {
+            selectedGroup = getAnnouncementGroupById(Number(e.target.value));
+            document.getElementById('ann-recipients-preview').textContent = recipientsText(selectedGroup);
+        });
+    }
 
     document.getElementById('cancelSendAnnouncementBtn').addEventListener('click', closeFormModal);
     document.getElementById('confirmSendAnnouncementBtn').addEventListener('click', () => {
@@ -361,12 +386,15 @@ function openSendAnnouncementForm(id) {
         if (!validateModalForm(form)) {
             return;
         }
+        const targetGroupId = preset ? id : Number(document.getElementById('ann-group').value);
         const title = document.getElementById('ann-title').value.trim();
         const message = document.getElementById('ann-message').value.trim();
-        const sentCount = sendAnnouncement(g.id, title, message);
+        const sentCount = sendAnnouncement(targetGroupId, title, message);
         closeFormModal();
         showToast(`Announcement sent to ${sentCount} organization${sentCount === 1 ? '' : 's'}.`, 'success');
-        renderPage('audience-groups');
+        if (appState.currentPage === 'audience-groups') {
+            renderPage('audience-groups');
+        }
     });
 }
 

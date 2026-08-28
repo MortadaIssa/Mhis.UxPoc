@@ -664,7 +664,6 @@ svg.icon {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: var(--spacing-md);
-    margin-bottom: var(--spacing-xl);
 }
 
 .tile {
@@ -675,13 +674,32 @@ svg.icon {
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-primary-green);
     text-align: center;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.tile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--color-pale-green);
+    color: var(--color-primary-green);
+    margin-bottom: var(--spacing-sm);
+}
+
+.tile-icon i,
+.tile-icon svg {
+    width: 18px;
+    height: 18px;
 }
 
 .tile-value {
     font-size: 32px;
     font-weight: 700;
     color: var(--color-primary-green);
-    margin: var(--spacing-md) 0;
+    margin: var(--spacing-sm) 0;
 }
 
 .tile-label {
@@ -1161,7 +1179,8 @@ svg.icon {
 
 .result-count {
     font-size: 13px;
-    color: var(--color-text-secondary);
+    font-weight: 700;
+    color: var(--color-text-primary);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -3210,6 +3229,8 @@ svg.icon {
 
 .tile-action:hover {
     border-color: var(--color-primary-green);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
 /* ===== Read-only detail rows ===== */
