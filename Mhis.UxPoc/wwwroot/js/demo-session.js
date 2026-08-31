@@ -396,6 +396,17 @@ function deactivateAccountAccess(id) {
     return registration;
 }
 
+// Derives an initials-style acronym from an organization name, e.g.
+// "Bright Minds Foundation" -> "BMF".
+function deriveAcronymFromName(name) {
+    return (name || '')
+        .split(/\s+/)
+        .filter(word => /[A-Za-z]/.test(word))
+        .map(word => word.match(/[A-Za-z]/)[0].toUpperCase())
+        .join('')
+        .slice(0, 6);
+}
+
 // ===== New organization registration wizard (login screen) =====
 // Completing the wizard signs the demo in as the seeded "New NGO" account
 // (id 101), reset to its pristine incomplete state so the registration demo
@@ -420,6 +431,7 @@ function completeNewNgoRegistration(email, organizationName) {
     const enteredOrgName = (organizationName || '').trim();
     if (enteredOrgName) {
         pristine.organization = enteredOrgName;
+        pristine.acronym = deriveAcronymFromName(enteredOrgName);
         account.organization = enteredOrgName;
     }
 

@@ -292,6 +292,7 @@ function startApp() {
     topBar.hidden = false;
     appShell.hidden = false;
     updateTopBarIdentity();
+    updateNotificationBadge();
     renderSidebarNav();
     navigateTo('home');
 }

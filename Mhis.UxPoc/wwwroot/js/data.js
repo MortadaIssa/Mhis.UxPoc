@@ -256,6 +256,7 @@ const mockData = {
     notifications: [
         {
             id: 1,
+            audience: "ngo",
             type: "announcement",
             title: "New Activity Guidelines Released",
             preview: "We have published updated guidelines for mental health awareness activities...",
@@ -265,6 +266,7 @@ const mockData = {
         },
         {
             id: 2,
+            audience: "ngo",
             type: "action",
             title: "Facility Verification Required",
             preview: "Your facility 'Central Health Clinic' requires verification to continue operations...",
@@ -275,6 +277,7 @@ const mockData = {
         },
         {
             id: 3,
+            audience: "ngo",
             type: "event",
             title: "Upcoming Training Session",
             preview: "Join us for a training on Data Quality Standards scheduled for next month...",
@@ -285,6 +288,7 @@ const mockData = {
         },
         {
             id: 4,
+            audience: "ngo",
             type: "system",
             title: "System Maintenance Notice",
             preview: "Scheduled maintenance will occur on Friday, 10 PM - 11 PM local time...",

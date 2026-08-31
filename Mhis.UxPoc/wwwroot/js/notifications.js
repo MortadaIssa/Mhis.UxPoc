@@ -22,21 +22,72 @@ const NOTIFICATION_TYPE_META = {
     system: { icon: 'settings', label: 'System', color: '#3730a3' }
 };
 
+// Admin notifications are generated from live admin-review counts rather than
+// stored as static mock data. Read/unread state for them is tracked here
+// (keyed by id) since a fresh set of objects is built on every call.
+const adminNotificationState = {
+    1001: { unread: true },
+    1002: { unread: true },
+    1003: { unread: true }
+};
+
+function getAdminNotifications() {
+    const pendingRegs = countRegistrationsByStatus(REGISTRATION_STATUS.pendingReview);
+    const pendingEvents = countEventReviewsByStatus(EVENT_REVIEW_STATUS.pendingReview);
+    const latestAnnouncement = mockData.announcements[0];
+    return [
+        {
+            id: 1001,
+            type: 'action',
+            title: 'Organization Registrations Pending Review',
+            preview: `${pendingRegs} organization registration${pendingRegs === 1 ? '' : 's'} awaiting your review.`,
+            fullContent: `${pendingRegs} organization registration${pendingRegs === 1 ? '' : 's'} currently awaiting your review. Open Organization Registrations to approve or reject them.`,
+            timestamp: 'Updated just now',
+            unread: adminNotificationState[1001].unread,
+            action: 'Review Registrations'
+        },
+        {
+            id: 1002,
+            type: 'action',
+            title: 'Events Pending Review',
+            preview: `${pendingEvents} submitted event${pendingEvents === 1 ? '' : 's'} awaiting review.`,
+            fullContent: `${pendingEvents} submitted event${pendingEvents === 1 ? '' : 's'} currently awaiting your review.`,
+            timestamp: 'Updated just now',
+            unread: adminNotificationState[1002].unread,
+            action: 'Review Events'
+        },
+        {
+            id: 1003,
+            type: 'announcement',
+            title: 'Announcement Published',
+            preview: `"${latestAnnouncement.title}" was sent to all organizations.`,
+            fullContent: `Your announcement "${latestAnnouncement.title}" was published and sent to all organizations on ${latestAnnouncement.date}.`,
+            timestamp: latestAnnouncement.date,
+            unread: adminNotificationState[1003].unread
+        }
+    ];
+}
+
+function getVisibleNotifications() {
+    return isAdminUser() ? getAdminNotifications() : appState.notifications;
+}
+
 function renderNotificationList() {
     const list = document.getElementById('notificationList');
     const subtitle = document.getElementById('notificationSubtitle');
-    const unreadCount = appState.notifications.filter(n => n.unread).length;
+    const notifications = getVisibleNotifications();
+    const unreadCount = notifications.filter(n => n.unread).length;
     if (subtitle) subtitle.textContent = unreadCount > 0 ? `${unreadCount} unread` : 'You\'re all caught up';
 
     const markAllBtn = document.getElementById('markAllRead');
     if (markAllBtn) markAllBtn.disabled = unreadCount === 0;
 
-    if (appState.notifications.length === 0) {
+    if (notifications.length === 0) {
         list.innerHTML = '<div class="notification-empty">No notifications yet.</div>';
         return;
     }
 
-    list.innerHTML = appState.notifications.map(notification => {
+    list.innerHTML = notifications.map(notification => {
         const meta = NOTIFICATION_TYPE_META[notification.type] || { icon: 'bell', label: notification.type, color: 'var(--color-text-secondary)' };
         return `
         <div class="notification-item ${notification.unread ? 'unread' : ''}" data-notification-id="${notification.id}">
@@ -61,11 +112,12 @@ function renderNotificationList() {
 
 function handleNotificationClick(e) {
     const notificationId = parseInt(e.currentTarget.getAttribute('data-notification-id'));
-    const notification = appState.notifications.find(n => n.id === notificationId);
-    
+    const notification = getVisibleNotifications().find(n => n.id === notificationId);
+
     if (notification) {
         showNotificationDetail(notification);
         notification.unread = false;
+        if (adminNotificationState[notificationId]) adminNotificationState[notificationId].unread = false;
         updateNotificationBadge();
         renderNotificationList();
     }
@@ -103,14 +155,17 @@ function handleModalBackdropClick(e) {
 }
 
 function markAllNotificationsAsRead() {
-    appState.notifications.forEach(n => n.unread = false);
+    getVisibleNotifications().forEach(n => n.unread = false);
+    if (isAdminUser()) {
+        Object.keys(adminNotificationState).forEach(id => { adminNotificationState[id].unread = false; });
+    }
     updateNotificationBadge();
     renderNotificationList();
 }
 
 function updateNotificationBadge() {
     const badge = document.getElementById('notificationBadge');
-    const unreadCount = appState.notifications.filter(n => n.unread).length;
+    const unreadCount = getVisibleNotifications().filter(n => n.unread).length;
     appState.unreadCount = unreadCount;
     
     if (unreadCount > 0) {
