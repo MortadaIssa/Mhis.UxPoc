@@ -150,25 +150,11 @@ function wirePasswordToggle(buttonId, inputId) {
 }
 
 // ===== Registration wizard (Email -> Verify -> Password) =====
-// Personal webmail providers can't be an organization's shared sign-in
-// address, so registration requires an organizational email instead. A
-// personal work address on the organization's own domain can't be detected
-// here; NMHP still catches it when it reviews the registration.
-const PERSONAL_EMAIL_DOMAINS = [
-    'gmail.com', 'googlemail.com', 'yahoo.com', 'ymail.com', 'outlook.com',
-    'hotmail.com', 'live.com', 'msn.com', 'icloud.com', 'me.com', 'mac.com',
-    'aol.com', 'protonmail.com', 'proton.me', 'gmx.com', 'zoho.com', 'yandex.com'
-];
-
-function isPersonalEmailDomain(email) {
-    const at = email.lastIndexOf('@');
-    if (at === -1) {
-        return false;
-    }
-    const domain = email.slice(at + 1).trim().toLowerCase();
-    return PERSONAL_EMAIL_DOMAINS.includes(domain);
-}
-
+// The sign-in email is checked by validateOrgEmail() (js/email-policy.js):
+// an invalid format or a public/disposable provider blocks the step;
+// a mailbox that looks personal or is not recognized as shared shows an amber
+// warning that the user must confirm before Send Verification Code is enabled.
+// NMHP still makes the final call when it reviews the registration.
 function openRegistrationEmailStep(prefill) {
     const prevOrgName = (prefill && prefill.organizationName) || '';
     const prevEmail = (prefill && prefill.email) || '';
@@ -182,24 +168,66 @@ function openRegistrationEmailStep(prefill) {
             </div>
             <div class="form-field">
                 <label for="regEmail">Email Address</label>
-                <input type="email" id="regEmail" data-required="true" autocomplete="email" value="${escapeHtml(prevEmail)}" />
-                <div class="field-error" id="regEmail-error"></div>
+                <input type="email" id="regEmail" data-required="true" autocomplete="email" aria-describedby="regEmail-error regEmail-warning regEmail-hint" value="${escapeHtml(prevEmail)}" />
+                <div class="field-error" id="regEmail-error" role="alert"></div>
+                <div class="email-policy-warning" id="regEmail-warning" hidden></div>
             </div>
         </div>
-        <p class="wizard-hint">Please use an organization email address (e.g., info@NMHP.com) that you and your team can access — not a personal work email (e.g., yourname@NMHP.com). This will become your organization’s MHIS sign-in username. Personal work email will <strong>not</strong> be activated and cannot be used.</p>`;
+        <p class="wizard-hint" id="regEmail-hint">Please use an organization email address (e.g., info@NMHP.com) that you and your team can access — not a personal work email (e.g., yourname@NMHP.com). This will become your organization’s MHIS sign-in username. Personal work email will <strong>not</strong> be activated and cannot be used.</p>`;
     const footerHTML = `
         <button type="button" class="modal-btn" id="regCancelBtn">Cancel</button>
         <button type="button" class="modal-btn primary" id="regSendCodeBtn">Send Verification Code</button>`;
     openFormModal('Register Your Organization', bodyHTML, footerHTML);
 
+    const emailInput = document.getElementById('regEmail');
+    const emailErrorEl = document.getElementById('regEmail-error');
+    const warningEl = document.getElementById('regEmail-warning');
+    const sendBtn = document.getElementById('regSendCodeBtn');
+    // Email for which the warning is on screen; with requireAckOnWarning off,
+    // a second click on Send for the same email continues.
+    let warnedEmail = null;
+
+    function clearEmailFeedback() {
+        emailInput.classList.remove('invalid', 'warning');
+        emailErrorEl.textContent = '';
+        warningEl.hidden = true;
+        warningEl.innerHTML = '';
+        sendBtn.disabled = false;
+        warnedEmail = null;
+    }
+
+    function showEmailWarning(result, email) {
+        emailInput.classList.add('warning');
+        const ackHTML = EMAIL_POLICY_CONFIG.requireAckOnWarning
+            ? `<label class="email-policy-ack"><input type="checkbox" id="regEmailAck" /> <span>${escapeHtml(EMAIL_POLICY_MESSAGES.ACK_LABEL)}</span></label>`
+            : '';
+        warningEl.innerHTML = `
+            <div class="email-policy-warning-message"><i data-lucide="triangle-alert"></i><span>${escapeHtml(result.message)}</span></div>
+            ${ackHTML}`;
+        warningEl.hidden = false;
+        refreshLucideIcons();
+        warnedEmail = email;
+        if (EMAIL_POLICY_CONFIG.requireAckOnWarning) {
+            sendBtn.disabled = true;
+            document.getElementById('regEmailAck').addEventListener('change', e => {
+                sendBtn.disabled = !e.target.checked;
+            });
+        }
+    }
+
+    // Any change to the email resets the feedback and the confirmation.
+    emailInput.addEventListener('input', () => {
+        if (warnedEmail !== null || emailErrorEl.textContent) {
+            clearEmailFeedback();
+        }
+    });
+
     document.getElementById('regCancelBtn').addEventListener('click', closeFormModal);
-    document.getElementById('regSendCodeBtn').addEventListener('click', () => {
+    sendBtn.addEventListener('click', () => {
         const orgInput = document.getElementById('regOrgName');
         const orgErrorEl = document.getElementById('regOrgName-error');
-        const emailInput = document.getElementById('regEmail');
-        const emailErrorEl = document.getElementById('regEmail-error');
         const orgName = orgInput.value.trim();
-        const emailValue = emailInput.value.trim();
+        const emailValue = emailInput.value.trim().toLowerCase();
 
         orgInput.classList.remove('invalid');
         orgErrorEl.textContent = '';
@@ -212,13 +240,16 @@ function openRegistrationEmailStep(prefill) {
             orgErrorEl.textContent = 'Enter your organization\'s name.';
             valid = false;
         }
-        if (!emailValue || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+
+        const result = validateOrgEmail(emailValue);
+        if (result.status === 'empty' || result.status === 'error') {
+            clearEmailFeedback();
             emailInput.classList.add('invalid');
-            emailErrorEl.textContent = 'Enter a valid email address.';
+            emailErrorEl.textContent = result.status === 'empty' ? 'Enter your organization\'s email address.' : result.message;
             valid = false;
-        } else if (isPersonalEmailDomain(emailValue)) {
-            emailInput.classList.add('invalid');
-            emailErrorEl.textContent = 'This looks like a personal email address. Please enter one from your organization instead (for example, name@yourngo.org) — it will become your MHIS sign-in username, so make sure it\'s an address your organization manages.';
+        } else if (result.status === 'warning' && warnedEmail !== emailValue) {
+            // First time this email is submitted: show the warning and stop.
+            showEmailWarning(result, emailValue);
             valid = false;
         }
         if (!valid) {
