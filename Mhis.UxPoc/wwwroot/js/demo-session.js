@@ -5,6 +5,11 @@
 
 const DEMO_STORAGE_KEY = 'mhis-demo-state';
 
+// Raise this whenever createRegistrationSeed() changes, so a browser that ran
+// an earlier version of the POC picks up the new sample registrations instead
+// of the ones it saved before (no manual "Reset demo data" needed).
+const DEMO_SEED_VERSION = 2;
+
 // Fully simulated — the POC has no backend, so a fixed code stands in for a
 // real emailed verification code during the registration wizard.
 const DEMO_VERIFICATION_CODE = '123456';
@@ -35,6 +40,17 @@ const DEMO_ACCOUNTS = [
         loginIdentifier: 'info@communityhealthngo.org',
         description: 'Approved organization with full access to MHIS.',
         registrationId: null
+    },
+    {
+        id: 'ngo-4ws-only',
+        role: 'ngo',
+        label: 'Existing NGO (4Ws only)',
+        organization: 'Northern Relief Association',
+        email: 'info@northernrelief.org',
+        loginIdentifier: 'info@northernrelief.org',
+        description: 'Approved organization that is not eligible for the Substance Use Platform.',
+        registrationId: null,
+        substanceUseEligible: false
     },
     {
         id: 'ngo-new',
@@ -144,7 +160,7 @@ function createRegistrationSeed() {
             acronym: 'BWI',
             phone: '+961 8 555 030',
             mobile: '+961 71 555 030',
-            email: 'info@bekaawellbeing.org',
+            email: 's.ghanem@bekaawellbeing.org',
             directorName: 'Samir Ghanem',
             directorEmail: 's.ghanem@bekaawellbeing.org',
             directorMobile: '+961 70 555 030',
@@ -214,6 +230,7 @@ function createRegistrationSeed() {
 }
 
 let demoState = {
+    seedVersion: DEMO_SEED_VERSION,
     accountId: null,
     registrations: createRegistrationSeed()
 };
@@ -231,11 +248,15 @@ function loadDemoState() {
             return;
         }
         const parsed = JSON.parse(raw);
-        if (parsed && Array.isArray(parsed.registrations) && parsed.registrations.length) {
+        const sameSeed = parsed && parsed.seedVersion === DEMO_SEED_VERSION;
+        if (sameSeed && Array.isArray(parsed.registrations) && parsed.registrations.length) {
             demoState.registrations = parsed.registrations;
         }
         if (parsed && parsed.accountId && getDemoAccount(parsed.accountId)) {
             demoState.accountId = parsed.accountId;
+        }
+        if (!sameSeed) {
+            saveDemoState();
         }
     } catch (err) {
         // A corrupt or unavailable storage entry simply starts the demo from scratch.
@@ -253,7 +274,7 @@ function saveDemoState() {
 }
 
 function resetDemoState() {
-    demoState = { accountId: null, registrations: createRegistrationSeed() };
+    demoState = { seedVersion: DEMO_SEED_VERSION, accountId: null, registrations: createRegistrationSeed() };
     try {
         window.localStorage.removeItem(DEMO_STORAGE_KEY);
     } catch (err) {
@@ -325,6 +346,12 @@ function getCurrentRegistration() {
 function getCurrentRegistrationStatus() {
     const registration = getCurrentRegistration();
     return registration ? registration.status : REGISTRATION_STATUS.approved;
+}
+
+// Only eligible organizations see the Substance Use Platform.
+function isSubstanceUseEligible() {
+    const account = getCurrentAccount();
+    return !!account && account.substanceUseEligible !== false;
 }
 
 function isCurrentNgoApproved() {

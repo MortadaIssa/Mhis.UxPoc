@@ -5,6 +5,7 @@
 // demoable. Signing in still goes through the normal loginForm submit.
 const DEMO_SCENARIOS = [
     { kind: 'login', accountId: 'ngo-existing', title: 'Existing NGO', subtitle: 'Approved organization with full MHIS access.' },
+    { kind: 'login', accountId: 'ngo-4ws-only', title: 'Existing NGO (4Ws only)', subtitle: 'Approved organization not eligible for Substance Use.' },
     { kind: 'register', title: 'Register New NGO', subtitle: 'Walk through creating a brand-new organization account.' },
     { kind: 'login', accountId: 'ngo-rejected', title: 'NGO with Returned Registration', subtitle: 'Registration was returned by NMHP with a reason to address.' },
     { kind: 'login', accountId: 'admin', title: 'NMHP Administrator', subtitle: 'Reviews and approves or rejects organization registrations.' }
@@ -150,7 +151,9 @@ function wirePasswordToggle(buttonId, inputId) {
 
 // ===== Registration wizard (Email -> Verify -> Password) =====
 // Personal webmail providers can't be an organization's shared sign-in
-// address, so registration requires an organizational email instead.
+// address, so registration requires an organizational email instead. A
+// personal work address on the organization's own domain can't be detected
+// here; NMHP still catches it when it reviews the registration.
 const PERSONAL_EMAIL_DOMAINS = [
     'gmail.com', 'googlemail.com', 'yahoo.com', 'ymail.com', 'outlook.com',
     'hotmail.com', 'live.com', 'msn.com', 'icloud.com', 'me.com', 'mac.com',
@@ -183,7 +186,7 @@ function openRegistrationEmailStep(prefill) {
                 <div class="field-error" id="regEmail-error"></div>
             </div>
         </div>
-        <p class="wizard-hint">Please use an organizational email address that you and your team can access — not a personal address like Gmail or Outlook. This will become your MHIS sign-in username.</p>`;
+        <p class="wizard-hint">Please use an organization email address (e.g., info@NMHP.com) that you and your team can access — not a personal work email (e.g., yourname@NMHP.com). This will become your organization’s MHIS sign-in username. Personal work email will <strong>not</strong> be activated and cannot be used.</p>`;
     const footerHTML = `
         <button type="button" class="modal-btn" id="regCancelBtn">Cancel</button>
         <button type="button" class="modal-btn primary" id="regSendCodeBtn">Send Verification Code</button>`;

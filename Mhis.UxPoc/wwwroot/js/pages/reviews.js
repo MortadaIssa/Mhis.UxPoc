@@ -211,8 +211,7 @@ function renderEventReviewDetailPage() {
 
     return `
         <div class="page">
-            <button type="button" class="link-back" id="eventReviewBackBtn"><i data-lucide="arrow-left"></i> Back to Event Reviews</button>
-            <div class="page-header">
+            <div class="page-header page-header-start">
                 <h1 class="page-title">${escapeHtml(r.eventTitle)}</h1>
                 ${renderEventReviewStatusPill(r.status)}
             </div>
@@ -234,7 +233,6 @@ function renderEventReviewDetailPage() {
 }
 
 function attachEventReviewDetailListeners() {
-    document.getElementById('eventReviewBackBtn')?.addEventListener('click', () => navigateTo('event-reviews'));
 
     document.getElementById('approveEventBtn')?.addEventListener('click', () => {
         const r = approveEventReview(reviewsView.selectedEventReviewId);
@@ -460,8 +458,7 @@ function renderFacilityDuplicateReviewPage() {
 
     return `
         <div class="page">
-            <button type="button" class="link-back" id="duplicateBackBtn"><i data-lucide="arrow-left"></i> Back to Potential Duplicate Facilities</button>
-            <div class="page-header">
+            <div class="page-header page-header-start">
                 <h1 class="page-title">${escapeHtml(d.newFacility.name)}</h1>
                 ${renderFacilityDuplicateStatusPill(d.status)}
             </div>
@@ -487,7 +484,6 @@ function renderFacilityDuplicateReviewPage() {
 }
 
 function attachFacilityDuplicateReviewListeners() {
-    document.getElementById('duplicateBackBtn')?.addEventListener('click', () => navigateTo('facility-duplicates'));
 
     document.querySelectorAll('[data-link-candidate]').forEach(btn => {
         btn.addEventListener('click', () => {

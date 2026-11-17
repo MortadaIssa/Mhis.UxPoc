@@ -134,6 +134,14 @@ function showNotificationDetail(notification) {
     
     if (notification.action) {
         modalFooter.innerHTML = `<button class="modal-btn primary">${escapeHtml(notification.action)}</button>`;
+        if (notification.resourceTopic) {
+            // Opens the matching Resources & Help page (used by What's New).
+            modalFooter.querySelector('button').addEventListener('click', () => {
+                closeDetailModal();
+                resourcesHelpView.mode = notification.resourceTopic;
+                navigateTo('resources-help');
+            });
+        }
     } else {
         modalFooter.innerHTML = '';
     }

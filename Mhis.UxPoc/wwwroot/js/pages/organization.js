@@ -1,6 +1,6 @@
 // ===== Organization Profile =====
 function renderOrganizationProfilePage() {
-    const p = mockData.organizationProfile;
+    const p = getCurrentNgoProfile();
 
     return `
         <div class="page">
@@ -41,7 +41,7 @@ function attachOrganizationProfileListeners() {
         if (!validateProfileForm(form)) {
             return;
         }
-        Object.assign(mockData.organizationProfile, collectOrgProfileFields(form));
+        Object.assign(getCurrentNgoProfile(), collectOrgProfileFields(form));
         appState.profileDirty = false;
         showToast('Organization profile saved successfully.', 'success');
     });

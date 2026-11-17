@@ -57,6 +57,11 @@ function renderAdminHomePage() {
                             <div class="resource-card-label">Review Organization Registrations</div>
                             <div class="resource-card-description">Approve or reject pending organization applications.</div>
                         </button>
+                        <button type="button" class="resource-card" id="adminOrganizationManagementBtn">
+                            <div class="resource-card-icon"><i data-lucide="building-2"></i></div>
+                            <div class="resource-card-label">Organization Management</div>
+                            <div class="resource-card-description">Check an organization's profile, facilities, and providers.</div>
+                        </button>
                         <button type="button" class="resource-card" id="adminUserManagementBtn">
                             <div class="resource-card-icon"><i data-lucide="users-round"></i></div>
                             <div class="resource-card-label">User Management</div>
@@ -80,6 +85,7 @@ function attachAdminHomeListeners() {
     };
     document.getElementById('adminRegistrationsBtn')?.addEventListener('click', goToRegistrations);
     document.querySelector('[data-admin-tile="registrations"]')?.addEventListener('click', goToRegistrations);
+    document.getElementById('adminOrganizationManagementBtn')?.addEventListener('click', () => navigateTo('organization-management'));
     document.getElementById('adminUserManagementBtn')?.addEventListener('click', () => navigateTo('user-management'));
     document.getElementById('adminCreateAnnouncementBtn')?.addEventListener('click', () => openComposeAnnouncementForm());
 
@@ -115,7 +121,12 @@ function renderOrganizationRegistrationsPage() {
                     <div class="cell-primary">${escapeHtml(r.organization)}</div>
                     <div class="cell-secondary">${escapeHtml(r.acronym || '')}</div>
                 </td>
-                <td>${escapeHtml(r.email || '—')}</td>
+                <td>
+                    ${escapeHtml(r.email || '—')}
+                    ${r.status === REGISTRATION_STATUS.pendingReview && findPersonalEmailMatch(r)
+                        ? '<div class="cell-flag"><i data-lucide="triangle-alert"></i><span>Possible personal email</span></div>'
+                        : ''}
+                </td>
                 <td>${escapeHtml(r.submittedDate || 'Not submitted')}</td>
                 <td><span class="reg-status reg-status-${registrationStatusClass(r.status)}"><i data-lucide="${registrationStatusIcon(r.status)}"></i><span>${escapeHtml(r.status)}</span></span></td>
                 <td class="actions-cell">
@@ -183,6 +194,44 @@ function attachOrganizationRegistrationsListeners() {
     });
 }
 
+// ===== Possible personal email =====
+// A pattern cannot tell a shared mailbox (info@ngo.org) from a person's
+// address on the same domain (yourname@ngo.org). Instead, the sign-in email
+// is compared with the people named in the same profile: if it contains the
+// director's or a focal person's name, NMHP is warned before approving.
+const PERSON_NAME_TITLES = ['dr', 'mr', 'mrs', 'ms', 'prof', 'eng'];
+
+function getPersonNameParts(name) {
+    return (name || '')
+        .toLowerCase()
+        .split(/[\s.\-']+/)
+        .map(part => part.replace(/[^a-z]/g, ''))
+        .filter(part => part.length >= 3 && !PERSON_NAME_TITLES.includes(part));
+}
+
+function findPersonalEmailMatch(registration) {
+    const email = registration.email || '';
+    const localPart = email.split('@')[0].toLowerCase().replace(/[^a-z]/g, '');
+    if (!localPart) {
+        return null;
+    }
+    const people = [{ name: registration.directorName, role: 'Director' }]
+        .concat((registration.focalPersons || []).map(f => ({ name: f.name, role: `${f.area} Focal Person` })));
+    return people.find(person => getPersonNameParts(person.name).some(part => localPart.includes(part))) || null;
+}
+
+function renderPersonalEmailWarning(registration) {
+    const match = findPersonalEmailMatch(registration);
+    if (!match) {
+        return '';
+    }
+    return `
+        <div class="warning-banner" role="status">
+            <i data-lucide="triangle-alert"></i>
+            <span><strong>Possible personal email.</strong> The sign-in email ${escapeHtml(registration.email)} matches the name of ${escapeHtml(match.name)} (${escapeHtml(match.role)}). Organizations must sign in with a shared organization address, so check it before approving.</span>
+        </div>`;
+}
+
 function renderRegistrationReviewPage() {
     const r = getRegistrationById(adminView.selectedRegistrationId);
     if (!r) {
@@ -216,13 +265,13 @@ function renderRegistrationReviewPage() {
 
     return `
         <div class="page">
-            <button type="button" class="link-back" id="registrationBackBtn"><i data-lucide="arrow-left"></i> Back to Organization Registrations</button>
-            <div class="page-header">
+            <div class="page-header page-header-start">
                 <h1 class="page-title">${escapeHtml(r.organization)}</h1>
                 ${renderRegStatusPill(r.status)}
             </div>
             <p class="status-text">Submitted registration details are read-only. NMHP can approve or reject the registration but cannot change the submitted information.</p>
             ${r.submittedDate ? `<p class="status-text">Submitted on ${escapeHtml(r.submittedDate)}.</p>` : ''}
+            ${r.status === REGISTRATION_STATUS.pendingReview ? renderPersonalEmailWarning(r) : ''}
 
             <div class="profile-form">
                 ${renderOrgProfileFields(values, true)}
@@ -235,8 +284,6 @@ function renderRegistrationReviewPage() {
 }
 
 function attachRegistrationReviewListeners() {
-    document.getElementById('registrationBackBtn')?.addEventListener('click', () => navigateTo('organization-registrations'));
-
     document.getElementById('approveRegistrationBtn')?.addEventListener('click', () => {
         const r = approveRegistration(adminView.selectedRegistrationId);
         showToast(`${r.organization} has been approved.`, 'success');

@@ -86,6 +86,7 @@ const mockData = {
     surveys: [
         { id: 1, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2025", status: "Draft", updated: "12 Feb 2025" },
         { id: 2, name: "Treatment Services Annual Survey", type: "Treatment", description: "Outpatient and residential treatment services and capacity.", year: "2025", status: "Draft", updated: "05 Feb 2025" },
+        { id: 7, name: "Harm Reduction Services Survey", type: "Harm Reduction", description: "Needle and syringe programmes, overdose prevention, and outreach.", year: "2025", status: "Submitted", updated: "28 Jan 2025" },
         { id: 3, name: "Harm Reduction Services Survey", type: "Harm Reduction", description: "Needle and syringe programmes, overdose prevention, and outreach.", year: "2024", status: "Submitted", updated: "18 Nov 2024" },
         { id: 4, name: "Prevention Activities Annual Survey", type: "Prevention", description: "Prevention programmes delivered in schools, communities, and workplaces.", year: "2024", status: "Submitted", updated: "22 Oct 2024" },
         { id: 5, name: "Treatment Services Annual Survey", type: "Treatment", description: "Outpatient and residential treatment services and capacity.", year: "2024", status: "Submitted", updated: "09 Oct 2024" },
@@ -295,6 +296,18 @@ const mockData = {
             fullContent: "Scheduled maintenance will occur on Friday, 10 PM - 11 PM local time. During this period, the system will be temporarily unavailable. We apologize for any inconvenience.",
             timestamp: "5 days ago",
             unread: false
+        },
+        {
+            id: 5,
+            audience: "ngo",
+            type: "system",
+            title: "What\u2019s New: Improved Notifications",
+            preview: "Notifications now group by type and support quick actions directly from the bell menu.",
+            fullContent: "Notifications now group by type and support quick actions directly from the bell menu.",
+            timestamp: "1 week ago",
+            unread: false,
+            action: "View What\u2019s New",
+            resourceTopic: "whats-new"
         }
     ],
     needsAttention: [
@@ -345,6 +358,29 @@ const mockData = {
         }
     ]
 };
+
+// Profile of the "Existing NGO (4Ws only)" demo account. Its facilities,
+// providers and activities reuse the same sample data as the Existing NGO.
+mockData.fourWsOnlyProfile = {
+    name: "Northern Relief Association",
+    acronym: "NRA",
+    phone: "+961 6 222 333",
+    mobile: "+961 71 222 333",
+    email: "info@northernrelief.org",
+    directorName: "Joseph Karam",
+    directorEmail: "j.karam@northernrelief.org",
+    directorMobile: "+961 70 222 333",
+    sectors: "Mental Health, Psychosocial Support",
+    website: "https://www.northernrelief.org",
+    linkedin: "",
+    daleelMadani: ""
+};
+
+// The organization profile of the signed-in (already approved) NGO.
+function getCurrentNgoProfile() {
+    const account = getCurrentAccount();
+    return account && account.id === 'ngo-4ws-only' ? mockData.fourWsOnlyProfile : mockData.organizationProfile;
+}
 
 // Application State
 let appState = {
@@ -402,11 +438,22 @@ mockData.resources = {
         { term: 'Sub-Activity', definition: 'A specific, catalog-defined type of work reported under a broader activity category.' },
         { term: 'Focal Person', definition: 'The designated contact person within an NGO for a specific reporting area, such as 4Ws or Substance Use.' }
     ],
-    annualReports: [
-        { title: 'MHIS Annual Report 2023', year: 2023, href: '#' },
-        { title: 'MHIS Annual Report 2022', year: 2022, href: '#' },
-        { title: 'MHIS Annual Report 2021', year: 2021, href: '#' },
-        { title: 'National Mental Health Programme Overview 2020', year: 2020, href: '#' }
+    annualReports4ws: [
+        { title: '4Ws Annual Report 2023', year: 2023, href: '#' },
+        { title: '4Ws Annual Report 2022', year: 2022, href: '#' },
+        { title: '4Ws Annual Report 2021', year: 2021, href: '#' }
+    ],
+    annualReportsSu: [
+        { title: 'Substance Use Annual Report 2023', year: 2023, href: '#' },
+        { title: 'Substance Use Annual Report 2022', year: 2022, href: '#' }
+    ],
+    // Sample entries only, to show where the list lives.
+    suSubActivities: [
+        { code: 'SU 1.1', category: 'Prevention', name: 'School-Based Prevention Programmes', definition: 'Structured prevention sessions delivered to students, teachers, or parents in a school setting.' },
+        { code: 'SU 1.2', category: 'Prevention', name: 'Community Awareness and Prevention', definition: 'Awareness and prevention activities delivered to communities, families, or workplaces.' },
+        { code: 'SU 2.1', category: 'Treatment', name: 'Outpatient Treatment Services', definition: 'Assessment, counselling, and treatment for substance use disorders without an overnight stay.' },
+        { code: 'SU 2.2', category: 'Treatment', name: 'Residential Treatment and Rehabilitation', definition: 'Treatment and rehabilitation services delivered in a residential setting.' },
+        { code: 'SU 3.1', category: 'Harm Reduction', name: 'Outreach and Harm Reduction Services', definition: 'Outreach, overdose prevention, and needle and syringe programmes for people who use drugs.' }
     ],
     contact: {
         organization: 'National Mental Health Programme (NMHP)',
@@ -564,9 +611,9 @@ mockData.announcementGroups = [
 ];
 
 mockData.announcementLogs = [
-    { id: 1, groupId: 1, groupName: 'Beirut Facility-Based Services', title: 'Updated Facility Service Guidelines', message: 'Please review the updated clinical service guidelines for facility-based programs, effective immediately.', sentDate: '2025-05-15', sentBy: 'NMHP Administrator', recipients: ['Community Health NGO'] },
-    { id: 2, groupId: 2, groupName: 'WHO-Funded Programs', title: 'WHO Reporting Deadline Reminder', message: 'A reminder that WHO-funded activity reports for this quarter are due by the end of the month.', sentDate: '2025-06-02', sentBy: 'NMHP Administrator', recipients: ['Community Health NGO'] },
-    { id: 3, groupId: 1, groupName: 'Beirut Facility-Based Services', title: 'Beirut Facility Site Visits Scheduled', message: 'NMHP will be conducting routine site visits to Beirut-based facilities over the coming weeks.', sentDate: '2025-06-20', sentBy: 'NMHP Administrator', recipients: ['Community Health NGO'] }
+    { id: 1, groupId: 1, groupName: 'Beirut Facility-Based Services', title: 'Updated Facility Service Guidelines', message: 'Please review the updated clinical service guidelines for facility-based programs, effective immediately.', sentDate: '2025-05-15', recipients: ['Community Health NGO', 'Southern Care Network'], readBy: ['Community Health NGO', 'Southern Care Network'] },
+    { id: 2, groupId: 2, groupName: 'WHO-Funded Programs', title: 'WHO Reporting Deadline Reminder', message: 'A reminder that WHO-funded activity reports for this quarter are due by the end of the month.', sentDate: '2025-06-02', recipients: ['Community Health NGO', 'Southern Care Network', 'Coastal Recovery Group'], readBy: ['Community Health NGO'] },
+    { id: 3, groupId: 1, groupName: 'Beirut Facility-Based Services', title: 'Beirut Facility Site Visits Scheduled', message: 'NMHP will be conducting routine site visits to Beirut-based facilities over the coming weeks.', sentDate: '2025-06-20', recipients: ['Community Health NGO', 'Southern Care Network'], readBy: [] }
 ];
 
 function getLastSentDateForGroup(groupId) {
@@ -577,3 +624,28 @@ function getLastSentDateForGroup(groupId) {
     return logs.reduce((latest, l) => (l.sentDate > latest ? l.sentDate : latest), logs[0].sentDate);
 }
 
+// ===== Admin Organization Management mock data =====
+// Facilities and providers of the approved organizations other than the
+// "Existing NGO" demo account (which uses mockData.facilities / providers).
+mockData.organizationRecords = {
+    'Southern Care Network': {
+        facilities: [
+            { name: 'Saida Community Wellness Center', type: 'Community Center', governorate: 'South', caza: 'Saida', locality: 'Old Saida', contact: '+961 7 555 043' },
+            { name: 'Tyre Primary Health Care Center', type: 'Primary Health Care Center', governorate: 'South', caza: 'Tyre', locality: 'Tyre', contact: '+961 7 555 044' }
+        ],
+        providers: [
+            { name: 'Dr. Samir Jaber', type: 'Psychiatrist', facility: 'Tyre Primary Health Care Center', phone: '+961 3 555 045', email: 's.jaber@southerncare.org' },
+            { name: 'Nadine Hoteit', type: 'Psychologist', facility: 'Saida Community Wellness Center', phone: '+961 3 555 046', email: 'n.hoteit@southerncare.org' },
+            { name: 'Ali Mroueh', type: 'Social Worker', facility: 'Saida Community Wellness Center', phone: '+961 3 555 047', email: 'a.mroueh@southerncare.org' }
+        ]
+    },
+    'Coastal Recovery Group': {
+        facilities: [
+            { name: 'Jounieh Recovery Center', type: 'Community Center', governorate: 'Mount Lebanon', caza: 'Kesrouan', locality: 'Jounieh', contact: '+961 9 555 053' }
+        ],
+        providers: [
+            { name: 'Dr. Carla Khoury', type: 'Psychiatrist', facility: 'Jounieh Recovery Center', phone: '+961 3 555 054', email: 'c.khoury@coastalrecovery.org' },
+            { name: 'Tony Saade', type: 'Counselor', facility: 'Jounieh Recovery Center', phone: '+961 3 555 055', email: 't.saade@coastalrecovery.org' }
+        ]
+    }
+};

@@ -29,17 +29,26 @@ business functions/branding — they are not designs to reproduce.
 ## Non-negotiable UX decisions
 
 - Replace the Platforms concept with a persistent left sidebar.
-- Do not display MHIS, 4Ws, Substance Use, or Admin as platforms.
+- There is no Platforms selector and no separate platform area. MHIS is the
+  one shell. The 4Ws Platform and the Substance Use Platform may appear only
+  as named sidebar groups, breadcrumb labels, and home page cards; a platform
+  is never a gate the user has to pass through to reach a task.
 - Preserve the MHIS green visual identity, but not the current navigation
   structure.
 - NGOs and administrators must have different navigation.
-- Facilities and Providers are independent sections, not Organization Profile
-  tabs.
+- Facilities and Providers are separate pages under the NGO's Organization
+  sidebar group, not Organization Profile tabs, and not part of registration.
+  The administrator sees them per organization in Organization Management.
 - Surveys are part of the common MHIS frontend and are visible only to
   eligible NGOs.
 - Events Calendar must be a labelled navigation item, not only an icon.
-- Dashboards must be directly accessible without entering a 4Ws platform.
-- Static/informational pages must be grouped under Resources & Help.
+- Each platform's Dashboard is a direct sidebar item. The Advanced Dashboard
+  (Power BI) opens in a new tab from the 4Ws Dashboard page.
+- Static/informational pages must be grouped under Resources & Help: one page,
+  sectioned General / 4Ws Platform / Substance Use Platform.
+- Every page except Home starts with the breadcrumb rendered by `core.js`
+  (`renderBreadcrumb` in `nav.js`). Do not add Back links to detail pages; put
+  status pills next to the page title (`page-header page-header-start`).
 - Notifications remain notifications — no Inbox, messaging center, task
   center, or communication module. Long notifications may open in a modal.
 - Do not turn the application into a workflow or journey-management
@@ -97,7 +106,11 @@ business functions/branding — they are not designs to reproduce.
     `resources.js`, `calendar.js`, `dashboards.js`, `organization.js`,
     `facilities.js`, `providers.js`, `activities.js` (Activities + Surveys,
     which are cross-referenced), `registration.js` (NGO registration
-    lifecycle), `admin.js` (administrator registration review).
+    lifecycle), `admin.js` (administrator registration review),
+    `organization-management.js` (administrator per-organization view),
+    plus `reviews.js`, `user-management.js`, `announcements.js`,
+    `whats-new.js` (not in the admin sidebar at the moment) and
+    `public-activities.js`.
   - `wwwroot/css/style.css` — all styling.
   - When adding a new page-level render function, put it in the matching
     `wwwroot/js/pages/*.js` file (or add a new one and register its
@@ -159,7 +172,8 @@ truncated before committing it, and overwrite the vendored file.
   when their purpose isn't obvious.
 - Keep tables readable and avoid unnecessary columns.
 - The left sidebar is the primary application navigation; the top bar
-  contains only global utilities (notifications, account controls).
+  contains only global utilities (Events Calendar shortcut, notifications,
+  account controls).
 
 ## UI consistency
 

@@ -3558,3 +3558,455 @@ svg.icon {
     color: var(--color-text-primary);
 }
 
+/* ===== Breadcrumb (every page except Home) ===== */
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.breadcrumb i,
+.breadcrumb svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.breadcrumb-link {
+    color: var(--color-primary-green);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-current {
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+/* ===== Home: platform cards ===== */
+.home-platforms {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.home-platforms.single {
+    grid-template-columns: 1fr;
+}
+
+.platform-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-top: 4px solid var(--color-primary-green);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    container-type: inline-size;
+}
+
+.platform-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+}
+
+.platform-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    background-color: var(--color-pale-green);
+    color: var(--color-primary-green);
+}
+
+.platform-card-icon i,
+.platform-card-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.platform-card-heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.platform-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: -0.2px;
+}
+
+.platform-card-tagline {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+}
+
+.platform-card-about {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.platform-card-about i,
+.platform-card-about svg {
+    width: 14px;
+    height: 14px;
+}
+
+.platform-card-about:hover {
+    color: var(--color-primary-green);
+    border-color: var(--color-primary-green);
+}
+
+/* Progress glance (4Ws figures / Substance Use reporting year) */
+.platform-card-progress {
+    flex: 1;
+    display: flex;
+}
+
+.platform-stats,
+.platform-cycle {
+    flex: 1;
+    background-color: var(--color-hover-green);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+}
+
+.platform-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+}
+
+.platform-stat {
+    text-align: center;
+    padding: 0 var(--spacing-sm);
+}
+
+.platform-stat + .platform-stat {
+    border-left: 1px solid #d3e8d6;
+}
+
+.platform-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-primary-green);
+}
+
+.platform-stat-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 700;
+    margin-top: var(--spacing-xs);
+}
+
+.platform-cycle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.platform-cycle-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.platform-cycle-year {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 700;
+}
+
+.platform-cycle-count {
+    font-size: 13px;
+    color: var(--color-text-primary);
+}
+
+.platform-cycle-count strong {
+    font-size: 20px;
+    color: var(--color-primary-green);
+}
+
+.platform-cycle-track {
+    height: 8px;
+    border-radius: 999px;
+    background-color: #d3e8d6;
+    overflow: hidden;
+}
+
+.platform-cycle-fill {
+    height: 100%;
+    border-radius: 999px;
+    background-color: var(--color-primary-green);
+}
+
+.platform-cycle-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.platform-cycle-note i,
+.platform-cycle-note svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Actions */
+.platform-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.platform-action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 14px var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.platform-action:hover {
+    border-color: var(--color-primary-green);
+    box-shadow: var(--shadow-md);
+}
+
+.platform-action:focus {
+    outline: 2px solid var(--color-primary-green);
+    outline-offset: 2px;
+}
+
+.platform-action.primary {
+    background-color: var(--color-primary-green);
+    border-color: var(--color-primary-green);
+    color: white;
+}
+
+.platform-action.primary:hover {
+    background-color: var(--color-dark-green);
+    border-color: var(--color-dark-green);
+}
+
+.platform-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: var(--color-pale-green);
+    color: var(--color-primary-green);
+}
+
+.platform-action.primary .platform-action-icon {
+    background-color: rgba(255, 255, 255, 0.18);
+    color: white;
+}
+
+.platform-action-icon i,
+.platform-action-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.platform-action-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.platform-action-label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.platform-action-hint {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.platform-action.primary .platform-action-hint {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.platform-action-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.platform-action:hover .platform-action-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+}
+
+/* Only one platform (organization not eligible for Substance Use): the card
+   spans the full width, with identity and actions on the left and the
+   progress glance on the right. */
+.platform-card-wide {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+        "head progress"
+        "actions progress";
+    column-gap: var(--spacing-xl);
+    row-gap: var(--spacing-lg);
+    align-items: start;
+}
+
+.platform-card-wide .platform-card-head {
+    grid-area: head;
+}
+
+.platform-card-wide .platform-card-progress {
+    grid-area: progress;
+    align-self: stretch;
+}
+
+.platform-card-wide .platform-card-actions {
+    grid-area: actions;
+    align-self: end;
+}
+
+@media (max-width: 1100px) {
+    .home-platforms {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Narrow cards: tighter action tiles, the whole tile is already the button */
+@container (max-width: 480px) {
+    .platform-action {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .platform-action-arrow {
+        display: none;
+    }
+}
+
+/* ===== Detail pages: status pill next to the title ===== */
+.page-header.page-header-start {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+/* ===== Table cell link (opens a related record) ===== */
+.table-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    color: var(--color-primary-green);
+    text-align: left;
+    cursor: pointer;
+}
+
+.table-link:hover {
+    text-decoration: underline;
+}
+
+/* ===== Registrations list: possible personal email marker ===== */
+.cell-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #b26500;
+}
+
+.cell-flag i,
+.cell-flag svg {
+    width: 13px;
+    height: 13px;
+}
+
+/* ===== Registration Review: possible personal email flag ===== */
+.warning-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background-color: #fff4e5;
+    border: 1px solid #ffd8a8;
+    border-radius: var(--radius-md);
+    color: #8a4b00;
+    font-size: 14px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.warning-banner i,
+.warning-banner svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* ===== Resources & Help: external link card ===== */
+a.resource-card {
+    text-decoration: none;
+}
+
+/* ===== Organization Management: records toolbar ===== */
+.organization-records-toolbar {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.organization-records-toolbar .result-count {
+    margin-bottom: 0;
+}
