@@ -33,8 +33,8 @@ business functions/branding — they are not designs to reproduce.
   one shell. The 4Ws Platform and the Substance Use Platform may appear only
   as named sidebar groups, breadcrumb labels, and home page cards; a platform
   is never a gate the user has to pass through to reach a task.
-- Preserve the MHIS green visual identity, but not the current navigation
-  structure.
+- Follow the NMHP BRIDGE visual identity (see Visual direction), but not the
+  current navigation structure.
 - NGOs and administrators must have different navigation.
 - Facilities and Providers are separate pages under the NGO's Organization
   sidebar group, not Organization Profile tabs, and not part of registration.
@@ -112,6 +112,8 @@ business functions/branding — they are not designs to reproduce.
     `whats-new.js` (not in the admin sidebar at the moment) and
     `public-activities.js`.
   - `wwwroot/css/style.css` — all styling.
+  - `wwwroot/fonts/` (Inter) and `wwwroot/img/` (NMHP logo) — static
+    assets used by the BRIDGE theme.
   - When adding a new page-level render function, put it in the matching
     `wwwroot/js/pages/*.js` file (or add a new one and register its
     `<script>` tag in `index.html`) rather than growing an existing file
@@ -163,7 +165,12 @@ truncated before committing it, and overwrite the vendored file.
 ## Visual direction
 
 - Professional government/NGO enterprise application.
-- Preserve the established dark-green MHIS brand.
+- Follow the NMHP Mental Health BRIDGE theme (https://bridge.nmhp-lb.com/):
+  Inter font, teal-green brand (`#097d63` primary, `#065c49` dark), slate
+  text, soft blue-grey borders, rounded low-shadow surfaces. All values are
+  the variables at the top of `style.css`; do not hard-code new colours.
+- Inter is bundled in `wwwroot/fonts/` and the NMHP logo in `wwwroot/img/`.
+  Do not load fonts or images from a CDN.
 - Clean white or soft-neutral content background; generous but controlled
   spacing.
 - Avoid excessive cards, badges, colors, explanatory paragraphs, and
@@ -171,8 +178,9 @@ truncated before committing it, and overwrite the vendored file.
 - Primary actions must be immediately recognizable; avoid icon-only actions
   when their purpose isn't obvious.
 - Keep tables readable and avoid unnecessary columns.
-- The left sidebar is the primary application navigation; the top bar
-  contains only global utilities (Events Calendar shortcut, notifications,
+- The left sidebar is the primary application navigation. The top bar is
+  white (BRIDGE style), with the NMHP logo and MHIS name on the left and only
+  global utilities on the right (Events Calendar shortcut, notifications,
   account controls).
 
 ## UI consistency

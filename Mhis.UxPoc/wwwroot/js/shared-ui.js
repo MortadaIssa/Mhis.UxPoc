@@ -1,10 +1,14 @@
 // ===== Reusable Form Modal =====
-function openFormModal(title, bodyHTML, footerHTML, wide) {
+// options.dismissOnBackdrop: false keeps the modal open when the user clicks
+// outside it, so it closes only from the X or its own buttons (used by the
+// registration wizard, where an accidental click would lose what was typed).
+function openFormModal(title, bodyHTML, footerHTML, wide, options = {}) {
     document.getElementById('formModalTitle').textContent = title;
     document.getElementById('formModalBody').innerHTML = bodyHTML;
     document.getElementById('formModalFooter').innerHTML = footerHTML;
     const overlay = document.getElementById('formModalOverlay');
     overlay.classList.toggle('modal-wide', !!wide);
+    overlay.dataset.dismissOnBackdrop = options.dismissOnBackdrop === false ? 'false' : 'true';
     overlay.style.display = 'flex';
     overlay.classList.add('show');
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -17,6 +21,7 @@ function closeFormModal() {
     overlay.style.display = 'none';
     overlay.classList.remove('show');
     overlay.classList.remove('modal-wide');
+    delete overlay.dataset.dismissOnBackdrop;
 }
 
 // ===== Reusable Confirmation Dialog =====

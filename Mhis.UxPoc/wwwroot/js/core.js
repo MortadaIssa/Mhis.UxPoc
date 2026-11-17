@@ -44,7 +44,7 @@ function initializeEventListeners() {
     // Reusable Form Modal
     document.getElementById('closeFormModal').addEventListener('click', closeFormModal);
     document.getElementById('formModalOverlay').addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget && e.currentTarget.dataset.dismissOnBackdrop !== 'false') {
             closeFormModal();
         }
     });

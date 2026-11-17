@@ -177,7 +177,7 @@ function openRegistrationEmailStep(prefill) {
     const footerHTML = `
         <button type="button" class="modal-btn" id="regCancelBtn">Cancel</button>
         <button type="button" class="modal-btn primary" id="regSendCodeBtn">Send Verification Code</button>`;
-    openFormModal('Register Your Organization', bodyHTML, footerHTML);
+    openFormModal('Register Your Organization', bodyHTML, footerHTML, false, { dismissOnBackdrop: false });
 
     const emailInput = document.getElementById('regEmail');
     const emailErrorEl = document.getElementById('regEmail-error');
@@ -276,7 +276,7 @@ function openRegistrationVerifyStep(email, organizationName) {
     const footerHTML = `
         <button type="button" class="modal-btn" id="regBackToEmailBtn">Back</button>
         <button type="button" class="modal-btn primary" id="regVerifyBtn">Verify</button>`;
-    openFormModal('Register Your Organization', bodyHTML, footerHTML);
+    openFormModal('Register Your Organization', bodyHTML, footerHTML, false, { dismissOnBackdrop: false });
 
     document.getElementById('regBackToEmailBtn').addEventListener('click', () => openRegistrationEmailStep({ organizationName, email }));
     document.getElementById('regResendBtn').addEventListener('click', () => {
@@ -320,7 +320,7 @@ function openRegistrationPasswordStep(email, organizationName) {
     const footerHTML = `
         <button type="button" class="modal-btn" id="regBackToVerifyBtn">Back</button>
         <button type="button" class="modal-btn primary" id="regCreateBtn">Create Account</button>`;
-    openFormModal('Register Your Organization', bodyHTML, footerHTML);
+    openFormModal('Register Your Organization', bodyHTML, footerHTML, false, { dismissOnBackdrop: false });
 
     wirePasswordToggle('toggleRegPasswordBtn', 'regPassword');
     wirePasswordToggle('toggleRegPasswordConfirmBtn', 'regPasswordConfirm');

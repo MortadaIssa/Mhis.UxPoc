@@ -392,8 +392,8 @@ let appState = {
 
 // ===== Events Calendar mock data =====
 mockData.calendarEventTypes = [
-    { id: 'event', label: 'Event', color: '#1e7e34' },
-    { id: 'training', label: 'Training', color: '#1565c0' },
+    { id: 'event', label: 'Event', color: '#097d63' },
+    { id: 'training', label: 'Training', color: '#1a5fb4' },
     { id: 'awareness', label: 'Awareness Campaign', color: '#6a4c93' }
 ];
 

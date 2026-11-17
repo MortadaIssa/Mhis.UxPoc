@@ -37,11 +37,11 @@ Priority 2:
 
 ## Application shell
 
-Use a persistent left sidebar and a compact green top bar.
+Use a persistent left sidebar and a compact white top bar in the NMHP BRIDGE style.
 
 The top bar contains:
 
-- MHIS identity.
+- NMHP logo and MHIS identity.
 - Events Calendar shortcut.
 - Notification bell.
 - Logged-in organization or administrator.
