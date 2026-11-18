@@ -21,9 +21,9 @@ function initializeEventListeners() {
         showToast('Changing the password is simulated in this POC.', 'info');
     });
 
-    // Calendar shortcut
+    // Calendar shortcut (shown only to approved NGOs, see startApp)
     document.getElementById('calendarShortcutBtn').addEventListener('click', () => {
-        navigateTo(isAdminUser() ? 'event-reviews' : 'events-calendar');
+        navigateTo('events-calendar');
     });
 
     // Notification Bell
@@ -32,6 +32,9 @@ function initializeEventListeners() {
     // Account Menu
     document.getElementById('accountBtn').addEventListener('click', toggleAccountDropdown);
     document.addEventListener('click', handleOutsideClick);
+
+    // Esc closes the topmost dialog, panel or menu (shared-ui.js)
+    document.addEventListener('keydown', handleEscapeKey);
 
     // Notification Modal
     document.getElementById('closeNotifications').addEventListener('click', closeNotificationModal);
@@ -138,13 +141,25 @@ function handleNavigation(e) {
 }
 
 // Activate a sidebar item and update state (also used for internal links).
-// A page opened from a list page keeps that list's sidebar item highlighted.
+// Opening a page of another area (a platform, or MHIS) switches the sidebar
+// and the top bar to that area. A page opened from a list page keeps that
+// list's sidebar item highlighted.
 function setActivePage(page) {
+    appState.currentPage = page;
+    if (page !== 'organization-profile') {
+        // Leaving the profile ends an Update and Resubmit that was not resubmitted.
+        registrationEditView.updating = false;
+    }
+    const area = getAreaForPage(page);
+    if (area !== appState.currentArea) {
+        appState.currentArea = area;
+        renderSidebarNav();
+        updateTopBarArea();
+    }
     const navPage = BREADCRUMB_PARENTS[page] || page;
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.toggle('active', item.getAttribute('data-page') === navPage);
     });
-    appState.currentPage = page;
 }
 
 // Navigate programmatically (used by in-page links)
@@ -243,13 +258,13 @@ function renderPageBody(page) {
             container.innerHTML = renderOrganizationProfilePage();
             attachOrganizationProfileListeners();
             break;
-        case 'facilities':
-            container.innerHTML = renderFacilitiesPage();
-            attachFacilitiesListeners();
+        case '4ws-overview':
+            container.innerHTML = renderFourWsOverviewPage();
+            attachPlatformOverviewListeners();
             break;
-        case 'providers':
-            container.innerHTML = renderProvidersPage();
-            attachProvidersListeners();
+        case 'su-overview':
+            container.innerHTML = renderSubstanceUseOverviewPage();
+            attachPlatformOverviewListeners();
             break;
         case 'activities':
             container.innerHTML = renderActivitiesPage();
@@ -370,7 +385,14 @@ function startApp() {
     loginScreen.hidden = true;
     topBar.hidden = false;
     appShell.hidden = false;
+    // Every sign-in opens on MHIS Home, the same page each time.
+    appState.currentArea = 'mhis';
+    appState.currentPage = 'home';
     updateTopBarIdentity();
+    updateTopBarArea();
+    // The calendar icon opens the Events Calendar, so it shows only to users
+    // who have one (not the administrator, not an NGO awaiting approval).
+    document.getElementById('calendarShortcutBtn').hidden = !getAllowedPages().includes('events-calendar');
     updateNotificationBadge();
     renderSidebarNav();
     navigateTo('home');
@@ -396,6 +418,7 @@ function signInAs(accountId) {
     activitiesView.mode = 'list';
     activityEditor = null;
     adminView.selectedRegistrationId = null;
+    organizationProfileView.tab = 'details';
     startApp();
 }
 
@@ -406,6 +429,23 @@ function handleSignOut() {
         document.getElementById('accountDropdown').style.display = 'none';
         startApp();
     };
+
+    // Same rule as every other way out of the activity editor (UX-BRIEF).
+    if (hasUnsavedActivityChanges()) {
+        document.getElementById('accountDropdown').style.display = 'none';
+        showConfirmDialog({
+            title: 'Discard Unsaved Changes?',
+            message: 'You have unsaved changes to this activity. Log out and discard them?',
+            confirmLabel: 'Log Out',
+            tone: 'danger',
+            onConfirm: () => {
+                activityEditor = null;
+                activitiesView.mode = 'list';
+                proceedToSignOut();
+            }
+        });
+        return;
+    }
 
     if (appState.profileDirty) {
         showConfirmDialog({
@@ -429,7 +469,7 @@ function updateTopBarIdentity() {
     if (!account) {
         return;
     }
-    const label = account.role === 'ngo' && !account.registrationId ? getCurrentNgoProfile().name : account.organization;
+    const label = account.role === 'ngo' ? getCurrentOrganizationName() : account.organization;
     document.getElementById('topBarOrgName').textContent = label;
 }
 

@@ -1,0 +1,207 @@
+{
+  "kit": "4.2.1",
+  "enforce": "warn",
+  "ui_paths": [
+    "Mhis.UxPoc/wwwroot/**/*.js",
+    "Mhis.UxPoc/wwwroot/**/*.css",
+    "Mhis.UxPoc/wwwroot/**/*.html"
+  ],
+  "exempt_paths": [],
+  "areas": {
+    "shell": {
+      "paths": [
+        "Mhis.UxPoc/wwwroot/index.html",
+        "Mhis.UxPoc/wwwroot/css/**",
+        "Mhis.UxPoc/wwwroot/js/core.js",
+        "Mhis.UxPoc/wwwroot/js/nav.js",
+        "Mhis.UxPoc/wwwroot/js/shared-ui.js",
+        "Mhis.UxPoc/wwwroot/js/notifications.js",
+        "Mhis.UxPoc/wwwroot/js/login.js",
+        "Mhis.UxPoc/wwwroot/js/email-policy.js",
+        "Mhis.UxPoc/wwwroot/js/demo-session.js",
+        "Mhis.UxPoc/wwwroot/js/data.js"
+      ],
+      "gates": {
+        "D": {
+          "status": "n/a",
+          "note": "existing system, brought in by adoption",
+          "date": "2026-11-17T15:31:03.840Z"
+        },
+        "P": {
+          "status": "n/a",
+          "note": "existing system, brought in by adoption",
+          "date": "2026-11-17T15:31:03.842Z"
+        }
+      }
+    },
+    "ngo": {
+      "paths": [
+        "Mhis.UxPoc/wwwroot/js/pages/home.js",
+        "Mhis.UxPoc/wwwroot/js/pages/organization.js",
+        "Mhis.UxPoc/wwwroot/js/pages/registration.js",
+        "Mhis.UxPoc/wwwroot/js/pages/facilities.js",
+        "Mhis.UxPoc/wwwroot/js/pages/providers.js",
+        "Mhis.UxPoc/wwwroot/js/pages/activities.js",
+        "Mhis.UxPoc/wwwroot/js/pages/dashboards.js",
+        "Mhis.UxPoc/wwwroot/js/pages/calendar.js",
+        "Mhis.UxPoc/wwwroot/js/pages/resources.js",
+        "Mhis.UxPoc/wwwroot/js/pages/public-activities.js"
+      ],
+      "gates": {
+        "D": {
+          "status": "n/a",
+          "note": "existing system, brought in by adoption",
+          "date": "2026-11-17T15:31:04.057Z"
+        },
+        "P": {
+          "status": "n/a",
+          "note": "existing system, brought in by adoption",
+          "date": "2026-11-17T15:31:04.058Z"
+        }
+      }
+    },
+    "admin": {
+      "paths": [
+        "Mhis.UxPoc/wwwroot/js/pages/admin.js",
+        "Mhis.UxPoc/wwwroot/js/pages/organization-management.js",
+        "Mhis.UxPoc/wwwroot/js/pages/reviews.js",
+        "Mhis.UxPoc/wwwroot/js/pages/user-management.js",
+        "Mhis.UxPoc/wwwroot/js/pages/announcements.js",
+        "Mhis.UxPoc/wwwroot/js/pages/whats-new.js"
+      ],
+      "gates": {
+        "D": {
+          "status": "n/a",
+          "note": "existing system, brought in by adoption",
+          "date": "2026-11-17T15:31:04.267Z"
+        },
+        "P": {
+          "status": "n/a",
+          "note": "existing system, brought in by adoption",
+          "date": "2026-11-17T15:31:04.268Z"
+        }
+      }
+    }
+  },
+  "fast_path": [],
+  "verify": {
+    "commands": [
+      "dotnet build Mhis.UxPoc/Mhis.UxPoc.csproj -nologo -v q"
+    ],
+    "base_url": "http://localhost:5232",
+    "pages": [
+      {
+        "path": "/?v=signin",
+        "flags": [
+          "--forms",
+          "--forms-server"
+        ],
+        "auth": ".design-kit/auth-signedout.json",
+        "note": "desktop-first: UX-BRIEF puts mobile data-entry out of scope (DESIGN.md 5)"
+      },
+      {
+        "path": "/?v=ngo",
+        "flags": [],
+        "auth": ".design-kit/auth-ngo-existing.json",
+        "note": "desktop-first: UX-BRIEF puts mobile data-entry out of scope (DESIGN.md 5)"
+      },
+      {
+        "path": "/?v=ngo4ws",
+        "flags": [],
+        "auth": ".design-kit/auth-ngo-4ws-only.json",
+        "note": "desktop-first: UX-BRIEF puts mobile data-entry out of scope (DESIGN.md 5)"
+      },
+      {
+        "path": "/?v=new",
+        "flags": [],
+        "auth": ".design-kit/auth-ngo-new.json",
+        "note": "desktop-first: UX-BRIEF puts mobile data-entry out of scope (DESIGN.md 5)"
+      },
+      {
+        "path": "/?v=rejected",
+        "flags": [],
+        "auth": ".design-kit/auth-ngo-rejected.json",
+        "note": "desktop-first: UX-BRIEF puts mobile data-entry out of scope (DESIGN.md 5)"
+      },
+      {
+        "path": "/?v=admin",
+        "flags": [],
+        "auth": ".design-kit/auth-admin.json",
+        "note": "desktop-first: UX-BRIEF puts mobile data-entry out of scope (DESIGN.md 5)"
+      }
+    ],
+    "widths": [
+      "1440x900",
+      "1280x800"
+    ],
+    "rtl": false,
+    "structure": "none"
+  },
+  "log": [
+    {
+      "date": "2026-11-17T15:31:03.632Z",
+      "event": "init",
+      "enforce": "warn"
+    },
+    {
+      "date": "2026-11-17T15:31:03.842Z",
+      "event": "area",
+      "area": "shell",
+      "paths": [
+        "Mhis.UxPoc/wwwroot/index.html",
+        "Mhis.UxPoc/wwwroot/css/**",
+        "Mhis.UxPoc/wwwroot/js/core.js",
+        "Mhis.UxPoc/wwwroot/js/nav.js",
+        "Mhis.UxPoc/wwwroot/js/shared-ui.js",
+        "Mhis.UxPoc/wwwroot/js/notifications.js",
+        "Mhis.UxPoc/wwwroot/js/login.js",
+        "Mhis.UxPoc/wwwroot/js/email-policy.js",
+        "Mhis.UxPoc/wwwroot/js/demo-session.js",
+        "Mhis.UxPoc/wwwroot/js/data.js"
+      ],
+      "existing": true
+    },
+    {
+      "date": "2026-11-17T15:31:04.058Z",
+      "event": "area",
+      "area": "ngo",
+      "paths": [
+        "Mhis.UxPoc/wwwroot/js/pages/home.js",
+        "Mhis.UxPoc/wwwroot/js/pages/organization.js",
+        "Mhis.UxPoc/wwwroot/js/pages/registration.js",
+        "Mhis.UxPoc/wwwroot/js/pages/facilities.js",
+        "Mhis.UxPoc/wwwroot/js/pages/providers.js",
+        "Mhis.UxPoc/wwwroot/js/pages/activities.js",
+        "Mhis.UxPoc/wwwroot/js/pages/dashboards.js",
+        "Mhis.UxPoc/wwwroot/js/pages/calendar.js",
+        "Mhis.UxPoc/wwwroot/js/pages/resources.js",
+        "Mhis.UxPoc/wwwroot/js/pages/public-activities.js"
+      ],
+      "existing": true
+    },
+    {
+      "date": "2026-11-17T15:31:04.268Z",
+      "event": "area",
+      "area": "admin",
+      "paths": [
+        "Mhis.UxPoc/wwwroot/js/pages/admin.js",
+        "Mhis.UxPoc/wwwroot/js/pages/organization-management.js",
+        "Mhis.UxPoc/wwwroot/js/pages/reviews.js",
+        "Mhis.UxPoc/wwwroot/js/pages/user-management.js",
+        "Mhis.UxPoc/wwwroot/js/pages/announcements.js",
+        "Mhis.UxPoc/wwwroot/js/pages/whats-new.js"
+      ],
+      "existing": true
+    },
+    {
+      "date": "2026-11-17T15:31:04.991Z",
+      "event": "verify-structure",
+      "value": "off"
+    },
+    {
+      "date": "2026-11-17T15:31:07.182Z",
+      "event": "verify-structure",
+      "value": "none"
+    }
+  ]
+}

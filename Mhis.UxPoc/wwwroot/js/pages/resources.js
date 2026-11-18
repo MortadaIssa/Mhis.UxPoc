@@ -1,6 +1,7 @@
 // ===== Resources & Help =====
-// One Resources & Help page, grouped by where the material belongs: general
-// MHIS material first, then one group per reporting platform.
+// One Resources & Help page in every area. It shows the topics of the area
+// the user is in: General in MHIS, the platform's own topics inside the 4Ws
+// or the Substance Use Platform.
 const NMHP_RESOURCES_URL = 'https://resources.nmhp-lb.com/';
 
 const RESOURCE_GROUPS = [
@@ -11,7 +12,6 @@ const RESOURCE_GROUPS = [
 
 const RESOURCE_TOPICS = [
     { key: 'about-mhis', group: 'general', label: 'About MHIS', icon: 'info', description: 'Learn about the Mental Health Information System.' },
-    { key: 'about-nmhp', group: 'general', label: 'About NMHP', icon: 'info', description: 'Learn about the National Mental Health Programme.' },
     { key: 'whats-new', group: 'general', label: 'What\u2019s New', icon: 'sparkles', description: 'Recent updates and improvements to MHIS.' },
     { key: 'nmhp-resources', group: 'general', label: 'NMHP Resources Page', icon: 'external-link', description: 'Opens the NMHP resources website in a new browser tab.', href: NMHP_RESOURCES_URL },
     { key: 'activity-catalog', group: '4ws', label: 'List of 4Ws Sub-Activities', icon: 'book-open', description: 'Browse sub-activity codes, names, and definitions.' },
@@ -22,21 +22,29 @@ const RESOURCE_TOPICS = [
     { key: 'annual-reports-su', group: 'su', label: 'Annual Reports', icon: 'file-text', description: 'Published Substance Use annual reports.' }
 ];
 
+// The About texts, also shown by Read More on the MHIS Home platform cards.
+const RESOURCE_ABOUT_TEXT = {
+    'about-mhis': 'The Mental Health Information System (MHIS) is the platform NGOs and administrators use to register activities, facilities, providers, and surveys in support of the national mental health response. It centralizes reporting to support coordination and evidence-based planning.',
+    'about-4ws': 'The 4Ws (Who, What, Where, When) framework is used to map mental health and psychosocial support activities across Lebanon. It helps NGOs and the National Mental Health Programme understand who is doing what, where, and when, avoiding duplication and identifying gaps in coverage.'
+};
+
+function getAboutText(topicKey) {
+    return topicKey === 'about-su' ? mockData.surveysIntro.full : RESOURCE_ABOUT_TEXT[topicKey] || '';
+}
+
 function getResourceTopic(key) {
     return RESOURCE_TOPICS.find(t => t.key === key);
 }
 
-// An organization that is not approved yet has no access to the reporting
-// platforms, so it only sees the general material.
-// Organizations that are not eligible for Substance Use do not see its group.
+// MHIS shows the general material; inside a platform, only that platform's
+// topics. An organization that is not approved yet only sees the general
+// material.
 function getVisibleResourceGroups() {
     if (isAdminUser()) {
         return RESOURCE_GROUPS;
     }
-    if (!isCurrentNgoApproved()) {
-        return RESOURCE_GROUPS.filter(g => g.key === 'general');
-    }
-    return RESOURCE_GROUPS.filter(g => g.key !== 'su' || isSubstanceUseEligible());
+    const platform = getCurrentPlatform();
+    return RESOURCE_GROUPS.filter(g => g.key === (platform ? platform.key : 'general'));
 }
 
 function renderResourcesHelpPage() {
@@ -90,13 +98,10 @@ function renderResourceTopicPage(topicKey) {
             bodyHTML = renderGlossaryResource();
             break;
         case 'about-4ws':
-            bodyHTML = renderStaticResource('About the 4Ws Platform', 'The 4Ws (Who, What, Where, When) framework is used to map mental health and psychosocial support activities across Lebanon. It helps NGOs and the National Mental Health Programme understand who is doing what, where, and when, avoiding duplication and identifying gaps in coverage.');
+            bodyHTML = renderStaticResource('About the 4Ws Platform', getAboutText('about-4ws'));
             break;
         case 'about-mhis':
-            bodyHTML = renderStaticResource('About MHIS', 'The Mental Health Information System (MHIS) is the platform NGOs and administrators use to register activities, facilities, providers, and surveys in support of the national mental health response. It centralizes reporting to support coordination and evidence-based planning.');
-            break;
-        case 'about-nmhp':
-            bodyHTML = renderStaticResource('About NMHP', 'The National Mental Health Programme (NMHP) is the government body within the Ministry of Public Health responsible for overseeing mental health policy, coordination, and services in Lebanon.');
+            bodyHTML = renderStaticResource('About MHIS', getAboutText('about-mhis'));
             break;
         case 'whats-new':
             bodyHTML = renderWhatsNewResource();
@@ -108,7 +113,7 @@ function renderResourceTopicPage(topicKey) {
             bodyHTML = renderSubstanceUseSubActivitiesResource();
             break;
         case 'about-su':
-            bodyHTML = renderStaticResource('About the Substance Use Platform', mockData.surveysIntro.full);
+            bodyHTML = renderStaticResource('About the Substance Use Platform', getAboutText('about-su'));
             break;
         case 'annual-reports-su':
             bodyHTML = renderAnnualReportsResource('Substance Use Annual Reports', mockData.resources.annualReportsSu);

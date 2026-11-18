@@ -89,7 +89,7 @@ function renderAccountAccessPill(access) {
 // Opens the organization's details in Organization Management.
 function openOrganizationDetails(organizationId, tab) {
     organizationManagementView.selectedId = organizationId;
-    organizationManagementView.tab = tab || 'profile';
+    organizationManagementView.tab = tab || 'details';
     navigateTo('organization-detail');
 }
 

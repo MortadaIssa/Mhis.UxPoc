@@ -284,14 +284,20 @@ svg.icon {
 }
 
 /* Main Container */
+/* The shell fills the window below the top bar: the sidebar stays in place
+   and the page content scrolls on its own, so sticky action bars (Save,
+   the activity editor actions, Before You Submit) stay in view. */
 .main-container {
     display: flex;
-    min-height: calc(100vh - 64px);
+    height: calc(100vh - 64px);
 }
 
 /* Sidebar */
 .sidebar {
+    display: flex;
+    flex-direction: column;
     width: 280px;
+    flex-shrink: 0;
     background-color: var(--color-surface);
     border-right: 1px solid var(--color-border);
     overflow-y: auto;
@@ -299,6 +305,7 @@ svg.icon {
 }
 
 .sidebar-nav {
+    flex: 1 0 auto;
     display: flex;
     flex-direction: column;
 }
@@ -1089,7 +1096,7 @@ svg.icon {
 
 .announcement-meta {
     font-size: 11px;
-    color: #8a9ab0;
+    color: var(--color-text-secondary);
 }
 
 .event-item {
@@ -1627,14 +1634,37 @@ textarea::placeholder {
     color: #8a9ab0;
 }
 
+/* Each field keeps one line reserved for its message, so showing or clearing
+   an error never moves the form (design-kit ux-patterns §3.1). */
 .field-error {
     font-size: 12px;
+    line-height: 16px;
     color: var(--color-error);
-    min-height: 14px;
+    min-height: 16px;
+}
+
+.form-field textarea.invalid {
+    border-color: var(--color-error);
+}
+
+/* An invalid field stays red while focused, so the field being fixed still reads as the error. */
+.form-field input.invalid:focus,
+.form-field select.invalid:focus,
+.form-field textarea.invalid:focus {
+    border-color: var(--color-error);
+}
+
+/* "N fields need attention" beside a long form's submit button. */
+.form-error-count {
+    margin-right: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-error-text);
 }
 
 .form-actions {
     display: flex;
+    align-items: center;
     gap: var(--spacing-md);
     margin-top: var(--spacing-md);
     justify-content: flex-end;
@@ -2124,9 +2154,11 @@ textarea::placeholder {
     justify-content: flex-end;
     gap: var(--spacing-md);
     position: sticky;
-    bottom: 0;
+    bottom: calc(-1 * var(--spacing-xl));
+    z-index: 5;
+    margin-bottom: calc(-1 * var(--spacing-xl));
     background: var(--color-page-bg);
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-md) 0 calc(var(--spacing-md) + var(--spacing-xl));
     border-top: 1px solid var(--color-border);
 }
 
@@ -2445,7 +2477,7 @@ textarea::placeholder {
 /* Month view */
 .cal-month-weekdays {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     background-color: var(--color-hover-green);
     border-bottom: 1px solid var(--color-border);
 }
@@ -2462,7 +2494,7 @@ textarea::placeholder {
 
 .cal-month-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     grid-auto-rows: minmax(110px, auto);
 }
 
@@ -2473,7 +2505,6 @@ textarea::placeholder {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    cursor: pointer;
 }
 
 .cal-month-cell:hover {
@@ -2561,7 +2592,7 @@ textarea::placeholder {
 /* Week / Day agenda views */
 .cal-week-view {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .cal-day-view {
@@ -3427,10 +3458,23 @@ textarea::placeholder {
     border-color: var(--color-border);
 }
 
+/* Pending Review waits for NMHP; Changes Requested waits for the organization. */
 .reg-status-pending {
+    background-color: var(--color-info-bg);
+    color: var(--color-info);
+    border-color: var(--color-info-border);
+}
+
+.reg-status-changes {
     background-color: var(--color-warning-bg);
     color: var(--color-warning-text);
     border-color: var(--color-warning-border);
+}
+
+.reg-status-declined {
+    background-color: var(--color-error-bg);
+    color: var(--color-error);
+    border-color: var(--color-error-border);
 }
 
 .reg-status-approved {
@@ -3873,40 +3917,8 @@ textarea::placeholder {
     margin-top: 2px;
 }
 
-.platform-card-about {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-    padding: 4px 10px;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-text-secondary);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.platform-card-about i,
-.platform-card-about svg {
-    width: 14px;
-    height: 14px;
-}
-
-.platform-card-about:hover {
-    color: var(--color-primary-green);
-    border-color: var(--color-primary-green);
-}
-
-/* Progress glance (4Ws figures / Substance Use reporting year) */
-.platform-card-progress {
-    flex: 1;
-    display: flex;
-}
-
+/* Progress glance (4Ws figures / Substance Use reporting year), shown on
+   the platform Overview pages */
 .platform-stats,
 .platform-cycle {
     flex: 1;
@@ -4002,155 +4014,6 @@ textarea::placeholder {
 .platform-cycle-note svg {
     width: 14px;
     height: 14px;
-}
-
-/* Actions */
-.platform-card-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-md);
-}
-
-.platform-action {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: 14px var(--spacing-md);
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    color: var(--color-text-primary);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.18s ease;
-}
-
-.platform-action:hover {
-    border-color: var(--color-green-border);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
-}
-
-.platform-action:focus {
-    outline: none;
-    box-shadow: var(--focus-ring);
-}
-
-.platform-action.primary {
-    background: var(--gradient-button);
-    border-color: transparent;
-    color: white;
-    box-shadow: 0 12px 26px rgba(6, 92, 73, 0.24);
-}
-
-.platform-action.primary:hover {
-    background: var(--gradient-button);
-    border-color: transparent;
-    box-shadow: 0 14px 30px rgba(6, 92, 73, 0.32);
-}
-
-.platform-action-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background-color: var(--color-pale-green);
-    color: var(--color-primary-green);
-}
-
-.platform-action.primary .platform-action-icon {
-    background-color: rgba(255, 255, 255, 0.18);
-    color: white;
-}
-
-.platform-action-icon i,
-.platform-action-icon svg {
-    width: 18px;
-    height: 18px;
-}
-
-.platform-action-text {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-width: 0;
-}
-
-.platform-action-label {
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.platform-action-hint {
-    font-size: 12px;
-    color: var(--color-text-secondary);
-}
-
-.platform-action.primary .platform-action-hint {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.platform-action-arrow {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    opacity: 0.6;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.platform-action:hover .platform-action-arrow {
-    opacity: 1;
-    transform: translateX(2px);
-}
-
-/* Only one platform (organization not eligible for Substance Use): the card
-   spans the full width, with identity and actions on the left and the
-   progress glance on the right. */
-.platform-card-wide {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas:
-        "head progress"
-        "actions progress";
-    column-gap: var(--spacing-xl);
-    row-gap: var(--spacing-lg);
-    align-items: start;
-}
-
-.platform-card-wide .platform-card-head {
-    grid-area: head;
-}
-
-.platform-card-wide .platform-card-progress {
-    grid-area: progress;
-    align-self: stretch;
-}
-
-.platform-card-wide .platform-card-actions {
-    grid-area: actions;
-    align-self: end;
-}
-
-@media (max-width: 1100px) {
-    .home-platforms {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* Narrow cards: tighter action tiles, the whole tile is already the button */
-@container (max-width: 480px) {
-    .platform-action {
-        gap: 10px;
-        padding: 12px;
-    }
-
-    .platform-action-arrow {
-        display: none;
-    }
 }
 
 /* ===== Detail pages: status pill next to the title ===== */
@@ -4283,7 +4146,8 @@ a.resource-card {
     flex: 0 0 auto;
     width: 16px;
     height: 16px;
-    margin: 1px 0 0;
+    min-height: 0;
+    margin: 2px 0 0;
     padding: 0;
     min-width: 0;
     accent-color: var(--color-primary-green);
@@ -4292,4 +4156,639 @@ a.resource-card {
 .modal-btn.primary:disabled:hover {
     background-color: var(--color-primary-green);
     border-color: var(--color-primary-green);
+}
+
+/* ===== Keyboard focus (design-kit adoption, WCAG 2.4.7) =====
+   One visible ring for every control reached with the keyboard. Mouse
+   clicks don't show it (:focus-visible). It is an outline, so it never
+   fights the box-shadows used for the active nav item, cards or buttons.
+   Text fields keep their own border-and-glow focus above. */
+:focus-visible {
+    outline: 2px solid var(--color-primary-green) !important;
+    outline-offset: 2px;
+}
+
+.nav-item:focus-visible,
+.notification-item:focus-visible,
+.cal-event-pill:focus-visible {
+    outline-offset: -2px;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none !important;
+}
+
+/* ===== Platform areas (MHIS / 4Ws Platform / Substance Use Platform) ===== */
+/* Top bar: "MHIS / 4Ws Platform" while working inside a platform. */
+.brand-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-area[hidden] {
+    display: none;
+}
+
+.brand-area-separator {
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--color-border-strong);
+}
+
+.brand-area-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-primary-green);
+}
+
+/* Sidebar inside a platform: the platform's name at the top, and Back to
+   MHIS as a pill at the bottom. */
+.nav-back-holder {
+    margin-top: auto;
+    padding-top: var(--spacing-lg);
+}
+
+.nav-item.nav-back {
+    display: inline-flex;
+    gap: 8px;
+    padding: 9px 18px 9px 14px;
+    border: 1.5px solid var(--color-primary-green);
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-dark-green);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-item.nav-back:hover {
+    background: var(--color-pale-green);
+    color: var(--color-dark-green);
+}
+
+.nav-item.nav-back .nav-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.nav-platform-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: var(--spacing-sm) 0 var(--spacing-md);
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-pale-green);
+    border: 1px solid var(--color-green-border);
+}
+
+.nav-platform-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-primary-green);
+}
+
+.nav-platform-icon i,
+.nav-platform-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.nav-platform-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.nav-platform-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-dark-green);
+}
+
+.nav-platform-tagline {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+/* MHIS sidebar: a platform entry opens the platform. */
+.nav-item .nav-enter-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.55;
+}
+
+.nav-platform-link:hover .nav-enter-icon {
+    opacity: 1;
+}
+
+/* ===== MHIS Home: platform cards ===== */
+.home-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.platform-card-points {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding-left: 20px;
+    font-size: 14px;
+    color: var(--color-text-body);
+}
+
+.platform-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.platform-card-footer .btn i,
+.platform-card-footer .btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.about-dialog-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-text-body);
+}
+
+/* ===== Platform Overview ===== */
+.overview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ===== Organization profile (shared by the NGO, registration and admin views) ===== */
+.profile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.list-toolbar .list-toolbar-action {
+    margin-left: auto;
+}
+
+/* Save stays in view on the long Organization Details form. */
+.form-actions-sticky {
+    position: sticky;
+    bottom: calc(-1 * var(--spacing-xl));
+    z-index: 5;
+    margin-top: var(--spacing-md);
+    margin-bottom: calc(-1 * var(--spacing-xl));
+    padding: var(--spacing-md) 0 calc(var(--spacing-md) + var(--spacing-xl));
+    background-color: var(--color-page-bg);
+    border-top: 1px solid var(--color-border);
+}
+
+/* Areas of Responsibility (AORs): a Yes/No question, then the sectors. */
+.profile-form input[type="checkbox"] {
+    min-height: 0;
+    min-width: 0;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: var(--color-primary-green);
+}
+
+.switch-field {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    cursor: pointer;
+}
+
+.aor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px var(--spacing-lg);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.aor-grid[hidden] {
+    display: none;
+}
+
+.aor-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 14px;
+    color: var(--color-text-body);
+    cursor: pointer;
+}
+
+/* Read-only Organization Details: label/value pairs, not disabled inputs. */
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-md) var(--spacing-lg);
+}
+
+.detail-grid div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.detail-grid dt {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-text-secondary);
+}
+
+.detail-grid dd {
+    font-size: 14px;
+    color: var(--color-text-primary);
+    overflow-wrap: anywhere;
+}
+
+.detail-empty {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+.chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.chip {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background-color: var(--color-pale-green);
+    color: var(--color-dark-green);
+    border: 1px solid var(--color-green-border);
+}
+
+/* ===== Registration: "Before You Submit" beside the profile tabs ===== */
+.registration-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+.registration-checklist {
+    position: sticky;
+    top: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+}
+
+.registration-checklist-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.registration-checklist-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.registration-checklist-actions .btn {
+    justify-content: center;
+}
+
+.registration-checklist-actions [hidden] {
+    display: none;
+}
+
+/* The track: one step per tab, then Submit. */
+.reg-track-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.reg-track-progress-bar {
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--color-slate-light);
+    overflow: hidden;
+}
+
+.reg-track-progress-bar span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background-color: var(--color-primary-green);
+    transition: width 0.3s ease;
+}
+
+.reg-track-progress-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.reg-track {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.reg-track-step {
+    position: relative;
+}
+
+/* The line from each step down to the next one (and to Submit). */
+.reg-track-step::after {
+    content: "";
+    position: absolute;
+    left: 21px;
+    top: 38px;
+    bottom: -8px;
+    width: 2px;
+    background-color: var(--color-border);
+}
+
+.reg-track-step.is-done::after {
+    background-color: var(--color-green-border);
+}
+
+.reg-track-button {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.reg-track-button:hover {
+    background-color: var(--color-hover-green);
+}
+
+.reg-track-step.is-current .reg-track-button {
+    background-color: var(--color-pale-green);
+    box-shadow: inset 3px 0 0 var(--color-primary-green);
+}
+
+.reg-track-marker {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid var(--color-border-strong);
+    background-color: var(--color-surface);
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.reg-track-marker i,
+.reg-track-marker svg {
+    width: 16px;
+    height: 16px;
+}
+
+.reg-track-step.is-done .reg-track-marker,
+.reg-track-final.is-done .reg-track-marker {
+    background-color: var(--color-primary-green);
+    border-color: var(--color-primary-green);
+    color: white;
+}
+
+.reg-track-step.is-missing .reg-track-marker {
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning);
+    color: var(--color-warning-text);
+}
+
+.reg-track-step.is-current .reg-track-marker {
+    box-shadow: 0 0 0 3px var(--color-surface), 0 0 0 5px var(--color-green-border);
+}
+
+.reg-track-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.reg-track-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.reg-track-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px 6px;
+}
+
+.reg-track-tag {
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background-color: var(--color-slate-light);
+    color: var(--color-text-secondary);
+}
+
+.reg-track-tag.is-required {
+    background-color: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.reg-track-detail {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.reg-track-step.is-missing .reg-track-detail {
+    font-weight: 500;
+    color: var(--color-warning-text);
+}
+
+.reg-track-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 6px;
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+}
+
+.reg-track-button:hover .reg-track-arrow {
+    opacity: 1;
+}
+
+.reg-track-final {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+}
+
+.reg-track-final-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.registration-checklist > .registration-checklist-actions {
+    margin-top: var(--spacing-md);
+}
+
+@media (max-width: 1100px) {
+    .registration-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .registration-checklist {
+        position: static;
+    }
+}
+
+/* ===== Registration review: decisions ===== */
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-left: auto;
+}
+
+/* Used least, so it comes last, after a divider; outlined in red so it
+   stands out from the page without competing with Approve. */
+.page-header-actions-divider {
+    width: 1px;
+    height: 28px;
+    margin: 0 var(--spacing-xs);
+    background-color: var(--color-border-strong);
+}
+
+.btn-danger-outline {
+    background-color: var(--color-surface);
+    color: var(--color-error);
+    border: 1.5px solid var(--color-error-border);
+}
+
+.btn-danger-outline:hover {
+    background-color: var(--color-error-bg);
+    border-color: var(--color-error);
+}
+
+.notification-btn[hidden] {
+    display: none;
+}
+
+.modal-btn.danger {
+    background-color: var(--color-error);
+    color: white;
+    border-color: var(--color-error);
+}
+
+.modal-btn.danger:hover {
+    background-color: var(--color-error-text);
+    border-color: var(--color-error-text);
+}
+
+/* Changes Requested is a request to update, not a rejection. */
+.reason-box-warning {
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning-border);
+}
+
+.reason-box-warning .reason-box-label {
+    color: var(--color-warning-text);
+}
+
+.previous-request {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    background-color: var(--color-slate-light);
+    border: 1px solid var(--color-border);
+    font-size: 14px;
+    color: var(--color-text-body);
+}
+
+.previous-request-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-text-secondary);
+}
+
+.decision-email-note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.decision-email-note i,
+.decision-email-note svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
 }

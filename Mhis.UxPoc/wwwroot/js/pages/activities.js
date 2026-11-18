@@ -813,16 +813,22 @@ function renderValidationSummary(issuesBySection) {
     });
     if (window.lucide) window.lucide.createIcons();
     summary.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    // Keyboard users land on the first section link, which opens that step.
+    const firstLink = summary.querySelector('button[data-goto-step]');
+    if (firstLink) firstLink.focus({ preventScroll: true });
 }
 
 function highlightMissingInStep() {
     const missing = stepMissingRequired(currentStepKey());
+    const inputs = [];
     missing.forEach(f => {
         const input = document.getElementById(`af-${f.id}`);
-        const err = document.getElementById(`af-${f.id}-error`);
-        if (input) input.classList.add('invalid');
-        if (err) err.textContent = 'This field is required.';
+        if (input) {
+            setFieldError(input, requiredFieldMessage(input));
+            inputs.push(input);
+        }
     });
+    focusFirstInvalid(inputs);
 }
 
 function persistActivity(state) {

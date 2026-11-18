@@ -6,7 +6,7 @@
 let organizationManagementView = {
     search: '',
     selectedId: null,
-    tab: 'profile'
+    tab: 'details'
 };
 
 function getManagedOrganizations() {
@@ -28,21 +28,16 @@ function getManagedOrganizations() {
     getRegistrations()
         .filter(r => r.status === REGISTRATION_STATUS.approved)
         .forEach(r => {
-            const records = mockData.organizationRecords[r.organization] || { facilities: [], providers: [] };
             organizations.push({
                 id: `reg-${r.id}`,
                 name: r.organization,
                 acronym: r.acronym,
                 email: r.email,
                 accountAccess: r.accountAccess,
-                profile: {
-                    name: r.organization, acronym: r.acronym, phone: r.phone, mobile: r.mobile, email: r.email,
-                    directorName: r.directorName, directorEmail: r.directorEmail, directorMobile: r.directorMobile,
-                    sectors: r.sectors, website: r.website, linkedin: r.linkedin, daleelMadani: r.daleelMadani
-                },
-                focalPersons: r.focalPersons,
-                facilities: records.facilities,
-                providers: records.providers
+                profile: getRegistrationProfileValues(r),
+                focalPersons: r.focalPersons || [],
+                facilities: r.facilities || [],
+                providers: r.providers || []
             });
         });
 
@@ -86,7 +81,7 @@ function renderOrganizationManagementPage() {
             <div class="page-header">
                 <div>
                     <h1 class="page-title">Organization Management</h1>
-                    <p class="page-lead">Open an approved organization to check its profile, facilities, and providers.</p>
+                    <p class="page-lead">Open an approved organization to check its details, focal persons, facilities, and providers.</p>
                 </div>
             </div>
             <div class="list-toolbar">
@@ -122,49 +117,15 @@ function attachOrganizationManagementListeners() {
     document.querySelectorAll('[data-view-organization]').forEach(btn => {
         btn.addEventListener('click', () => {
             organizationManagementView.selectedId = btn.getAttribute('data-view-organization');
-            organizationManagementView.tab = 'profile';
+            organizationManagementView.tab = 'details';
             navigateTo('organization-detail');
         });
     });
 }
 
 // ---------- Organization detail (read-only) ----------
-const ORGANIZATION_FACILITY_FIELDS = [
-    ['Facility Name', 'name'], ['Facility Type', 'type'], ['Governorate', 'governorate'],
-    ['Caza', 'caza'], ['Locality', 'locality'], ['Contact Number', 'contact']
-];
-
-const ORGANIZATION_PROVIDER_FIELDS = [
-    ['Provider Name', 'name'], ['Provider Type / Profession', 'type'],
-    ['Facility', 'facility'], ['Phone', 'phone'], ['Email', 'email']
-];
-
-function renderOrganizationRecordsTable(kind, fields, records, emptyText) {
-    const rowsHTML = records.length
-        ? records.map((record, index) => `
-            <tr>
-                ${fields.map(([, key]) => `<td>${escapeHtml(record[key] || '-')}</td>`).join('')}
-                <td class="actions-col">
-                    <button type="button" class="icon-action" title="View Details" aria-label="View details" data-org-record="${kind}" data-org-record-index="${index}"><i data-lucide="eye"></i></button>
-                </td>
-            </tr>`).join('')
-        : `<tr><td colspan="${fields.length + 1}" class="empty-cell">${escapeHtml(emptyText)}</td></tr>`;
-
-    return `
-        <div class="list-toolbar organization-records-toolbar">
-            <div class="result-count">${records.length} ${kind === 'facility' ? `facilit${records.length === 1 ? 'y' : 'ies'}` : `provider${records.length === 1 ? '' : 's'}`}</div>
-            <button type="button" class="btn btn-secondary" data-org-export="${kind}">
-                <i data-lucide="download"></i><span>Export</span>
-            </button>
-        </div>
-        <table class="data-table">
-            <thead>
-                <tr>${fields.map(([label]) => `<th>${escapeHtml(label)}</th>`).join('')}<th class="actions-col">Actions</th></tr>
-            </thead>
-            <tbody>${rowsHTML}</tbody>
-        </table>`;
-}
-
+// The same tabs as the organization's own profile and as Registration
+// Review (org-profile.js), plus the organization's users.
 // The organization's sign-in accounts. Access is managed in User Management.
 function renderOrganizationUsersTable(org) {
     const users = getUsersOfOrganization(org.id);
@@ -198,19 +159,12 @@ function renderOrganizationDetailPage() {
         return renderOrganizationManagementPage();
     }
 
-    const tabs = [
-        { id: 'profile', label: 'Profile', icon: 'building-2' },
-        { id: 'facilities', label: `Facilities (${org.facilities.length})`, icon: 'building' },
-        { id: 'providers', label: `Providers (${org.providers.length})`, icon: 'users' },
-        { id: 'users', label: `Users (${getUsersOfOrganization(org.id).length})`, icon: 'users-round' }
-    ];
-    const activeTab = organizationManagementView.tab;
-
-    const tabsHTML = tabs.map(tab => `
-        <button class="tab ${tab.id === activeTab ? 'active' : ''}" data-organization-tab="${tab.id}">
-            <i data-lucide="${tab.icon}"></i>
-            <span>${escapeHtml(tab.label)}</span>
-        </button>`).join('');
+    const tab = organizationManagementView.tab;
+    const tabs = getOrgProfileTabs({
+        focalPersons: org.focalPersons.length,
+        facilities: org.facilities.length,
+        providers: org.providers.length
+    }).concat([{ id: 'users', label: `Users (${getUsersOfOrganization(org.id).length})`, icon: 'users-round' }]);
 
     return `
         <div class="page">
@@ -219,26 +173,12 @@ function renderOrganizationDetailPage() {
                 ${renderAccountAccessPill(org.accountAccess)}
             </div>
 
-            <div class="tabs">${tabsHTML}</div>
-
-            <div class="tab-panel ${activeTab === 'profile' ? 'active' : ''}" data-organization-panel="profile">
-                <div class="profile-form">
-                    ${renderOrgProfileFields(org.profile, true)}
-                </div>
-                ${renderFocalPersonsSection(org.focalPersons, true)}
-            </div>
-
-            <div class="tab-panel ${activeTab === 'facilities' ? 'active' : ''}" data-organization-panel="facilities">
-                ${renderOrganizationRecordsTable('facility', ORGANIZATION_FACILITY_FIELDS, org.facilities, 'This organization has not added any facilities yet.')}
-            </div>
-
-            <div class="tab-panel ${activeTab === 'providers' ? 'active' : ''}" data-organization-panel="providers">
-                ${renderOrganizationRecordsTable('provider', ORGANIZATION_PROVIDER_FIELDS, org.providers, 'This organization has not added any providers yet.')}
-            </div>
-
-            <div class="tab-panel ${activeTab === 'users' ? 'active' : ''}" data-organization-panel="users">
-                ${renderOrganizationUsersTable(org)}
-            </div>
+            ${renderProfileTabs(tabs, tab)}
+            ${renderProfilePanel('details', tab, renderOrgDetailsReadOnly(org.profile))}
+            ${renderProfilePanel('focal-persons', tab, renderFocalPersonsTab(org.focalPersons, { readOnly: true }))}
+            ${renderProfilePanel('facilities', tab, renderOrganizationRecordsTable('facility', org.facilities))}
+            ${renderProfilePanel('providers', tab, renderOrganizationRecordsTable('provider', org.providers))}
+            ${renderProfilePanel('users', tab, renderOrganizationUsersTable(org))}
         </div>`;
 }
 
@@ -249,41 +189,13 @@ function attachOrganizationDetailListeners() {
         return;
     }
 
-    document.querySelectorAll('[data-organization-tab]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.getAttribute('data-organization-tab');
-            organizationManagementView.tab = id;
-            document.querySelectorAll('[data-organization-tab]').forEach(t => t.classList.toggle('active', t === btn));
-            document.querySelectorAll('[data-organization-panel]').forEach(p => {
-                p.classList.toggle('active', p.getAttribute('data-organization-panel') === id);
-            });
-        });
-    });
-
-    document.querySelectorAll('[data-org-record]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const isFacility = btn.getAttribute('data-org-record') === 'facility';
-            const index = Number(btn.getAttribute('data-org-record-index'));
-            const record = (isFacility ? org.facilities : org.providers)[index];
-            const fields = isFacility ? ORGANIZATION_FACILITY_FIELDS : ORGANIZATION_PROVIDER_FIELDS;
-            openFormModal(isFacility ? 'Facility Details' : 'Provider Details',
-                `<dl class="detail-list">${fields.map(([label, key]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(record[key] || '-')}</dd></div>`).join('')}</dl>`,
-                `<button class="modal-btn" id="detailCloseBtn">Close</button>`);
-            document.getElementById('detailCloseBtn').addEventListener('click', closeFormModal);
-        });
-    });
+    attachProfileTabs(id => { organizationManagementView.tab = id; });
+    attachOrganizationRecordsTables(org.facilities, org.providers, org.name);
 
     document.getElementById('manageOrganizationUsersBtn')?.addEventListener('click', () => {
         userManagementView.search = '';
         userManagementView.accessFilter = '';
         userManagementView.organizationFilter = org.name;
         navigateTo('user-management');
-    });
-
-    document.querySelectorAll('[data-org-export]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const kind = btn.getAttribute('data-org-export') === 'facility' ? 'facilities' : 'providers';
-            showToast(`Exporting ${org.name}'s ${kind} is simulated in this POC.`, 'info');
-        });
     });
 }

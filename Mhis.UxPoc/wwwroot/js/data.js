@@ -18,7 +18,8 @@ const mockData = {
         directorName: "Dr. Layla Haddad",
         directorEmail: "l.haddad@communityhealthngo.org",
         directorMobile: "+961 70 111 222",
-        sectors: "Mental Health, Substance Use, Community Awareness",
+        participatesInAors: true,
+        aors: ["MHPSS Coordination Group (MHPSS CG)", "Health", "Education"],
         website: "https://www.communityhealthngo.org",
         linkedin: "https://www.linkedin.com/company/community-health-ngo",
         daleelMadani: "https://daleel-madani.org/profile/community-health-ngo"
@@ -333,7 +334,7 @@ const mockData = {
         },
         {
             title: "Welcome to MHIS",
-            content: "Thank you for joining the Mental Health Information System. Your organization profile is currently under review.",
+            content: "Thank you for joining the Mental Health Information System.",
             date: "March 1, 2024"
         }
     ],
@@ -370,11 +371,22 @@ mockData.fourWsOnlyProfile = {
     directorName: "Joseph Karam",
     directorEmail: "j.karam@northernrelief.org",
     directorMobile: "+961 70 222 333",
-    sectors: "Mental Health, Psychosocial Support",
+    participatesInAors: true,
+    aors: ["MHPSS Coordination Group (MHPSS CG)", "Livelihoods"],
     website: "https://www.northernrelief.org",
     linkedin: "",
     daleelMadani: ""
 };
+
+// Sectors / areas of responsibility (AORs) an organization can take part
+// in, as listed in the Organization Details of the current MHIS.
+mockData.aorSectors = [
+    "MHPSS Coordination Group (MHPSS CG)", "Child Protection", "Gender-Based Violence (GBV)",
+    "Community Protection", "Cash Working Group", "Logistics", "Basic Assistance", "Education",
+    "Energy", "Food Security & Agriculture", "Health", "Sexual & Reproductive Health (SRH)",
+    "Nutrition", "Livelihoods", "Shelter", "Site Management and Coordination", "Social Stability",
+    "Water, Sanitation and Hygiene (WaSH)"
+];
 
 // The organization profile of the signed-in (already approved) NGO.
 function getCurrentNgoProfile() {
@@ -382,9 +394,18 @@ function getCurrentNgoProfile() {
     return account && account.id === 'ngo-4ws-only' ? mockData.fourWsOnlyProfile : mockData.organizationProfile;
 }
 
+// The signed-in organization's name, for an NGO that registered in the demo
+// as well as for the two existing NGOs.
+function getCurrentOrganizationName() {
+    const registration = getCurrentRegistration();
+    return registration ? registration.organization : getCurrentNgoProfile().name;
+}
+
 // Application State
 let appState = {
     currentPage: 'home',
+    // The area an approved NGO is working in: 'mhis', '4ws' or 'su' (nav.js).
+    currentArea: 'mhis',
     notifications: mockData.notifications,
     unreadCount: mockData.notifications.filter(n => n.unread).length,
     profileDirty: false
@@ -407,23 +428,25 @@ mockData.calendarEventTypes = [
         return iso(d);
     };
     mockData.calendarEvents = [
-        { id: 1, title: 'Regional Mental Health Summit', type: 'event', status: 'confirmed', date: withOffset(2), startTime: '10:00', endTime: '16:00', location: 'Beirut Conference Center', description: 'Annual summit bringing together mental health practitioners across the region.' },
-        { id: 2, title: 'Data Quality Training', type: 'training', status: 'confirmed', date: withOffset(5), startTime: '14:00', endTime: '17:00', location: 'Central Health Clinic', description: 'Hands-on training for facility staff on the 4Ws data collection tools.' },
-        { id: 3, title: 'Community Awareness Campaign Kickoff', type: 'awareness', status: 'pending', date: withOffset(1), startTime: '09:00', endTime: '12:00', location: 'Northern Community Center', description: 'Launch event for the stigma-reduction awareness campaign.' },
-        { id: 4, title: 'Provider Onboarding Session', type: 'training', status: 'pending', date: withOffset(9), startTime: '11:00', endTime: '13:00', location: 'Bekaa Mental Health Hospital', description: '' },
-        { id: 5, title: 'Partners Networking Evening', type: 'event', status: 'confirmed', date: withOffset(12), startTime: '18:00', endTime: '20:00', location: 'Southern Wellbeing Center', description: '' },
-        { id: 6, title: 'Youth Awareness Workshop', type: 'awareness', status: 'confirmed', date: withOffset(-3), startTime: '10:00', endTime: '12:30', location: 'Mount Lebanon Mobile Unit', description: '' },
-        { id: 7, title: 'Cancelled Field Visit', type: 'event', status: 'canceled', date: withOffset(-1), startTime: '09:00', endTime: '11:00', location: 'Central Health Clinic', description: 'Cancelled due to weather conditions.' },
-        { id: 8, title: 'Psychological First Aid Training', type: 'training', status: 'confirmed', date: withOffset(16), startTime: '09:00', endTime: '15:00', location: 'Central Health Clinic', description: '' },
-        { id: 9, title: 'Mental Health Awareness Radio Spot Recording', type: 'awareness', status: 'canceled', date: withOffset(6), startTime: '13:00', endTime: '14:00', location: '', description: '' },
-        { id: 10, title: 'Monthly Coordination Meeting', type: 'event', status: 'confirmed', date: withOffset(0), startTime: '15:00', endTime: '16:00', location: 'Online', description: '' }
+        { id: 1, organization: 'NMHP', title: 'Regional Mental Health Summit', type: 'event', status: 'confirmed', date: withOffset(2), startTime: '10:00', endTime: '16:00', location: 'Beirut Conference Center', description: 'Annual summit bringing together mental health practitioners across the region.' },
+        { id: 2, organization: 'NMHP', title: 'Data Quality Training', type: 'training', status: 'confirmed', date: withOffset(5), startTime: '14:00', endTime: '17:00', location: 'Central Health Clinic', description: 'Hands-on training for facility staff on the 4Ws data collection tools.' },
+        { id: 3, organization: 'Community Health NGO', title: 'Community Awareness Campaign Kickoff', type: 'awareness', status: 'pending', date: withOffset(1), startTime: '09:00', endTime: '12:00', location: 'Northern Community Center', description: 'Launch event for the stigma-reduction awareness campaign.' },
+        { id: 4, organization: 'Bekaa Wellbeing Initiative', title: 'Provider Onboarding Session', type: 'training', status: 'pending', date: withOffset(9), startTime: '11:00', endTime: '13:00', location: 'Bekaa Mental Health Hospital', description: '' },
+        { id: 5, organization: 'Southern Care Network', title: 'Partners Networking Evening', type: 'event', status: 'confirmed', date: withOffset(12), startTime: '18:00', endTime: '20:00', location: 'Southern Wellbeing Center', description: '' },
+        { id: 6, organization: 'Southern Care Network', title: 'Youth Awareness Workshop', type: 'awareness', status: 'confirmed', date: withOffset(-3), startTime: '10:00', endTime: '12:30', location: 'Mount Lebanon Mobile Unit', description: '' },
+        { id: 7, organization: 'Community Health NGO', title: 'Cancelled Field Visit', type: 'event', status: 'canceled', date: withOffset(-1), startTime: '09:00', endTime: '11:00', location: 'Central Health Clinic', description: 'Cancelled due to weather conditions.' },
+        { id: 8, organization: 'Coastal Recovery Group', title: 'Psychological First Aid Training', type: 'training', status: 'confirmed', date: withOffset(16), startTime: '09:00', endTime: '15:00', location: 'Central Health Clinic', description: '' },
+        { id: 9, organization: 'Community Health NGO', title: 'Mental Health Awareness Radio Spot Recording', type: 'awareness', status: 'canceled', date: withOffset(6), startTime: '13:00', endTime: '14:00', location: '', description: '' },
+        { id: 10, organization: 'NMHP', title: 'Monthly Coordination Meeting', type: 'event', status: 'confirmed', date: withOffset(0), startTime: '15:00', endTime: '16:00', location: 'Online', description: '' }
     ];
     mockData.calendarEventNextId = 11;
 })();
 
 let calendarView = {
     mode: 'month',
-    currentDate: new Date()
+    currentDate: new Date(),
+    // Administrator only: '' shows every organization's events.
+    organization: ''
 };
 
 // ===== Resources & Help mock data =====
@@ -624,28 +647,3 @@ function getLastSentDateForGroup(groupId) {
     return logs.reduce((latest, l) => (l.sentDate > latest ? l.sentDate : latest), logs[0].sentDate);
 }
 
-// ===== Admin Organization Management mock data =====
-// Facilities and providers of the approved organizations other than the
-// "Existing NGO" demo account (which uses mockData.facilities / providers).
-mockData.organizationRecords = {
-    'Southern Care Network': {
-        facilities: [
-            { name: 'Saida Community Wellness Center', type: 'Community Center', governorate: 'South', caza: 'Saida', locality: 'Old Saida', contact: '+961 7 555 043' },
-            { name: 'Tyre Primary Health Care Center', type: 'Primary Health Care Center', governorate: 'South', caza: 'Tyre', locality: 'Tyre', contact: '+961 7 555 044' }
-        ],
-        providers: [
-            { name: 'Dr. Samir Jaber', type: 'Psychiatrist', facility: 'Tyre Primary Health Care Center', phone: '+961 3 555 045', email: 's.jaber@southerncare.org' },
-            { name: 'Nadine Hoteit', type: 'Psychologist', facility: 'Saida Community Wellness Center', phone: '+961 3 555 046', email: 'n.hoteit@southerncare.org' },
-            { name: 'Ali Mroueh', type: 'Social Worker', facility: 'Saida Community Wellness Center', phone: '+961 3 555 047', email: 'a.mroueh@southerncare.org' }
-        ]
-    },
-    'Coastal Recovery Group': {
-        facilities: [
-            { name: 'Jounieh Recovery Center', type: 'Community Center', governorate: 'Mount Lebanon', caza: 'Kesrouan', locality: 'Jounieh', contact: '+961 9 555 053' }
-        ],
-        providers: [
-            { name: 'Dr. Carla Khoury', type: 'Psychiatrist', facility: 'Jounieh Recovery Center', phone: '+961 3 555 054', email: 'c.khoury@coastalrecovery.org' },
-            { name: 'Tony Saade', type: 'Counselor', facility: 'Jounieh Recovery Center', phone: '+961 3 555 055', email: 't.saade@coastalrecovery.org' }
-        ]
-    }
-};

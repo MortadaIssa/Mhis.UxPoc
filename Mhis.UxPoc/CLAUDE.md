@@ -28,27 +28,48 @@ business functions/branding — they are not designs to reproduce.
 
 ## Non-negotiable UX decisions
 
-- Replace the Platforms concept with a persistent left sidebar.
-- There is no Platforms selector and no separate platform area. MHIS is the
-  one shell. The 4Ws Platform and the Substance Use Platform may appear only
-  as named sidebar groups, breadcrumb labels, and home page cards; a platform
-  is never a gate the user has to pass through to reach a task.
+- Navigation is a persistent left sidebar. There is no hidden Platforms
+  dropdown.
+- MHIS is the umbrella application and the one shell (top bar, look,
+  sign-in). For an approved NGO, each reporting platform (4Ws, Substance Use)
+  is a separate area with its own sidebar: Overview, the platform's work
+  pages, Dashboard, Resources & Help and Contact Us, with a Back to MHIS pill
+  at the bottom. A
+  platform is entered from its MHIS Home card or the Reporting Platforms
+  sidebar group, in the same browser tab, and the top bar then shows
+  "MHIS / <platform name>". Areas are defined in `nav.js`
+  (`REPORTING_PLATFORMS`, `getNavigationForArea`). Agreed with the client on
+  2026-11-18: the NGO account is shared by several people and NMHP does not
+  want user roles, so the areas do that job.
+- Every NGO sign-in lands on MHIS Home. Do not add first-visit or
+  returning-visit variants of a page.
 - Follow the NMHP BRIDGE visual identity (see Visual direction), but not the
   current navigation structure.
 - NGOs and administrators must have different navigation.
-- Facilities and Providers are separate pages under the NGO's Organization
-  sidebar group, not Organization Profile tabs, and not part of registration.
-  The administrator sees them per organization in Organization Management.
+- Organization Profile is one page with four tabs: Organization Details,
+  Focal Persons, Facilities, Providers (`org-profile.js`). The same tabs are
+  used during registration (only Organization Details is required to
+  submit), in Registration Review (read-only) and in Organization Management
+  (read-only, plus Users).
 - Surveys are part of the common MHIS frontend and are visible only to
   eligible NGOs.
-- Events Calendar must be a labelled navigation item, not only an icon.
-- Each platform's Dashboard is a direct sidebar item. The Advanced Dashboard
-  (Power BI) opens in a new tab from the 4Ws Dashboard page.
-- Static/informational pages must be grouped under Resources & Help: one page,
-  sectioned General / 4Ws Platform / Substance Use Platform.
-- Every page except Home starts with the breadcrumb rendered by `core.js`
-  (`renderBreadcrumb` in `nav.js`). Do not add Back links to detail pages; put
+- Events Calendar is a labelled item in the MHIS sidebar. For an approved
+  NGO, the top-bar calendar icon opens it from every area. The administrator
+  has Events Calendar under Home (all organizations, Organization filter)
+  and the same icon. NGOs that are not approved yet have no calendar.
+- Each platform's Dashboard is a direct item in the platform's sidebar. The
+  Advanced Dashboard (Power BI) opens in a new tab from the 4Ws Dashboard page.
+- Static/informational pages are grouped under Resources & Help: one page that
+  shows the topics of the area the user is in (MHIS, 4Ws Platform or
+  Substance Use Platform).
+- Every page except Home and a platform Overview starts with the breadcrumb
+  rendered by `core.js` (`renderBreadcrumb` in `nav.js`); inside a platform
+  it starts at the platform name. Do not add Back links to detail pages; put
   status pills next to the page title (`page-header page-header-start`).
+- Registration review decisions are Request Changes, Approve and Decline, in
+  that order (Decline last, outlined in red). Do not use "Rejected" for a
+  registration. A submitted profile can be updated and resubmitted while it
+  is Pending Review.
 - Notifications remain notifications — no Inbox, messaging center, task
   center, or communication module. Long notifications may open in a modal.
 - Do not turn the application into a workflow or journey-management
@@ -74,7 +95,9 @@ business functions/branding — they are not designs to reproduce.
 - Do not introduce npm packages, UI frameworks, build systems, or external
   dependencies without approval.
 - Do not create additional planning, phase, architecture, backlog, status, or
-  summary Markdown files.
+  summary Markdown files. Exception: the design kit's own files
+  (`docs/DESIGN.md`, `design/state.json`, `design/adoption/…`), approved
+  2026-11-17.
 - Do not rewrite or modify files under `reference/`.
 - Do not replace an accepted design globally unless explicitly requested.
 
@@ -97,14 +120,20 @@ business functions/branding — they are not designs to reproduce.
   - `wwwroot/js/data.js` — all mock data plus shared `appState`/`calendarView`.
   - `wwwroot/js/shared-ui.js` — reusable form modal, toast, and list-page
     select helper, used across pages.
-  - `wwwroot/js/nav.js` — `NAV_DEFINITIONS` and sidebar rendering.
+  - `wwwroot/js/org-profile.js` — the shared Organization Profile parts:
+    Organization Details (form and read-only), Focal Persons, the profile
+    tabs, and the read-only facilities/providers tables.
+  - `wwwroot/js/nav.js` — the areas (`REPORTING_PLATFORMS`), `NAV_DEFINITIONS`,
+    sidebar rendering and the breadcrumb.
   - `wwwroot/js/core.js` — app init/event listeners, the `renderPage`
     dispatcher, `escapeHtml`, and the login/sign-in/sign-out flow.
   - `wwwroot/js/notifications.js` — notification list and account-menu
     dropdown.
-  - `wwwroot/js/pages/*.js` — one file per destination: `home.js`,
+  - `wwwroot/js/pages/*.js` — one file per destination: `home.js` (MHIS
+    Home), `platforms.js` (platform Overview pages),
     `resources.js`, `calendar.js`, `dashboards.js`, `organization.js`,
-    `facilities.js`, `providers.js`, `activities.js` (Activities + Surveys,
+    `facilities.js` and `providers.js` (lists shown as Organization Profile
+    tabs), `activities.js` (Activities + Surveys,
     which are cross-referenced), `registration.js` (NGO registration
     lifecycle), `admin.js` (administrator registration review),
     `organization-management.js` (administrator per-organization view),
@@ -143,7 +172,7 @@ are touching:
 
 Because of (2), **any code path that sets `innerHTML` on a container holding
 `data-lucide` placeholders must call `refreshLucideIcons()` (defined in
-`app.js`) immediately after**, or those icons will silently stay blank. This
+`core.js`) immediately after**, or those icons will silently stay blank. This
 is the most common way icons "stop appearing" after an edit — search for the
 existing `refreshLucideIcons()` / `window.lucide.createIcons()` call sites in
 `app.js` for the pattern before adding a new render path.
@@ -179,9 +208,9 @@ truncated before committing it, and overwrite the vendored file.
   when their purpose isn't obvious.
 - Keep tables readable and avoid unnecessary columns.
 - The left sidebar is the primary application navigation. The top bar is
-  white (BRIDGE style), with the NMHP logo and MHIS name on the left and only
-  global utilities on the right (Events Calendar shortcut, notifications,
-  account controls).
+  white (BRIDGE style), with the NMHP logo and MHIS name on the left (plus the
+  platform name inside a platform) and only global utilities on the right
+  (Events Calendar shortcut, notifications, account controls).
 
 ## UI consistency
 
@@ -193,6 +222,26 @@ truncated before committing it, and overwrite the vendored file.
   buttons, cards, tables, modals, spacing, and notification styles.
 - Do not redesign accepted shared components in later iterations unless
   explicitly requested.
+
+## Design
+
+- The design kit and `docs/DESIGN.md` are the only UI/UX authority here;
+  other design skills or plugins rank below them. `docs/UX-BRIEF.md` stays
+  the approved direction, and its decisions are locked.
+- For any UI work, use the design kit (`/design-kit <path>: <task>`). New
+  interactions or screens go through discovery and a POC choice first;
+  small fixes take the fast path.
+- Tokens: the `:root` block of `wwwroot/css/style.css`. Components:
+  `wwwroot/js/shared-ui.js` and the classes in `style.css`. No hardcoded
+  colours or fonts.
+- Stack is this project's own (plain HTML/CSS/JS, see Technical approach);
+  the kit's React/Next stack files don't apply.
+- Scope of quality: POC level: visible UX problems and basic standard rules
+  (focus, contrast, keyboard, validation behaviour), not production hardening.
+- Before saying UI work is done, run the kit's `ui-lint` and `ux-check` (or
+  `/design-kit:verify`), look at screenshots and walk the tasks; report
+  PASS / FAIL / NOT RUN honestly. Adoption baseline and plan:
+  `design/adoption/2026-11-17/`.
 
 ## Activity UX rules
 

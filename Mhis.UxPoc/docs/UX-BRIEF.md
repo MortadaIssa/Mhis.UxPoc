@@ -1,6 +1,6 @@
 # MHIS UX POC Brief
 
-Updated 16 November 2026 to reflect the decisions taken after the client feedback of September 2026.
+Updated 16 November 2026 after the client feedback of September 2026, and 18 November 2026 after the client meeting on the platforms and the registration review (platform areas, Organization Profile tabs, review decisions, the registration track and resubmission, administrator queue names).
 
 ## Reference material rule
 
@@ -14,12 +14,12 @@ The POC must visibly look and behave differently from the current application.
 
 The most important changes are:
 
-- One coherent MHIS application.
+- One coherent MHIS application: one shell, one sign-in, one look.
 - Persistent left sidebar.
-- No Platforms selector.
+- No hidden Platforms selector: each reporting platform is a named area, entered from MHIS Home or the sidebar.
 - Clear role-based navigation.
 - Useful NGO and admin home pages.
-- Direct access to Activities, Facilities, Providers, Dashboards, Surveys, and Events Calendar.
+- Each person reaches their own work directly: common organization data in MHIS, activities in the 4Ws Platform, surveys in the Substance Use Platform.
 - Improved notifications without introducing an Inbox.
 - Dynamic activity forms based on the selected sub-activity.
 
@@ -41,8 +41,8 @@ Use a persistent left sidebar and a compact white top bar in the NMHP BRIDGE sty
 
 The top bar contains:
 
-- NMHP logo and MHIS identity.
-- Events Calendar shortcut.
+- NMHP logo and MHIS identity, followed by the platform name inside a platform (MHIS / 4Ws Platform).
+- Events Calendar shortcut, for approved NGOs and administrators.
 - Notification bell.
 - Logged-in organization or administrator.
 - Account menu.
@@ -52,54 +52,91 @@ The account menu may contain:
 - Change Password.
 - Log Out.
 
-There is no Platforms selector and no separate platform area. MHIS is the umbrella application. The 4Ws Platform and the Substance Use Platform appear only as named sidebar groups, breadcrumb labels, and home page cards, all inside the same shell. A platform is never a gate the user has to find or pass through to reach a task.
+## Platform areas
+
+MHIS is the umbrella application. One NGO account is shared by several people (the 4Ws focal persons, the Substance Use focal persons, sometimes the same person), and NMHP does not want user roles. So an approved NGO works in one of three areas, each with its own sidebar inside the same shell:
+
+- MHIS: the organization's common data and shared information.
+- 4Ws Platform: activities and the 4Ws dashboards.
+- Substance Use Platform: surveys and the Substance Use dashboard (eligible NGOs only).
+
+Rules:
+
+- A platform is entered from its MHIS Home card or from the Reporting Platforms group in the MHIS sidebar, in the same browser tab. There is no hidden Platforms dropdown.
+- Inside a platform, the platform name heads the sidebar, Back to MHIS is a pill at the bottom of the sidebar, and the top bar shows MHIS / platform name.
+- The top bar (calendar, notifications, account) is the same in every area. Opening a page of another area (the calendar, a notification action) switches the sidebar to that area.
+- Every NGO sign-in lands on MHIS Home. Pages look the same on every visit: no first-visit or returning-visit variants.
+- An administrator and an NGO that is not approved yet have a single sidebar.
 
 ## Breadcrumb and page headers
 
-Every page except Home starts with a breadcrumb: Home › sidebar group › page › detail. For an NGO, the sidebar group is the platform the page belongs to.
+Every page except Home and a platform Overview starts with a breadcrumb: Home › sidebar group › page › detail. Inside a platform, the breadcrumb starts at the platform name (4Ws Platform › Activities › Add Activity).
 
 Detail pages (registration review, event review, duplicate facility review, organization details, resource topics, Add Activity, the activity editor) do not repeat a Back link. The breadcrumb is the way back.
 
 A status pill sits next to the page title, not at the far right.
 
-Leaving the activity editor with unsaved changes, by any route (sidebar, breadcrumb, top bar, notification), asks for confirmation.
+Leaving the activity editor with unsaved changes, by any route (sidebar, Back to MHIS, breadcrumb, top bar, notification, Log Out), asks for confirmation.
 
 ## Existing NGO navigation
 
+MHIS area:
+
 - Home
 - Events Calendar
-- Organization (group)
-  - Profile
-  - Facilities
-  - Providers
-- 4Ws Platform (group)
-  - Dashboard
-  - Activities
-- Substance Use Platform (group)
-  - Dashboard
-  - Surveys
+- Organization Profile
+- Reporting Platforms (group)
+  - 4Ws (opens the 4Ws Platform)
+  - Substance Use (opens the Substance Use Platform)
 - Resources & Support (group)
   - Resources & Help
   - Contact Us
 
-The Substance Use Platform group is hidden for NGOs that are not eligible.
+4Ws Platform area:
+
+- Overview
+- Activities
+- Dashboard
+- Resources & Support (group)
+  - Resources & Help
+  - Contact Us
+- Back to MHIS (pill at the bottom of the sidebar)
+
+Substance Use Platform area:
+
+- Overview
+- Surveys
+- Dashboard
+- Resources & Support (group)
+  - Resources & Help
+  - Contact Us
+- Back to MHIS (pill at the bottom of the sidebar)
+
+The Substance Use Platform is hidden for NGOs that are not eligible.
 
 Sidebar labels do not use "My". Page titles match the sidebar labels, except the two dashboards, which are titled 4Ws Dashboard and Substance Use Dashboard.
 
 ## Existing NGO home
 
-The home page is led by the reporting platforms. Show, in this order:
+MHIS Home is the same page on every sign-in. Show, in this order:
 
 1. Welcome heading with organization name.
-2. One card per platform (4Ws, then Substance Use when eligible). Each card contains:
-   - Platform name, a one-line purpose, and an About link in the top-right corner that opens the matching Resources & Help topic.
-   - A progress glance. 4Ws: the headline figures of the 4Ws Dashboard (activities, ongoing, beneficiaries). Substance Use: submitted surveys against the expected surveys for the current reporting year, as a progress bar, plus the number of drafts.
-   - Two action tiles: Add Activity / Add Survey (primary), and Check Progress, which opens that platform's dashboard.
+2. Reporting Platforms: one card per platform (4Ws, then Substance Use when eligible). Each card contains the platform name and tagline, three short lines on what the platform is for, a Read More link that shows the platform's About text in a dialog, and an Open button that enters the platform.
 3. Recent Announcements and Upcoming Events, side by side.
 
-When the NGO is not eligible for Substance Use, the 4Ws card takes the full width, with name and actions on the left and the progress glance on the right.
+When the NGO is not eligible for Substance Use, the 4Ws card takes the full width.
 
-Do not show Needs Attention until it is backed by real functionality. Do not show an overview of counts across the whole system.
+MHIS Home shows no platform figures or actions. Do not show Needs Attention (facility reviews and other required actions already come as notifications). Do not show an overview of counts across the whole system.
+
+## Platform Overview
+
+Each platform opens on its Overview, the same page on every visit:
+
+- Platform name and a one-line purpose.
+- Main actions. 4Ws: Add Activity (primary), View Activities, Open Dashboard. Substance Use: Add Survey (primary), View Surveys, Open Dashboard.
+- At a Glance. 4Ws: the headline figures of the 4Ws Dashboard (activities, ongoing, beneficiaries). Substance Use: submitted surveys against the expected surveys for the current reporting year, as a progress bar, plus the number of drafts.
+
+With no data yet, the figures are zero and the first action is still Add Activity or Add Survey.
 
 ## New NGO scenarios
 
@@ -112,6 +149,7 @@ The NGO may access only:
 - Home
 - Organization Profile
 - Resources & Help
+- Contact Us
 
 The home page directs the NGO to complete and submit its profile.
 
@@ -119,11 +157,15 @@ The home page directs the NGO to complete and submit its profile.
 
 After profile submission, show a concise confirmation that NMHP is reviewing the registration.
 
-Operational modules remain unavailable.
+Operational modules remain unavailable. The profile is shown read-only and clearly marked as submitted. Home and the profile panel offer Update and Resubmit: the NGO edits the profile, then resubmits it or cancels the update. The status stays Pending Review, and NMHP reviews the latest submission.
 
-### Rejected
+### Changes Requested
 
-Show the rejection reason and an Update and Resubmit action.
+Show NMHP's message and an Update and Resubmit action. The profile is editable again.
+
+### Declined
+
+Show NMHP's reason and a Contact Us action. The profile stays read-only.
 
 ### Approved
 
@@ -133,25 +175,34 @@ The POC does not need to synchronize the NGO scenario with the admin scenario.
 
 ## Organization Profile
 
+Organization Profile is one page with four tabs, used everywhere the organization's data is shown:
+
+- Organization Details, in five sections: Identity (Organization Name, Acronym, Logo), Contact Details (Phone Number, Mobile Number, Email), Director (Name, Email, Mobile Number), Areas of Responsibility (AORs: a Yes/No question, then the sectors), Links (Website, LinkedIn Profile, Daleel Madani). Required, as in the current MHIS: Organization Name, Phone Number, Email, and the three Director fields.
+- Focal Persons, in two sections: 4Ws Focal Persons and Substance Use Focal Persons.
+- Facilities.
+- Providers.
+
 For an NGO:
 
-- Open directly in editable mode.
-- Contain General Information, 4Ws Focal Persons, and Substance Use Focal Persons.
+- Open directly in editable mode. Organization Details is saved with Save Changes, which stays visible at the bottom of the window on the long form. Focal persons, facilities and providers are saved one record at a time.
 - Use consistent required-field indicators and validation.
-- Keep Save or Submit for Review visible on long forms.
 
-Facilities and Providers must not appear as profile tabs. They are not part of the registration process: an organization registers with its profile and focal persons only.
+During registration:
+
+- The same page and tabs. Only Organization Details blocks Submit for Review; the other tabs can be filled now or after approval.
+- A Before You Submit panel beside the tabs works as a track: a progress bar, one step per tab marked Required or Optional with what is filled or missing, then Submit for Review. Clicking a step opens its tab (on Organization Details, the first empty required field). The open tab is highlighted in the track.
+- Save Draft sits above Submit for Review and appears only when there are unsaved changes.
+- After submission the panel becomes Your Registration and offers Update and Resubmit. While updating, Cancel replaces Save Draft and the action becomes Resubmit for Review.
 
 For an administrator:
 
-- Use a separate read-only registration review screen.
-- Allow Approve or Reject.
+- Registration Review and Organization Management show the same tabs, read-only. Organization Management adds a Users tab.
 - Do not allow the administrator to edit NGO information.
-- Organization Management lists the approved organizations. Opening one shows its full data in three read-only tabs: Profile, Facilities, and Providers. Facilities and providers can be opened for details and exported.
+- Organization Management lists the approved organizations. Facilities and providers can be opened for details and exported.
 
 ## Facilities and Providers
 
-Create separate management pages using consistent list-page conventions:
+Facilities and Providers are tabs of Organization Profile and use the list-page conventions:
 
 - Page title.
 - Add action.
@@ -160,8 +211,6 @@ Create separate management pages using consistent list-page conventions:
 - Readable table.
 - Edit as a visible action.
 - Secondary actions under More Actions.
-
-When an activity requires a facility, allow Add Facility through a modal without leaving the activity form.
 
 ## Activities list
 
@@ -230,7 +279,7 @@ Show:
 
 ## Dashboards
 
-Each platform has a Dashboard item in its sidebar group.
+Each platform has a Dashboard item in its sidebar.
 
 Represent the existing 4Ws dashboard without redesigning its reports.
 
@@ -240,17 +289,19 @@ The Substance Use Dashboard is a placeholder built from the survey list until it
 
 ## Resources & Help
 
-One page with one sidebar entry, grouped in three sections:
+One page, present in every area, showing the topics of the area the user is in:
 
-- General: About MHIS, About NMHP, What’s New, NMHP Resources Page (external link).
+- MHIS: About MHIS, What’s New, NMHP Resources Page (external link).
 - 4Ws Platform: List of 4Ws Sub-Activities, About the 4Ws Platform, Annual Reports.
 - Substance Use Platform: List of Substance Use Sub-Activities, About the Substance Use Platform, Annual Reports.
 
-The Substance Use section is hidden for NGOs that are not eligible. An NGO that is not approved yet sees only the General section.
+An NGO that is not approved yet sees the MHIS topics only.
 
 ## Events Calendar
 
-Use a labelled Events Calendar navigation item.
+Events Calendar is a labelled item in the MHIS sidebar. For an approved NGO, the calendar icon in the top bar opens it from every area. NGOs that are not approved yet have no calendar.
+
+The administrator has Events Calendar under Home and the same top-bar calendar icon. The administrator sees every organization's events, with an Organization filter, and edits only NMHP's own events. Event approval stays in To Review > Submitted Events.
 
 Show public and private events and retain Add Event.
 
@@ -284,17 +335,20 @@ The badge represents unread notifications.
 ## Admin navigation
 
 - Home
+- Events Calendar
+- To Review (group)
+  - Submitted Profiles
+  - Submitted Events
+  - Possible Duplicate Facilities
+  - Submitted Custom Values
 - Organizations & Users (group)
-  - Organization Registrations
   - Organization Management
   - User Management
-- Reviews (group)
-  - Event Reviews
-  - Potential Duplicate Facilities
-  - Pending Custom Values
 - Announcements (group)
   - Audience Groups
   - Announcement History
+
+To Review holds every queue that waits for an NMHP decision, each named after what was submitted so the word Review is not repeated; Organizations & Users holds approved records. Page titles match the sidebar labels.
 
 The client asked to remove Content & Resources, so the administrator has no What’s New Management or Resources & Help item.
 
@@ -302,12 +356,12 @@ The client asked to remove Content & Resources, so the administrator has no What
 
 Show concise work-area counts for:
 
-- New Organization Registrations.
-- Events to Review.
-- Potential Duplicate Facilities.
-- Pending Custom Values.
+- Submitted Profiles.
+- Submitted Events.
+- Possible Duplicate Facilities.
+- Submitted Custom Values.
 
-Also provide direct access to Review Organization Registrations, Organization Management, User Management, and Create Announcement.
+Also provide direct access to Review Submitted Profiles, Organization Management, User Management, and Create Announcement.
 
 ## Registration review
 
@@ -315,23 +369,35 @@ Separate registration review from user access management.
 
 Registration review values:
 
+- Incomplete (not submitted yet)
 - Pending Review
+- Changes Requested
 - Approved
-- Rejected
+- Declined
 
 Account access values:
 
 - Active
 - Inactive
 
-An approved organization may later become inactive without being considered rejected.
+An approved organization may later become inactive without being considered declined.
 
-The administrator may review, approve, or reject but may not edit the submitted profile.
+Decisions, as buttons in the Registration Review header, ordered by how often they are used:
+
+- Request Changes (secondary button), with a required message. The organization updates and resubmits; the next review shows this message as the previous request.
+- Approve (primary button), after a confirmation.
+- Decline (outlined in red, after a divider), with a required reason, for registrations that are not genuine organizations, duplicates or tests.
+
+NMHP emails each decision to the sign-in email and the focal persons, and sends an MHIS notification. Do not use the word Rejected for a registration.
+
+The Submitted Profiles list opens filtered on Pending Review; the other statuses stay available in the filter.
+
+The administrator may not edit the submitted profile.
 
 Registration email:
 
 - The registration form blocks personal webmail domains (Gmail, Outlook, Yahoo, and similar).
-- A personal work address on the organization's own domain cannot be detected by a pattern. Instead, when a registration is pending review, the sign-in email is compared with the director's and focal persons' names in the same profile. If it contains one of those names, Registration Review shows a "Possible personal email" warning, and the Organization Registrations list marks the email. The administrator decides.
+- A personal work address on the organization's own domain cannot be detected by a pattern. Instead, when a registration is pending review, the sign-in email is compared with the director's and focal persons' names in the same profile. If it contains one of those names, Registration Review shows a "Possible personal email" warning, and the Submitted Profiles list marks the email. The administrator decides.
 
 ## User Management
 

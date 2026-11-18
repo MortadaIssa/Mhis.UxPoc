@@ -7,8 +7,8 @@ const DEMO_SCENARIOS = [
     { kind: 'login', accountId: 'ngo-existing', title: 'Existing NGO', subtitle: 'Approved organization with full MHIS access.' },
     { kind: 'login', accountId: 'ngo-4ws-only', title: 'Existing NGO (4Ws only)', subtitle: 'Approved organization not eligible for Substance Use.' },
     { kind: 'register', title: 'Register New NGO', subtitle: 'Walk through creating a brand-new organization account.' },
-    { kind: 'login', accountId: 'ngo-rejected', title: 'NGO with Returned Registration', subtitle: 'Registration was returned by NMHP with a reason to address.' },
-    { kind: 'login', accountId: 'admin', title: 'NMHP Administrator', subtitle: 'Reviews and approves or rejects organization registrations.' }
+    { kind: 'login', accountId: 'ngo-rejected', title: 'NGO with Changes Requested', subtitle: 'NMHP asked the organization to update its registration.' },
+    { kind: 'login', accountId: 'admin', title: 'NMHP Administrator', subtitle: 'Reviews submitted profiles: approves them or requests changes.' }
 ];
 
 function initializeLoginScreen() {
@@ -96,38 +96,25 @@ function applyDemoScenario(scenario) {
 
 // ===== Login form =====
 function clearLoginErrors() {
-    document.getElementById('loginEmail-error').textContent = '';
-    document.getElementById('loginPassword-error').textContent = '';
-    document.getElementById('loginEmail').classList.remove('invalid');
-    document.getElementById('loginPassword').classList.remove('invalid');
+    clearFieldError(document.getElementById('loginEmail'));
+    clearFieldError(document.getElementById('loginPassword'));
 }
 
 function handleLoginSubmit(e) {
     e.preventDefault();
     clearLoginErrors();
 
+    const form = document.getElementById('loginForm');
     const identifierInput = document.getElementById('loginEmail');
-    const passwordInput = document.getElementById('loginPassword');
-    let valid = true;
-
-    if (!identifierInput.value.trim()) {
-        identifierInput.classList.add('invalid');
-        document.getElementById('loginEmail-error').textContent = 'This field is required.';
-        valid = false;
-    }
-    if (!passwordInput.value) {
-        passwordInput.classList.add('invalid');
-        document.getElementById('loginPassword-error').textContent = 'This field is required.';
-        valid = false;
-    }
-    if (!valid) {
+    if (!validateForm(form)) {
         return;
     }
 
     const account = getDemoAccountByLoginIdentifier(identifierInput.value);
     if (!account) {
-        identifierInput.classList.add('invalid');
-        document.getElementById('loginEmail-error').textContent = 'Unknown account. Use "Demo Scenarios" to fill a working account.';
+        // One short line, so it fits the reserved slot without moving the form.
+        setFieldError(identifierInput, 'No account found. Try a Demo Scenario.');
+        identifierInput.focus();
         return;
     }
 

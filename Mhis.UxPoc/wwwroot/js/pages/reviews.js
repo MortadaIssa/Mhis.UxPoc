@@ -120,7 +120,7 @@ function renderEventReviewsPage() {
     return `
         <div class="page">
             <div class="page-header">
-                <h1 class="page-title">Event Reviews</h1>
+                <h1 class="page-title">Submitted Events</h1>
                 <button type="button" class="btn btn-secondary" id="exportEventReviewsBtn"><i data-lucide="download"></i><span>Export to Excel</span></button>
             </div>
             <div class="list-toolbar">
@@ -369,7 +369,7 @@ function renderFacilityDuplicatesPage() {
     return `
         <div class="page">
             <div class="page-header">
-                <h1 class="page-title">Potential Duplicate Facilities</h1>
+                <h1 class="page-title">Possible Duplicate Facilities</h1>
             </div>
             <div class="list-toolbar">
                 <div class="search-group">
@@ -577,7 +577,7 @@ function renderPendingCustomValuesPage() {
     return `
         <div class="page">
             <div class="page-header">
-                <h1 class="page-title">Pending Custom Values</h1>
+                <h1 class="page-title">Submitted Custom Values</h1>
             </div>
             <div class="list-toolbar">
                 <div class="search-group">

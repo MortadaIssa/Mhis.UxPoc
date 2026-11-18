@@ -22,15 +22,16 @@ If the screenshots conflict with `docs/UX-BRIEF.md`, follow `docs/UX-BRIEF.md`.
 
 ## Non-negotiable UX decisions
 
-- Replace the Platforms concept with a persistent left sidebar.
-- Do not display MHIS, 4Ws, Substance Use, or Admin as platforms.
+- Navigation is a persistent left sidebar. There is no hidden Platforms dropdown.
+- For an approved NGO, the 4Ws Platform and the Substance Use Platform are separate areas inside the one MHIS shell, each with its own sidebar (Overview, work pages, Dashboard, Resources & Help, Contact Us, and a Back to MHIS pill at the bottom). Every sign-in lands on MHIS Home. Admin is never a platform. See `docs/UX-BRIEF.md` (Platform areas).
 - Preserve the MHIS green visual identity, but do not preserve the current navigation structure.
 - NGOs and administrators must have different navigation.
-- Facilities and Providers are independent sections, not Organization Profile tabs.
+- Organization Profile is one page with four tabs: Organization Details, Focal Persons, Facilities, Providers. Registration and the administrator use the same tabs.
 - Surveys are part of the common MHIS frontend and are visible only to eligible NGOs.
-- Events Calendar must be a labelled navigation item, not only an icon.
-- Dashboards must be directly accessible without entering a 4Ws platform.
-- Static and informational pages must be grouped under Resources & Help.
+- Events Calendar is a labelled item in the MHIS sidebar; for an approved NGO, the top-bar calendar icon opens it from every area. The administrator has Events Calendar under Home (all organizations, with an Organization filter) and the same icon.
+- Each platform's Dashboard is a direct item in that platform's sidebar.
+- Static and informational pages are grouped under Resources & Help, which shows the topics of the area the user is in.
+- Registration review decisions are Request Changes, Approve and Decline, in that order. Do not use "Rejected".
 - Notifications remain notifications. Do not add an Inbox, messaging center, task center, or communication module.
 - Long notifications may open in a modal.
 - Do not turn the application into a workflow or journey-management interface.
@@ -60,18 +61,18 @@ If the screenshots conflict with `docs/UX-BRIEF.md`, follow `docs/UX-BRIEF.md`.
 - Build the POC using HTML, CSS, and vanilla JavaScript.
 - Keep the code simple and understandable.
 - Use reusable JavaScript rendering functions only where they reduce duplication.
-- Keep mock records and persona data in `wwwroot/js/mock-data.js`.
-- Keep interaction code in `wwwroot/js/app.js`.
-- Keep styling in `wwwroot/css/site.css`.
+- Keep mock records in `wwwroot/js/data.js` and demo accounts/session in `wwwroot/js/demo-session.js`.
+- Keep shell code in `wwwroot/js/core.js`, `nav.js`, `shared-ui.js`, `notifications.js`, and page code in `wwwroot/js/pages/*.js` (see CLAUDE.md for the layout).
+- Keep styling in `wwwroot/css/style.css`.
 - Use semantic HTML and accessible labels.
-- Use Lucide icons through a CDN if icons are needed.
+- Use Lucide icons from the vendored `wwwroot/js/vendor/lucide.min.js`; never load Lucide from a CDN.
 - Use simulated navigation, filtering, modals, forms, and notifications.
 - The project must continue to build and run after every iteration.
 
 ## Visual direction
 
 - Professional government/NGO enterprise application.
-- Preserve the established dark-green MHIS brand.
+- Follow the NMHP BRIDGE theme: Inter, teal `#097d63` primary (tokens at the top of `style.css`).
 - Use a clean white or soft-neutral content background.
 - Use generous but controlled spacing.
 - Avoid excessive cards, badges, colors, explanatory paragraphs, and decorative graphics.
@@ -85,7 +86,7 @@ If the screenshots conflict with `docs/UX-BRIEF.md`, follow `docs/UX-BRIEF.md`.
 
 - Use Lucide line icons exclusively throughout the POC.
 - Never use emoji, Unicode symbols, operating-system icons, or mixed icon libraries as interface icons.
-- Follow the CSS variables and component styles already defined in `site.css`.
+- Follow the CSS variables and component styles already defined in `style.css`.
 - New pages must visually reuse the established sidebar, top bar, typography, buttons, cards, tables, modals, spacing, and notification styles.
 - Do not redesign accepted shared components in later iterations unless explicitly requested.
 
@@ -111,3 +112,6 @@ After editing:
 - Activity form sections are dynamic. Never assume that Location, Facilities, Providers, Beneficiaries, Funding, or any other section applies to every activity.
 - Existing screenshots explain business content only and must not be copied as the target UX.
 - Do not generate additional documentation.
+## Design
+
+- UI/UX decisions live in `docs/DESIGN.md` (design kit) and `docs/UX-BRIEF.md`; follow them.
