@@ -5,7 +5,7 @@
 //     Platforms entries, Resources & Help and Contact Us;
 //   - one area per reporting platform (4Ws, Substance Use): Overview, the
 //     platform's work pages, its Dashboard, Resources & Help and Contact Us,
-//     with a Back to MHIS pill at the bottom.
+//     with a Back to MHIS button at the bottom.
 // A platform is entered from its MHIS Home card or from the Reporting
 // Platforms group, always in the same browser tab. The administrator and an
 // NGO that is not approved yet have a single sidebar.
@@ -139,7 +139,7 @@ function getNavigationForArea(area) {
             { type: 'platform-header', platform: area },
             ...platform.pages.map(page => ({ type: 'item', page })),
             ...support,
-            // Rendered as a pill at the bottom of the sidebar.
+            // Rendered at the bottom of the sidebar, shaped like the platform name.
             { type: 'back' }
         ];
     }
@@ -184,7 +184,7 @@ function renderNavEntry(entry) {
         return `
             <div class="nav-back-holder">
                 <a href="#" class="nav-item nav-back" data-page="home">
-                    <i class="nav-icon" data-lucide="arrow-left"></i>
+                    <span class="nav-back-icon"><i data-lucide="arrow-left"></i></span>
                     <span class="nav-label">Back to MHIS</span>
                 </a>
             </div>`;

@@ -23,7 +23,7 @@ If the screenshots conflict with `docs/UX-BRIEF.md`, follow `docs/UX-BRIEF.md`.
 ## Non-negotiable UX decisions
 
 - Navigation is a persistent left sidebar. There is no hidden Platforms dropdown.
-- For an approved NGO, the 4Ws Platform and the Substance Use Platform are separate areas inside the one MHIS shell, each with its own sidebar (Overview, work pages, Dashboard, Resources & Help, Contact Us, and a Back to MHIS pill at the bottom). Every sign-in lands on MHIS Home. Admin is never a platform. See `docs/UX-BRIEF.md` (Platform areas).
+- For an approved NGO, the 4Ws Platform and the Substance Use Platform are separate areas inside the one MHIS shell, each with its own sidebar (Overview, work pages, Dashboard, Resources & Help, Contact Us, and Back to MHIS at the bottom, styled like the platform name block in a deeper green). Every sign-in lands on MHIS Home. Admin is never a platform. See `docs/UX-BRIEF.md` (Platform areas).
 - Preserve the MHIS green visual identity, but do not preserve the current navigation structure.
 - NGOs and administrators must have different navigation.
 - Organization Profile is one page with four tabs: Organization Details, Focal Persons, Facilities, Providers. Registration and the administrator use the same tabs.

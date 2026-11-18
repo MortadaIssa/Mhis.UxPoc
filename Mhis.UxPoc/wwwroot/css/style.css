@@ -4205,30 +4205,46 @@ textarea:focus-visible {
 }
 
 /* Sidebar inside a platform: the platform's name at the top, and Back to
-   MHIS as a pill at the bottom. */
+   MHIS at the bottom, in the same shape as the platform name but in a
+   deeper green so it stands out. */
 .nav-back-holder {
     margin-top: auto;
     padding-top: var(--spacing-lg);
 }
 
 .nav-item.nav-back {
-    display: inline-flex;
-    gap: 8px;
-    padding: 9px 18px 9px 14px;
-    border: 1.5px solid var(--color-primary-green);
-    border-radius: 999px;
-    background: var(--color-surface);
+    gap: 12px;
+    min-height: 60px;
+    padding: 12px 14px;
+    border: 1px solid color-mix(in srgb, var(--color-primary-green) 40%, white);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-primary-green) 16%, white);
     color: var(--color-dark-green);
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     box-shadow: var(--shadow-sm);
 }
 
 .nav-item.nav-back:hover {
-    background: var(--color-pale-green);
-    color: var(--color-dark-green);
+    background: color-mix(in srgb, var(--color-primary-green) 24%, white);
+    border-color: var(--color-primary-green);
+    color: var(--color-deep-green);
 }
 
-.nav-item.nav-back .nav-icon {
+.nav-back-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    background-color: var(--color-primary-green);
+    color: white;
+}
+
+.nav-back-icon i,
+.nav-back-icon svg {
     width: 18px;
     height: 18px;
 }

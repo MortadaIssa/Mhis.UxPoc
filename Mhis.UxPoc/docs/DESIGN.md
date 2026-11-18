@@ -106,4 +106,5 @@ Changes that reopen the POC: new interactions or screens (e.g. Add Facility moda
 2026-11-18: Administrator Events Calendar: item under Home and the top-bar calendar icon (supersedes "no calendar icon for administrators" above). All organizations' events with an Organization filter; the administrator edits only NMHP events; event approval stays in Submitted Events; by: Mortada Issa
 2026-11-18: Platform sidebar: Back to MHIS moves from the top to a pill at the bottom of the sidebar, so it reads as leaving the platform rather than as a menu item; by: Mortada Issa
 2026-11-18: Fixes: sticky Save Changes and editor action bars reach the window bottom (no strip of the form shows under them); shared-mailbox checkbox aligned with its label; calendar month and week columns keep equal widths with long event titles
+2026-11-18: Back to MHIS restyled: same shape and size as the platform name block at the top of the sidebar (no description), deeper green tint with a solid green arrow icon, instead of the small outlined pill; by: Mortada Issa
 ```

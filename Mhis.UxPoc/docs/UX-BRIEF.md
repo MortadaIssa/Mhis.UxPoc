@@ -63,7 +63,7 @@ MHIS is the umbrella application. One NGO account is shared by several people (t
 Rules:
 
 - A platform is entered from its MHIS Home card or from the Reporting Platforms group in the MHIS sidebar, in the same browser tab. There is no hidden Platforms dropdown.
-- Inside a platform, the platform name heads the sidebar, Back to MHIS is a pill at the bottom of the sidebar, and the top bar shows MHIS / platform name.
+- Inside a platform, the platform name heads the sidebar, Back to MHIS sits at the bottom of the sidebar, and the top bar shows MHIS / platform name. Back to MHIS has the same shape and size as the platform name block, in a deeper green with a solid green arrow icon, so it stands out from the menu items.
 - The top bar (calendar, notifications, account) is the same in every area. Opening a page of another area (the calendar, a notification action) switches the sidebar to that area.
 - Every NGO sign-in lands on MHIS Home. Pages look the same on every visit: no first-visit or returning-visit variants.
 - An administrator and an NGO that is not approved yet have a single sidebar.
@@ -100,7 +100,7 @@ MHIS area:
 - Resources & Support (group)
   - Resources & Help
   - Contact Us
-- Back to MHIS (pill at the bottom of the sidebar)
+- Back to MHIS (at the bottom of the sidebar)
 
 Substance Use Platform area:
 
@@ -110,7 +110,7 @@ Substance Use Platform area:
 - Resources & Support (group)
   - Resources & Help
   - Contact Us
-- Back to MHIS (pill at the bottom of the sidebar)
+- Back to MHIS (at the bottom of the sidebar)
 
 The Substance Use Platform is hidden for NGOs that are not eligible.
 

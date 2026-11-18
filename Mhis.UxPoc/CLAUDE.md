@@ -33,8 +33,8 @@ business functions/branding — they are not designs to reproduce.
 - MHIS is the umbrella application and the one shell (top bar, look,
   sign-in). For an approved NGO, each reporting platform (4Ws, Substance Use)
   is a separate area with its own sidebar: Overview, the platform's work
-  pages, Dashboard, Resources & Help and Contact Us, with a Back to MHIS pill
-  at the bottom. A
+  pages, Dashboard, Resources & Help and Contact Us, with Back to MHIS at the
+  bottom (same shape as the platform name block, deeper green). A
   platform is entered from its MHIS Home card or the Reporting Platforms
   sidebar group, in the same browser tab, and the top bar then shows
   "MHIS / <platform name>". Areas are defined in `nav.js`
