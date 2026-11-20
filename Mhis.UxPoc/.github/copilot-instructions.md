@@ -23,15 +23,16 @@ If the screenshots conflict with `docs/UX-BRIEF.md`, follow `docs/UX-BRIEF.md`.
 ## Non-negotiable UX decisions
 
 - Navigation is a persistent left sidebar. There is no hidden Platforms dropdown.
-- For an approved NGO, the 4Ws Platform and the Substance Use Platform are separate areas inside the one MHIS shell, each with its own sidebar (Overview, work pages, Dashboard, Resources & Help, Contact Us, and Back to MHIS at the bottom, styled like the platform name block in a deeper green). Every sign-in lands on MHIS Home. Admin is never a platform. See `docs/UX-BRIEF.md` (Platform areas).
+- For an approved NGO, the 4Ws Platform and the Substance Use Platform are separate areas inside the one MHIS shell, each with its own sidebar (Overview, the work page (Activities or Surveys), My Dashboard, Advanced Dashboard, Resources & Help, Contact Us, and Back to MHIS at the bottom, styled like the platform name block in a deeper green). Every sign-in lands on MHIS Home. Admin is never a platform. See `docs/UX-BRIEF.md` (Platform areas).
 - Preserve the MHIS green visual identity, but do not preserve the current navigation structure.
 - NGOs and administrators must have different navigation.
 - Organization Profile is one page with four tabs: Organization Details, Focal Persons, Facilities, Providers. Registration and the administrator use the same tabs.
 - Surveys are part of the common MHIS frontend and are visible only to eligible NGOs.
 - Events Calendar is a labelled item in the MHIS sidebar; for an approved NGO, the top-bar calendar icon opens it from every area. The administrator has Events Calendar under Home (all organizations, with an Organization filter) and the same icon.
-- Each platform's Dashboard is a direct item in that platform's sidebar.
+- Each platform's sidebar has My Dashboard and Advanced Dashboard. Advanced Dashboard opens a page that says the Power BI report opens in a new browser tab, with an Open Advanced Dashboard button; it never opens the report straight from the sidebar.
 - Static and informational pages are grouped under Resources & Help, which shows the topics of the area the user is in.
 - Registration review decisions are Request Changes, Approve and Decline, in that order. Do not use "Rejected".
+- Organization Management shows when each organization was approved and marks one that has added no facility, activity or survey since its approval as "Not started", so NMHP can follow up.
 - Notifications remain notifications. Do not add an Inbox, messaging center, task center, or communication module.
 - Long notifications may open in a modal.
 - Do not turn the application into a workflow or journey-management interface.

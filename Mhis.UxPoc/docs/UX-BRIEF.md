@@ -1,6 +1,6 @@
 # MHIS UX POC Brief
 
-Updated 16 November 2026 after the client feedback of September 2026, and 18 November 2026 after the client meeting on the platforms and the registration review (platform areas, Organization Profile tabs, review decisions, the registration track and resubmission, administrator queue names).
+Updated 16 November 2026 after the client feedback of September 2026, 18 November 2026 after the client meeting on the platforms and the registration review (platform areas, Organization Profile tabs, review decisions, the registration track and resubmission, administrator queue names), and 20 November 2026 after the client's review of the POC (platform sidebars and Overview actions, the Advanced Dashboard page, approval dates in Organization Management).
 
 ## Reference material rule
 
@@ -96,7 +96,8 @@ MHIS area:
 
 - Overview
 - Activities
-- Dashboard
+- My Dashboard
+- Advanced Dashboard
 - Resources & Support (group)
   - Resources & Help
   - Contact Us
@@ -106,7 +107,8 @@ Substance Use Platform area:
 
 - Overview
 - Surveys
-- Dashboard
+- My Dashboard
+- Advanced Dashboard
 - Resources & Support (group)
   - Resources & Help
   - Contact Us
@@ -114,7 +116,7 @@ Substance Use Platform area:
 
 The Substance Use Platform is hidden for NGOs that are not eligible.
 
-Sidebar labels do not use "My". Page titles match the sidebar labels, except the two dashboards, which are titled 4Ws Dashboard and Substance Use Dashboard.
+Sidebar labels do not use "My", except My Dashboard, which the client asked for. Page titles match the sidebar labels, except My Dashboard, which is titled 4Ws Dashboard or Substance Use Dashboard.
 
 ## Existing NGO home
 
@@ -133,7 +135,7 @@ MHIS Home shows no platform figures or actions. Do not show Needs Attention (fac
 Each platform opens on its Overview, the same page on every visit:
 
 - Platform name and a one-line purpose.
-- Main actions. 4Ws: Add Activity (primary), View Activities, Open Dashboard. Substance Use: Add Survey (primary), View Surveys, Open Dashboard.
+- Main actions. 4Ws: Add Activity (primary), My Activities, Go to My Dashboard. Substance Use: Add Survey (primary), My Surveys, Go to My Dashboard.
 - At a Glance. 4Ws: the headline figures of the 4Ws Dashboard (activities, ongoing, beneficiaries). Substance Use: submitted surveys against the expected surveys for the current reporting year, as a progress bar, plus the number of drafts.
 
 With no data yet, the figures are zero and the first action is still Add Activity or Add Survey.
@@ -199,6 +201,7 @@ For an administrator:
 - Registration Review and Organization Management show the same tabs, read-only. Organization Management adds a Users tab.
 - Do not allow the administrator to edit NGO information.
 - Organization Management lists the approved organizations. Facilities and providers can be opened for details and exported.
+- Organization Management shows when each organization was approved: an Approved column, most recent first, and "Approved on" on the organization page. An organization that has added no facility, activity or survey since its approval is marked Not started, and the Since Approval filter (Started, Not Started) lists those organizations, so NMHP can follow up with them. The POC uses mock values; the real application derives them from the organization's records.
 
 ## Facilities and Providers
 
@@ -279,13 +282,13 @@ Show:
 
 ## Dashboards
 
-Each platform has a Dashboard item in its sidebar.
+Each platform has two dashboard items in its sidebar: My Dashboard and Advanced Dashboard.
 
-Represent the existing 4Ws dashboard without redesigning its reports.
+My Dashboard opens the platform's dashboard page (4Ws Dashboard, Substance Use Dashboard). Represent the existing 4Ws dashboard without redesigning its reports.
 
-The Advanced Dashboard is not a sidebar item. It opens the Power BI report in a new browser tab from a button on the 4Ws Dashboard page.
+Advanced Dashboard opens a page that tells the user the Power BI report opens in a new browser tab, so MHIS stays open. The page shows the report address and an Open Advanced Dashboard button. The report never opens straight from the sidebar, and the dashboard page has no second Advanced Dashboard button.
 
-The Substance Use Dashboard is a placeholder built from the survey list until its real content is defined.
+The Substance Use Dashboard is a placeholder built from the survey list until its real content is defined. NMHP has not provided the Substance Use Power BI report yet; until then its Open Advanced Dashboard button says that the report is not linked.
 
 ## Resources & Help
 

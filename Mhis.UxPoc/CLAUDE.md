@@ -33,8 +33,9 @@ business functions/branding — they are not designs to reproduce.
 - MHIS is the umbrella application and the one shell (top bar, look,
   sign-in). For an approved NGO, each reporting platform (4Ws, Substance Use)
   is a separate area with its own sidebar: Overview, the platform's work
-  pages, Dashboard, Resources & Help and Contact Us, with Back to MHIS at the
-  bottom (same shape as the platform name block, deeper green). A
+  page (Activities or Surveys), My Dashboard, Advanced Dashboard, Resources &
+  Help and Contact Us, with Back to MHIS at the bottom (same shape as the
+  platform name block, deeper green). A
   platform is entered from its MHIS Home card or the Reporting Platforms
   sidebar group, in the same browser tab, and the top bar then shows
   "MHIS / <platform name>". Areas are defined in `nav.js`
@@ -57,8 +58,13 @@ business functions/branding — they are not designs to reproduce.
   NGO, the top-bar calendar icon opens it from every area. The administrator
   has Events Calendar under Home (all organizations, Organization filter)
   and the same icon. NGOs that are not approved yet have no calendar.
-- Each platform's Dashboard is a direct item in the platform's sidebar. The
-  Advanced Dashboard (Power BI) opens in a new tab from the 4Ws Dashboard page.
+- Each platform's sidebar has My Dashboard and Advanced Dashboard (client
+  request, 2026-11-20). My Dashboard opens the platform's dashboard page,
+  titled 4Ws Dashboard or Substance Use Dashboard. Advanced Dashboard opens a
+  page that says the Power BI report opens in a new browser tab, with an Open
+  Advanced Dashboard button (`dashboards.js`, `ADVANCED_DASHBOARD_URLS`). Do
+  not open the report straight from the sidebar, and do not add a second
+  Advanced Dashboard button on the dashboard page.
 - Static/informational pages are grouped under Resources & Help: one page that
   shows the topics of the area the user is in (MHIS, 4Ws Platform or
   Substance Use Platform).
@@ -70,6 +76,12 @@ business functions/branding — they are not designs to reproduce.
   that order (Decline last, outlined in red). Do not use "Rejected" for a
   registration. A submitted profile can be updated and resubmitted while it
   is Pending Review.
+- Organization Management shows when each organization was approved
+  (Approved column, most recent first) and marks an organization that has
+  added no facility, activity or survey since its approval as "Not
+  started", with a Since Approval filter, so NMHP can follow up (client request,
+  2026-11-20). The POC reads a mock flag (`contributedSinceApproval`); the
+  real application derives it from the organization's records.
 - Notifications remain notifications — no Inbox, messaging center, task
   center, or communication module. Long notifications may open in a modal.
 - Do not turn the application into a workflow or journey-management
